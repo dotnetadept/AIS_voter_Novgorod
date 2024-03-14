@@ -1,0 +1,25 @@
+[4:02:06 PM]: Spawning /home/vladimir/Desktop/Flutter/flutter/bin/flutter with args ["run","--machine","--target","lib/main.dart","-d","linux","--dart-define=flutter.inspector.structuredErrors=true","--start-paused","--web-server-debug-protocol","ws","--web-allow-expose-url","--no-sound-null-safety","--devtools-server-address","http://127.0.0.1:9101/"]
+[4:02:06 PM]: ..  in /home/vladimir/Desktop/AIS_voter/src/clients/deputy
+[4:02:06 PM]: ..  with {"toolEnv":{"FLUTTER_HOST":"VSCode","PUB_ENVIRONMENT":"vscode.dart-code","FLUTTER_DESKTOP_EMBEDDING":true}}
+[4:02:06 PM]: PID: 119387
+[4:02:07 PM]: <== [{"event":"daemon.connected","params":{"version":"0.6.0","pid":119417}}]
+[4:02:07 PM]: <== [{"event":"app.start","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","deviceId":"linux","directory":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy","supportsRestart":true,"launchMode":"run"}}]
+[4:02:07 PM]: <== Launching lib/main.dart on Linux in debug mode...
+[4:02:07 PM]: <== [{"event":"app.progress","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","id":"0","progressId":null,"message":"Building Linux application...","finished":false}}]
+[4:02:16 PM]: <== [{"event":"app.progress","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","id":"0","progressId":null,"finished":true}}]
+[4:02:19 PM]: <== [{"event":"app.debugPort","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","port":34689,"wsUri":"ws://127.0.0.1:34689/7e7NL_glRus=/ws","baseUri":"file:///tmp/deputyIZBUYI/deputy/"}}]
+[4:02:19 PM]: <== [{"event":"app.progress","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","id":"1","progressId":null,"message":"Syncing files to device Linux...","finished":false}}]
+[4:02:19 PM]: <== [{"event":"app.progress","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","id":"1","progressId":null,"finished":true}}]
+[4:02:19 PM]: <== [{"event":"app.started","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913"}}]
+[4:02:19 PM]: ==> [{"id":"1","method":"app.callServiceExtension","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","methodName":"ext.flutter.platformOverride"}}]
+[4:02:19 PM]: ==> [{"id":"2","method":"app.callServiceExtension","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","methodName":"ext.flutter.brightnessOverride"}}]
+[4:02:19 PM]: ==> [{"id":"3","method":"app.callServiceExtension","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","methodName":"ext.flutter.inspector.structuredErrors","params":{"enabled":true}}}]
+[4:02:19 PM]: ==> [{"id":"4","method":"app.callServiceExtension","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","methodName":"ext.flutter.inspector.isWidgetCreationTracked"}}]
+[4:02:19 PM]: ==> [{"id":"5","method":"app.callServiceExtension","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913","methodName":"ext.flutter.inspector.setPubRootDirectories","params":{"isolateId":"isolates/1459824446566359","arg0":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}}]
+[4:02:19 PM]: <== [{"id":"1","result":{"value":"linux","type":"_extensionType","method":"ext.flutter.platformOverride"}}]
+[4:02:19 PM]: <== [{"id":"2","result":{"value":"Brightness.light","type":"_extensionType","method":"ext.flutter.brightnessOverride"}}]
+[4:02:19 PM]: <== [{"id":"3","result":{"enabled":"true","type":"_extensionType","method":"ext.flutter.inspector.structuredErrors"}}]
+[4:02:19 PM]: <== [{"id":"4","result":{"result":true,"type":"_extensionType","method":"ext.flutter.inspector.isWidgetCreationTracked"}}]
+[4:02:20 PM]: <== [{"id":"5","result":{"result":null,"type":"_extensionType","method":"ext.flutter.inspector.setPubRootDirectories"}}]
+[5:25:18 PM]: <== Lost connection to device.
+[5:25:18 PM]: <== [{"event":"app.stop","params":{"appId":"c5d099ce-d682-4569-95fa-39cf6d89f913"}}]

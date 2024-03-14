@@ -1,0 +1,13 @@
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/flutter_webrtc_example
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/data/icudtl.dat
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/lib/libflutter_linux_gtk.so
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/lib/libflutter_webrtc_plugin.so
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/lib/libwebrtc.so
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/data/flutter_assets/FontManifest.json
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/data/flutter_assets/shaders/ink_sparkle.frag
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/data/flutter_assets/version.json
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES.Z
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
+/home/user/Downloads/flutter-webrtc-main(4)/flutter-webrtc-main/example/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.json

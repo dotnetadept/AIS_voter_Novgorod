@@ -1,0 +1,8 @@
+obj\x64\Debug\Product.wixobj
+C:\Users\Vladimir\source\repos\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\x64\Debug\ru-RU\AIS_deputy_msi_installer.msi
+C:\Users\Vladimir\source\repos\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\x64\Debug\ru-RU\AIS_deputy_msi_installer.wixpdb
+obj\x64\Debug\AIS_deputy_msi_installer.wixproj.BindContentsFileListru-RU.txt
+obj\x64\Debug\AIS_deputy_msi_installer.wixproj.BindOutputsFileListru-RU.txt
+obj\x64\Debug\AIS_deputy_msi_installer.wixproj.BindBuiltOutputsFileListru-RU.txt
+C:\AIS_voter\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\x64\Debug\ru-RU\AIS_deputy_msi_installer.msi
+C:\AIS_voter\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\x64\Debug\ru-RU\AIS_deputy_msi_installer.wixpdb

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Панель оператора
+Name[ru]=Панель оператора
+Type=Application
+NoDisplay=false
+Exec=bash /home/user/ais_voter/operator_panel/startOperatorPanel.sh
+Icon=/home/user/ais_voter/icons/logoo.png
+Hidden=false
+Terminal=false
+StartupNotify=false
+Categories=Utility;Application
+Version=1.0
+

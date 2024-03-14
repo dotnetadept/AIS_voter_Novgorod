@@ -1,0 +1,15 @@
+DROP TABLE public._aqueduct_version_pgsql;
+DROP TABLE public._result;
+DROP TABLE public._meetingsession;
+DROP TABLE public._questionsession;
+DROP TABLE public._votingmode;
+DROP TABLE public._meeting;
+DROP TABLE public._groupuser;
+DROP TABLE public._user;
+DROP TABLE public._group;
+DROP TABLE public._file;
+DROP TABLE public._question;
+DROP TABLE public._agenda;
+DROP TABLE public._registrationsession;
+DROP TABLE public._registration;
+DROP TABLE public._settings;

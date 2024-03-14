@@ -1,0 +1,2 @@
+C:\AIS_voter\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\x64\Release\ru-ru\AIS_deputy_msi_installer.msi
+C:\AIS_voter\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\x64\Release\ru-ru\AIS_deputy_msi_installer.wixpdb

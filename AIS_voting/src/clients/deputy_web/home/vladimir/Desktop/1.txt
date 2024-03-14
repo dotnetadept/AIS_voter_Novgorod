@@ -1,0 +1,245 @@
+!! PLEASE REVIEW THIS LOG FOR SENSITIVE INFORMATION BEFORE SHARING !!
+
+Dart Code extension: 3.22.0
+Flutter extension: 3.22.0 (not activated)
+
+App: Visual Studio Code
+Version: 1.56.2
+Platform: linux
+
+HTTP_PROXY: undefined
+NO_PROXY: undefined
+
+Logging Categories:
+    FlutterDaemon
+
+Mon May 31 2021 [14:10:21 GMT+0300 (Moscow Standard Time)] Log file started
+[2:10:21 PM] [FlutterDaemon] [Info] Spawning /home/vladimir/Desktop/Flutter/flutter/bin/flutter with args ["daemon"]
+[2:10:21 PM] [FlutterDaemon] [Info] ..  in /home/vladimir/Desktop/Flutter/flutter
+[2:10:21 PM] [FlutterDaemon] [Info] ..  with {"toolEnv":{"FLUTTER_HOST":"VSCode","PUB_ENVIRONMENT":"vscode.dart-code","FLUTTER_DESKTOP_EMBEDDING":true}}
+[2:10:21 PM] [FlutterDaemon] [Info]     PID: 4585
+[2:10:21 PM] [FlutterDaemon] [Info] ==> [{"id":"1","method":"emulator.getEmulators"}]
+[2:10:22 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[2:10:22 PM] [FlutterDaemon] [Info] <== [{"event":"daemon.connected","params":{"version":"0.6.0","pid":4714}}]
+[2:10:22 PM] [FlutterDaemon] [Info] ==> [{"id":"2","method":"device.enable"}]
+[2:10:22 PM] [FlutterDaemon] [Info] <== [{"event":"daemon.logMessage","params":{"level":"status","message":"Starting device daemon..."}}]
+[2:10:22 PM] [FlutterDaemon] [Info] <== [{"id":"2"}]
+[2:10:22 PM] [FlutterDaemon] [Info] <== [{"id":"1","result":[{"id":"Nexus_5_API_19","name":"Nexus 5 API 19","category":"mobile","platformType":"android"},{"id":"Nexus_7_API_19","name":"Nexus 7 API 19","category":"mobile","platformType":"android"},{"id":"Pixel_3_XL_API_19","name":"Pixel 3 XL API 19","category":"mobile","platformType":"android"}]}]
+[2:10:26 PM] [FlutterDaemon] [Info] <== [{"event":"device.added","params":{"id":"linux","name":"Linux","platform":"linux-x64","emulator":false,"category":"desktop","platformType":"linux","ephemeral":false,"emulatorId":null}}]
+[2:10:26 PM] [FlutterDaemon] [Info] ==> [{"id":"3","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:10:26 PM] [FlutterDaemon] [Info] <== [{"id":"3","result":{"platforms":["linux","ios","android"]}}]
+[2:11:13 PM] [FlutterDaemon] [Info] ==> [{"id":"4","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:11:13 PM] [FlutterDaemon] [Info] <== [{"id":"4","result":{"platforms":["linux","ios","android"]}}]
+[2:11:13 PM] [FlutterDaemon] [Info] ==> [{"id":"5","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:11:13 PM] [FlutterDaemon] [Info] <== [{"id":"5","result":{"platforms":["linux","ios","android"]}}]
+[2:11:13 PM] [General] [Warn] Did not find session bd9352a5-7f13-4cdb-a8bb-4c35f1967c1f to handle dart.progressStart. There were 0 sessions:
+[2:11:13 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[2:12:17 PM] [FlutterDaemon] [Info] ==> [{"id":"6","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:12:17 PM] [FlutterDaemon] [Info] <== [{"id":"6","result":{"platforms":["linux","ios","android"]}}]
+[2:12:17 PM] [FlutterDaemon] [Info] ==> [{"id":"7","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:12:17 PM] [FlutterDaemon] [Info] <== [{"id":"7","result":{"platforms":["linux","ios","android"]}}]
+[2:12:17 PM] [General] [Warn] Did not find session 0de21ec3-8507-4756-8f03-29e5f8422451 to handle dart.progressStart. There were 0 sessions:
+[2:12:17 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[2:17:43 PM] [FlutterDaemon] [Info] ==> [{"id":"8","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:17:43 PM] [FlutterDaemon] [Info] <== [{"id":"8","result":{"platforms":["linux","ios","android"]}}]
+[2:17:43 PM] [FlutterDaemon] [Info] ==> [{"id":"9","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:17:43 PM] [FlutterDaemon] [Info] <== [{"id":"9","result":{"platforms":["linux","ios","android"]}}]
+[2:17:43 PM] [General] [Warn] Did not find session f8314cdc-d91e-4e5c-be88-babac824a278 to handle dart.progressStart. There were 0 sessions:
+[2:17:43 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[2:20:26 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:38:16 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:38:21 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:38:43 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:39:04 PM] [FlutterDaemon] [Info] ==> [{"id":"10","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:39:04 PM] [FlutterDaemon] [Info] <== [{"id":"10","result":{"platforms":["linux","ios","android"]}}]
+[2:39:04 PM] [FlutterDaemon] [Info] ==> [{"id":"11","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:39:04 PM] [FlutterDaemon] [Info] <== [{"id":"11","result":{"platforms":["linux","ios","android"]}}]
+[2:39:05 PM] [General] [Warn] Did not find session 7e6387fe-4d7f-4c7f-a080-73d835bc3634 to handle dart.progressStart. There were 0 sessions:
+[2:39:05 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[2:40:49 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:40:54 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:40:59 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:41:02 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:41:05 PM] [FlutterDaemon] [Info] ==> [{"id":"12","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:41:05 PM] [FlutterDaemon] [Info] <== [{"id":"12","result":{"platforms":["linux","ios","android"]}}]
+[2:41:05 PM] [FlutterDaemon] [Info] ==> [{"id":"13","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:41:05 PM] [FlutterDaemon] [Info] <== [{"id":"13","result":{"platforms":["linux","ios","android"]}}]
+[2:41:05 PM] [General] [Warn] Project has errors, prompting user
+[2:41:05 PM] [General] [Warn]     /home/vladimir/Desktop/AIS_voter/src/clients/deputy/lib/Pages/viewStream.dart:23:8
+[2:41:05 PM] [General] [Warn]     Expected an identifier.
+[2:41:16 PM] [FlutterDaemon] [Info] ==> [{"id":"14","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:41:16 PM] [FlutterDaemon] [Info] <== [{"id":"14","result":{"platforms":["linux","ios","android"]}}]
+[2:41:16 PM] [FlutterDaemon] [Info] ==> [{"id":"15","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:41:16 PM] [FlutterDaemon] [Info] <== [{"id":"15","result":{"platforms":["linux","ios","android"]}}]
+[2:41:16 PM] [General] [Warn] Did not find session 1bfd4d12-7ca6-402f-91b0-c154d635e1de to handle dart.progressStart. There were 0 sessions:
+[2:41:16 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[2:44:05 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:44:16 PM] [FlutterDaemon] [Info] ==> [{"id":"16","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:44:16 PM] [FlutterDaemon] [Info] <== [{"id":"16","result":{"platforms":["linux","ios","android"]}}]
+[2:44:16 PM] [FlutterDaemon] [Info] ==> [{"id":"17","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:44:16 PM] [FlutterDaemon] [Info] <== [{"id":"17","result":{"platforms":["linux","ios","android"]}}]
+[2:44:16 PM] [General] [Warn] Did not find session 4319e478-5a17-489d-94cc-169876ae47dd to handle dart.progressStart. There were 0 sessions:
+[2:44:16 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[2:55:40 PM] [FlutterDaemon] [Info] ==> [{"id":"18","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:55:40 PM] [FlutterDaemon] [Info] <== [{"id":"18","result":{"platforms":["linux","ios","android"]}}]
+[2:55:40 PM] [FlutterDaemon] [Info] ==> [{"id":"19","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[2:55:40 PM] [FlutterDaemon] [Info] <== [{"id":"19","result":{"platforms":["linux","ios","android"]}}]
+[2:55:40 PM] [General] [Warn] Did not find session 3346c20c-b33c-4684-9189-7e779cf6882b to handle dart.progressStart. There were 0 sessions:
+[2:55:40 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[2:57:27 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[3:01:19 PM] [FlutterDaemon] [Info] ==> [{"id":"20","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:01:19 PM] [FlutterDaemon] [Info] <== [{"id":"20","result":{"platforms":["linux","ios","android"]}}]
+[3:01:19 PM] [FlutterDaemon] [Info] ==> [{"id":"21","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:01:19 PM] [FlutterDaemon] [Info] <== [{"id":"21","result":{"platforms":["linux","ios","android"]}}]
+[3:01:19 PM] [General] [Warn] Did not find session e8208ebf-d115-4bd9-a28a-1d2aaa9cc510 to handle dart.progressStart. There were 0 sessions:
+[3:01:19 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:02:57 PM] [FlutterDaemon] [Info] ==> [{"id":"22","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:02:57 PM] [FlutterDaemon] [Info] <== [{"id":"22","result":{"platforms":["linux","ios","android"]}}]
+[3:02:57 PM] [FlutterDaemon] [Info] ==> [{"id":"23","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:02:57 PM] [FlutterDaemon] [Info] <== [{"id":"23","result":{"platforms":["linux","ios","android"]}}]
+[3:02:57 PM] [General] [Warn] Did not find session 5d315f33-30c6-4426-aa83-c7359f6d1297 to handle dart.progressStart. There were 0 sessions:
+[3:02:57 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:09:43 PM] [FlutterDaemon] [Info] ==> [{"id":"24","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:09:43 PM] [FlutterDaemon] [Info] <== [{"id":"24","result":{"platforms":["linux","ios","android"]}}]
+[3:09:43 PM] [FlutterDaemon] [Info] ==> [{"id":"25","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:09:43 PM] [FlutterDaemon] [Info] <== [{"id":"25","result":{"platforms":["linux","ios","android"]}}]
+[3:09:43 PM] [General] [Warn] Did not find session 3011a6d7-93e9-4963-86b4-3155a15ea055 to handle dart.progressStart. There were 0 sessions:
+[3:09:43 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:10:18 PM] [FlutterDaemon] [Info] ==> [{"id":"26","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:10:18 PM] [FlutterDaemon] [Info] <== [{"id":"26","result":{"platforms":["linux","ios","android"]}}]
+[3:10:18 PM] [FlutterDaemon] [Info] ==> [{"id":"27","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:10:18 PM] [FlutterDaemon] [Info] <== [{"id":"27","result":{"platforms":["linux","ios","android"]}}]
+[3:10:18 PM] [General] [Warn] Did not find session 0b8ad290-5ce2-4df3-b9e0-c877f3dd0597 to handle dart.progressStart. There were 0 sessions:
+[3:10:18 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:17:03 PM] [FlutterDaemon] [Info] ==> [{"id":"28","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:17:03 PM] [FlutterDaemon] [Info] <== [{"id":"28","result":{"platforms":["linux","ios","android"]}}]
+[3:17:03 PM] [FlutterDaemon] [Info] ==> [{"id":"29","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:17:03 PM] [FlutterDaemon] [Info] <== [{"id":"29","result":{"platforms":["linux","ios","android"]}}]
+[3:17:03 PM] [General] [Warn] Did not find session f3d0ca6d-7599-412e-8d60-9da8cba86cb7 to handle dart.progressStart. There were 0 sessions:
+[3:17:03 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:18:16 PM] [FlutterDaemon] [Info] ==> [{"id":"30","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:18:16 PM] [FlutterDaemon] [Info] <== [{"id":"30","result":{"platforms":["linux","ios","android"]}}]
+[3:18:16 PM] [FlutterDaemon] [Info] ==> [{"id":"31","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:18:16 PM] [FlutterDaemon] [Info] <== [{"id":"31","result":{"platforms":["linux","ios","android"]}}]
+[3:18:16 PM] [General] [Warn] Did not find session 473b3e70-66e8-421a-bd5c-71e2a1a3509d to handle dart.progressStart. There were 0 sessions:
+[3:18:16 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:19:19 PM] [FlutterDaemon] [Info] ==> [{"id":"32","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:19:19 PM] [FlutterDaemon] [Info] <== [{"id":"32","result":{"platforms":["linux","ios","android"]}}]
+[3:19:19 PM] [FlutterDaemon] [Info] ==> [{"id":"33","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:19:19 PM] [FlutterDaemon] [Info] <== [{"id":"33","result":{"platforms":["linux","ios","android"]}}]
+[3:19:19 PM] [General] [Warn] Did not find session d1766239-2332-4e8e-9a87-984e775e0b70 to handle dart.progressStart. There were 0 sessions:
+[3:19:19 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:27:37 PM] [FlutterDaemon] [Info] ==> [{"id":"34","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:27:37 PM] [FlutterDaemon] [Info] <== [{"id":"34","result":{"platforms":["linux","ios","android"]}}]
+[3:27:37 PM] [FlutterDaemon] [Info] ==> [{"id":"35","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:27:37 PM] [FlutterDaemon] [Info] <== [{"id":"35","result":{"platforms":["linux","ios","android"]}}]
+[3:27:37 PM] [General] [Warn] Project has errors, prompting user
+[3:27:37 PM] [General] [Warn]     /home/vladimir/Desktop/AIS_voter/src/clients/deputy/lib/Pages/viewStream.dart:12:8
+[3:27:37 PM] [General] [Warn]     This requires the 'non-nullable' language feature to be enabled.
+[3:27:58 PM] [FlutterDaemon] [Info] ==> [{"id":"36","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:27:58 PM] [FlutterDaemon] [Info] <== [{"id":"36","result":{"platforms":["linux","ios","android"]}}]
+[3:27:58 PM] [FlutterDaemon] [Info] ==> [{"id":"37","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:27:58 PM] [FlutterDaemon] [Info] <== [{"id":"37","result":{"platforms":["linux","ios","android"]}}]
+[3:27:58 PM] [General] [Warn] Project has errors, prompting user
+[3:27:58 PM] [General] [Warn]     /home/vladimir/Desktop/AIS_voter/src/clients/deputy/lib/Pages/viewStream.dart:40:9
+[3:27:58 PM] [General] [Warn]     The setter 'devices' isn't defined for the type '_ViewStreamPageState'.
+[3:28:10 PM] [FlutterDaemon] [Info] ==> [{"id":"38","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:28:10 PM] [FlutterDaemon] [Info] <== [{"id":"38","result":{"platforms":["linux","ios","android"]}}]
+[3:28:10 PM] [FlutterDaemon] [Info] ==> [{"id":"39","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:28:10 PM] [FlutterDaemon] [Info] <== [{"id":"39","result":{"platforms":["linux","ios","android"]}}]
+[3:28:10 PM] [General] [Warn] Project has errors, prompting user
+[3:28:10 PM] [General] [Warn]     /home/vladimir/Desktop/AIS_voter/src/clients/deputy/lib/Pages/viewStream.dart:40:9
+[3:28:10 PM] [General] [Warn]     The setter 'devices' isn't defined for the type '_ViewStreamPageState'.
+[3:28:11 PM] [General] [Warn] Did not find session 0be6bc44-6bba-4f54-98f6-d909e6c280bb to handle dart.progressStart. There were 0 sessions:
+[3:28:11 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:28:27 PM] [FlutterRun] [Error] [Dart ] ERROR: lib/Pages/viewStream.dart:41:10: Error: The setter 'devices' isn't defined for the class '_ViewStreamPageState'.
+[3:28:27 PM] [FlutterRun] [Error] [Dart ] ERROR:  - '_ViewStreamPageState' is from 'package:deputy/Pages/viewStream.dart' ('lib/Pages/viewStream.dart').
+ERROR: Try correcting the name to the name of an existing setter, or defining a setter or field named 'devices'.
+ERROR:     this.devices = await Devices.all;
+ERROR:          ^^^^^^^
+ERROR: lib/Pages/viewStream.dart:66:21: Error: Null safety features are disabled for this library.
+ERROR: Try removing the package language version or setting the language version to 2.12 or higher.
+ERROR:               player!
+ERROR:                     ^
+[3:28:27 PM] [FlutterRun] [Error] [Dart ] Exception: Build process failed
+[3:28:47 PM] [FlutterDaemon] [Info] ==> [{"id":"40","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:28:47 PM] [FlutterDaemon] [Info] <== [{"id":"40","result":{"platforms":["linux","ios","android"]}}]
+[3:28:47 PM] [FlutterDaemon] [Info] ==> [{"id":"41","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:28:47 PM] [FlutterDaemon] [Info] <== [{"id":"41","result":{"platforms":["linux","ios","android"]}}]
+[3:28:47 PM] [General] [Warn] Did not find session 0846d806-3da8-40fc-9e07-c424153da6dd to handle dart.progressStart. There were 0 sessions:
+[3:28:47 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:29:08 PM] [VmService] [Error] [Dart ] Cannot add breakpoint
+[3:32:11 PM] [FlutterDaemon] [Info] ==> [{"id":"42","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:32:11 PM] [FlutterDaemon] [Info] <== [{"id":"42","result":{"platforms":["linux","ios","android"]}}]
+[3:32:11 PM] [FlutterDaemon] [Info] ==> [{"id":"43","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:32:11 PM] [FlutterDaemon] [Info] <== [{"id":"43","result":{"platforms":["linux","ios","android"]}}]
+[3:32:11 PM] [General] [Warn] Did not find session 12d51592-2038-47a2-9803-c5069d8338ca to handle dart.progressStart. There were 0 sessions:
+[3:32:11 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:32:53 PM] [FlutterDaemon] [Info] ==> [{"id":"44","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:32:54 PM] [FlutterDaemon] [Info] <== [{"id":"44","result":{"platforms":["linux","ios","android"]}}]
+[3:32:54 PM] [FlutterDaemon] [Info] ==> [{"id":"45","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:32:54 PM] [FlutterDaemon] [Info] <== [{"id":"45","result":{"platforms":["linux","ios","android"]}}]
+[3:32:54 PM] [General] [Warn] Did not find session ffef6f8b-bff6-40ba-8a4a-6fb771fa5c3d to handle dart.progressStart. There were 0 sessions:
+[3:32:54 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:38:02 PM] [FlutterDaemon] [Info] ==> [{"id":"46","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:38:02 PM] [FlutterDaemon] [Info] <== [{"id":"46","result":{"platforms":["linux","ios","android"]}}]
+[3:38:02 PM] [FlutterDaemon] [Info] ==> [{"id":"47","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:38:02 PM] [FlutterDaemon] [Info] <== [{"id":"47","result":{"platforms":["linux","ios","android"]}}]
+[3:38:03 PM] [General] [Warn] Did not find session 36079708-d2f8-448e-8815-fef57fc03531 to handle dart.progressStart. There were 0 sessions:
+[3:38:03 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:39:13 PM] [FlutterDaemon] [Info] ==> [{"id":"48","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:39:13 PM] [FlutterDaemon] [Info] <== [{"id":"48","result":{"platforms":["linux","ios","android"]}}]
+[3:39:13 PM] [FlutterDaemon] [Info] ==> [{"id":"49","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:39:13 PM] [FlutterDaemon] [Info] <== [{"id":"49","result":{"platforms":["linux","ios","android"]}}]
+[3:39:13 PM] [General] [Warn] Did not find session c70dbcca-e736-4cbd-aeef-2d60a69cbbd0 to handle dart.progressStart. There were 0 sessions:
+[3:39:13 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:42:03 PM] [FlutterDaemon] [Info] ==> [{"id":"50","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:42:03 PM] [FlutterDaemon] [Info] <== [{"id":"50","result":{"platforms":["linux","ios","android"]}}]
+[3:42:03 PM] [FlutterDaemon] [Info] ==> [{"id":"51","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:42:03 PM] [FlutterDaemon] [Info] <== [{"id":"51","result":{"platforms":["linux","ios","android"]}}]
+[3:42:03 PM] [General] [Warn] Did not find session 251d2c26-8c79-431f-a9e9-344bd3763dc5 to handle dart.progressStart. There were 0 sessions:
+[3:42:03 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:44:00 PM] [FlutterDaemon] [Info] ==> [{"id":"52","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:44:00 PM] [FlutterDaemon] [Info] <== [{"id":"52","result":{"platforms":["linux","ios","android"]}}]
+[3:44:00 PM] [FlutterDaemon] [Info] ==> [{"id":"53","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:44:00 PM] [FlutterDaemon] [Info] <== [{"id":"53","result":{"platforms":["linux","ios","android"]}}]
+[3:44:01 PM] [General] [Warn] Did not find session 35487206-3784-452c-a20a-81a86c4220e2 to handle dart.progressStart. There were 0 sessions:
+[3:44:01 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:48:09 PM] [FlutterDaemon] [Info] ==> [{"id":"54","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:48:09 PM] [FlutterDaemon] [Info] <== [{"id":"54","result":{"platforms":["linux","ios","android"]}}]
+[3:48:09 PM] [FlutterDaemon] [Info] ==> [{"id":"55","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:48:09 PM] [FlutterDaemon] [Info] <== [{"id":"55","result":{"platforms":["linux","ios","android"]}}]
+[3:48:09 PM] [General] [Warn] Did not find session 3a6b465d-db1a-4a7b-9772-87a086a068da to handle dart.progressStart. There were 0 sessions:
+[3:48:09 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:48:10 PM] [FlutterRun] [Error] [Dart ] ninja: warning: bad deps log signature or version; starting over
+[3:54:28 PM] [FlutterDaemon] [Info] ==> [{"id":"56","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:54:28 PM] [FlutterDaemon] [Info] <== [{"id":"56","result":{"platforms":["linux","ios","android"]}}]
+[3:54:28 PM] [FlutterDaemon] [Info] ==> [{"id":"57","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:54:28 PM] [FlutterDaemon] [Info] <== [{"id":"57","result":{"platforms":["linux","ios","android"]}}]
+[3:54:28 PM] [General] [Warn] Did not find session af09b0ee-6d2e-4439-88d8-40a47c957442 to handle dart.progressStart. There were 0 sessions:
+[3:54:28 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:58:06 PM] [FlutterDaemon] [Info] ==> [{"id":"58","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:58:06 PM] [FlutterDaemon] [Info] <== [{"id":"58","result":{"platforms":["linux","ios","android"]}}]
+[3:58:06 PM] [FlutterDaemon] [Info] ==> [{"id":"59","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[3:58:06 PM] [FlutterDaemon] [Info] <== [{"id":"59","result":{"platforms":["linux","ios","android"]}}]
+[3:58:06 PM] [General] [Warn] Project has errors, prompting user
+[3:58:06 PM] [General] [Warn]     /home/vladimir/Desktop/AIS_voter/src/clients/deputy/lib/main.dart:115:11
+[3:58:06 PM] [General] [Warn]     A value of type 'Null' can't be returned from the method '_getRoute' because it has a return type of 'Route<dynamic>'.
+[3:58:08 PM] [General] [Warn] Did not find session 863d2490-63ca-4bb0-ba9f-14a730196255 to handle dart.progressStart. There were 0 sessions:
+[3:58:08 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[4:00:34 PM] [FlutterDaemon] [Info] ==> [{"id":"60","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[4:00:34 PM] [FlutterDaemon] [Info] <== [{"id":"60","result":{"platforms":["linux","ios","android"]}}]
+[4:00:34 PM] [FlutterDaemon] [Info] ==> [{"id":"61","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[4:00:34 PM] [FlutterDaemon] [Info] <== [{"id":"61","result":{"platforms":["linux","ios","android"]}}]
+[4:00:34 PM] [General] [Warn] Project has errors, prompting user
+[4:00:34 PM] [General] [Warn]     /home/vladimir/Desktop/AIS_voter/src/clients/deputy/lib/main.dart:75:28
+[4:00:34 PM] [General] [Warn]     Undefined name 'widget'.
+[4:00:39 PM] [General] [Warn] Did not find session f8c8fb01-c9cf-4fc2-9ab5-5f6bb25d24a4 to handle dart.progressStart. There were 0 sessions:
+[4:00:39 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[4:02:06 PM] [FlutterDaemon] [Info] ==> [{"id":"62","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[4:02:06 PM] [FlutterDaemon] [Info] <== [{"id":"62","result":{"platforms":["linux","ios","android"]}}]
+[4:02:06 PM] [FlutterDaemon] [Info] ==> [{"id":"63","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/AIS_voter/src/clients/deputy"}}]
+[4:02:06 PM] [FlutterDaemon] [Info] <== [{"id":"63","result":{"platforms":["linux","ios","android"]}}]
+[4:02:06 PM] [General] [Warn] Did not find session 771a9fde-0302-4921-896b-bd09f4c658fb to handle dart.progressStart. There were 0 sessions:
+[4:02:06 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+Mon May 31 2021 [17:52:43 GMT+0300 (Moscow Standard Time)] Log file ended

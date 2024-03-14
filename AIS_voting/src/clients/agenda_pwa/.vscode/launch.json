@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "agenda_pwa",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--no-sound-null-safety"
+            ]
+        },
+        {
+            "name": "agenda_pwa (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        }
+    ]
+}

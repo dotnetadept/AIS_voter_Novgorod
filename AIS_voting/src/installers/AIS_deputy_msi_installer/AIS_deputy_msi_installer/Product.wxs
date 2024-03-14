@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<?define ProductName="АИС Депутат" ?>
+	<?define ProductVersion="1.0.0.3" ?>
+	<?define ProductCode="B7BC7C6F-9A4E-4973-BE84-ECA8E3427C97"?>
+	<?define UpgradeCode="06A81104-1E30-463D-87E1-E8A79B4C682A"?>
+	<?define Manufacturer="ServiceTv"?>
+
+	<Product Id="$(var.ProductCode)" Name="$(var.ProductName)" Language="1049" Version="$(var.ProductVersion)" Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.UpgradeCode)">
+		<Package InstallerVersion="301" Compressed="yes" />
+		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="DesktopFolder" Name="Desktop">
+				<Component Id="ApplicationShortcutDesktop" Guid="*">
+					<Shortcut Id="ApplicationDesktopShortcut"
+						Name="Депутат $(var.ProductVersion)"
+						Description="АИС Голосование Депутат $(var.ProductVersion)"
+						Icon="deputy.ico"
+						Target="[INSTALLLOCATION]deputy.exe"
+						WorkingDirectory="INSTALLLOCATION">
+						<Icon Id="deputy.ico" SourceFile="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\flutter_assets\assets\images\app_icon.ico" />
+					</Shortcut>
+					<RemoveFolder Id="DesktopFolder" On="uninstall"/>
+					<RegistryValue
+						Root="HKCU"
+						Key="Software\MyCompany\MyApplicationName"
+						Name="installed"
+						Type="integer"
+						Value="1"
+						KeyPath="yes"/>
+				</Component>
+			</Directory>
+			
+			<!--<Merge Id="VCRedist" SourceFile="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143\MergeModules\Microsoft_VC143_CRT_x64.msm" DiskId="1" Language="0"/>
+			<Merge Id="CXXRedist" SourceFile="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143\MergeModules\Microsoft_VC143_CXXAMP_x64.msm" DiskId="1" Language="0"/>
+			<Merge Id="MFCRedist" SourceFile="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143\MergeModules\Microsoft_VC143_MFC_x64.msm" DiskId="1" Language="0"/>
+			<Merge Id="MFCLOCRedist" SourceFile="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143\MergeModules\Microsoft_VC143_MFCLOC_x64.msm" DiskId="1" Language="0"/>
+			<Merge Id="OpenMPRedist" SourceFile="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143\MergeModules\Microsoft_VC143_OpenMP_x64.msm" DiskId="1" Language="0"/>-->
+			<Directory Id="ProgramFiles64Folder">
+				<Directory Id="INSTALLLOCATION" Name="$(var.ProductName)">
+					<Component Id="ProductComponent" Guid="3CE2DBF1-1285-48ED-ADAA-0425AF2C7511" KeyPath="yes">
+						<File Id='deputy' DiskId='1' Source='C:\AIS_voter\deputy_windows\build\windows\runner\Release\deputy.exe'/>
+						<File Id='flutter_windows.dll' DiskId='1' Source='C:\AIS_voter\deputy_windows\build\windows\runner\release\flutter_windows.dll'/>
+						<File Id='window_manager_plugin.dll' DiskId='1' Source='C:\AIS_voter\deputy_windows\build\windows\runner\release\window_manager_plugin.dll'/>
+						<File Id='window_size_plugin.dll' DiskId='1' Source='C:\AIS_voter\deputy_windows\build\windows\runner\Release\window_size_plugin.dll'/>
+						<!--C++ redistributable-->
+						<File Id='msvcp140.dll' DiskId='1' Source='C:\Users\Vladimir\Desktop\cpp_libs\msvcp140.dll'/>
+						<File Id='vcruntime140.dll' DiskId='1' Source='C:\Users\Vladimir\Desktop\cpp_libs\vcruntime140.dll'/>
+						<File Id='vcruntime140_1.dll' DiskId='1' Source='C:\Users\Vladimir\Desktop\cpp_libs\vcruntime140_1.dll'/>
+						<File Id='vcruntime140_1d.dll' DiskId='1' Source='C:\Users\Vladimir\Desktop\cpp_libs\vcruntime140_1d.dll'/>
+						<File Id='vcruntime140_clr0400.dll' DiskId='1' Source='C:\Users\Vladimir\Desktop\cpp_libs\vcruntime140_clr0400.dll'/>
+						<!--<File Id='vcruntime140d.dll' DiskId='1' Source='C:\Users\Vladimir\Desktop\cpp_libs\vcruntime140d.dll'/>-->
+					</Component>
+
+						<Directory Id="InstallFiles_Release_data" Name="data">
+							<Directory Id="InstallFiles_Release_data_flutter_assets" Name="flutter_assets">
+								<Directory Id="InstallFiles_Release_data_flutter_assets_assets" Name="assets">
+									<Directory Id="InstallFiles_Release_data_flutter_assets_assets_images" Name="images">
+										<Component Id="icons" Guid="3CE2DBF1-1285-48ED-ADAA-0425AF2C75AF" KeyPath="yes">
+											<File Id="InstallFiles_Release_data_flutter_assets_assets_images_app_icon.ico" Name="app_icon.ico" Source="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\flutter_assets\assets\images\app_icon.ico" />
+											<File Id="InstallFiles_Release_data_flutter_assets_assets_images_emblem.png" Name="emblem.png" Source="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\flutter_assets\assets\images\emblem.png" />
+										</Component>
+									</Directory>
+									<Directory Id="InstallFiles_Release_data_flutter_assets_assets_cfg" Name="cfg">
+										<Component Id="cfg" Guid="3CE2DBF1-1285-48ED-ADAA-0425AF2C75AA" KeyPath="yes">
+											<File Id="InstallFiles_Release_data_flutter_assets_assets_cfg_app_settings.json" Name="app_settings.json" Source="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\flutter_assets\assets\cfg\app_settings.json" />
+										</Component>
+									</Directory>
+								</Directory>
+								<Component Id="flutter_assets" Guid="3CE2DBF1-1285-48ED-ADAA-0425AF2C75AD" KeyPath="yes">
+									<File Id="InstallFiles_Release_data_flutter_assets_asset_manifest.json" Name="AssetManifest.json" Source="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\flutter_assets\AssetManifest.json" />
+									<File Id="InstallFiles_Release_data_flutter_assets_font_manifest.json" Name="FontManifest.json" Source="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\flutter_assets\FontManifest.json" />
+									<File Id="InstallFiles_Release_data_flutter_assets_font_notices.z" Name="NOTICES.Z" Source="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\flutter_assets\NOTICES.Z" />
+								</Component>
+								<Directory Id="InstallFiles_Release_data_flutter_asset" Name="fonts">
+									<Component Id="fonts" Guid="18DAF7E3-49AE-416D-9EE9-0E18B0329569" KeyPath="yes">
+										<File Id="InstallFiles_Release_data_flutter_assets_fonts.otf" Name="MaterialIcons-Regular.otf" Source="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\flutter_assets\fonts\MaterialIcons-Regular.otf" />		
+									</Component>
+								</Directory>
+							</Directory>
+							
+							<Component Id="data" Guid="880A97AB-B56C-42DE-BC58-BE8AE0AFD2FD" KeyPath="yes">
+								<File Id="InstallFiles_Release_data_app.so" Name="app.so" Source="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\app.so" />
+								<File Id="InstallFiles_Release_data_icudtl.dat" Name="icudtl.dat" Source="C:\AIS_voter\deputy_windows\build\windows\runner\Release\data\icudtl.dat" />
+							</Component>
+
+					</Directory>
+				</Directory>
+			</Directory>
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)">
+					<Component Id="ApplicationShortcut" Guid="4CEBD68F-E933-47F9-B02C-A4FC69FDB551">
+						<Shortcut Id="Shortcut"
+							 Name="АИС Депутат"
+							 Description="$(var.ProductName)"
+							 Target="[INSTALLLOCATION]deputy.exe"
+							 WorkingDirectory="INSTALLLOCATION"/>
+						<RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+						<RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.ProductName)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+					</Component>
+				</Directory>
+			</Directory>
+		</Directory>
+
+		<Feature Id="ProductFeature" Title="АИС Депутат" Level="1">
+			<ComponentRef Id="ApplicationShortcutDesktop" />
+			<ComponentRef Id="ProductComponent" />
+			<ComponentRef Id="icons" />
+			<ComponentRef Id="cfg" />
+			<ComponentRef Id="flutter_assets" />
+			<ComponentRef Id="fonts" />
+			<ComponentRef Id="data" />
+			<ComponentRef Id="ApplicationShortcut" />
+			<!--<MergeRef Id="VCRedist"/>-->
+			<!--<ComponentGroupRef Id="InstallFiles_Release_data_flutter_assets_assets_images_files" />
+			<ComponentGroupRef Id="InstallFiles_Release_files" />-->
+		</Feature>
+
+		<!--<Feature Id="VCRedist" Title="Visual C++ 8.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+			<MergeRef Id="VCRedist"/>
+			<MergeRef Id="CXXRedist"/>
+			<MergeRef Id="MFCRedist"/>
+			<MergeRef Id="MFCLOCRedist"/>
+			<MergeRef Id="OpenMPRedist"/>
+		</Feature>-->
+
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" ></Property>
+		<WixVariable Id="WixUILicenseRtf" Overridable="yes" Value="License.rtf"/>
+		<UIRef Id="WixUI_InstallDir"/>
+
+	</Product>
+</Wix>

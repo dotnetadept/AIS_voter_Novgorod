@@ -1,0 +1,12 @@
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/data/icudtl.dat
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/flutter_windows.dll
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/window_manager_plugin.dll
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/window_size_plugin.dll
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/data/flutter_assets/AssetManifest.json
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/data/flutter_assets/assets/cfg/app_settings.json
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/data/flutter_assets/assets/images/app_icon.ico
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/data/flutter_assets/assets/images/emblem.png
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/data/flutter_assets/FontManifest.json
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/data/flutter_assets/kernel_blob.bin
+C:/AIS_voter/deputy_windows/build/windows/runner/Debug/data/flutter_assets/NOTICES.Z

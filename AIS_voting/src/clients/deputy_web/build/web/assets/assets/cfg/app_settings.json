@@ -1,0 +1,9 @@
+{
+    "server": "109.60.205.242",
+    "http_port": "27153",
+    "ws_port": "27154",
+    "auto_reconnect": "true",
+    "reconnect_delay": "7",
+    "ping_interval": "1",
+    "terminal_id": "014"
+}

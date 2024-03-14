@@ -1,0 +1,12 @@
+{
+    "server": "192.168.0.104",
+    "ntp_server": "pool.ntp.org",
+    "http_port": "27153",
+    "ws_port": "27154",
+    "auto_reconnect": "true",
+    "reconnect_delay": "7",
+    "ping_interval": "1",
+    "use_auth_card": "false",
+    "stream_file": "file:///home/vladimir/Desktop/deputyStreamPlayer.html",
+    "terminal_id": "014"
+}

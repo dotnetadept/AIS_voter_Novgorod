@@ -1,0 +1,1 @@
+stty -F /dev/ttyS0 19200 cs8 -ixon -ixoff istrip;

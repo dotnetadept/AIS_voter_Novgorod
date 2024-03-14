@@ -1,0 +1,33 @@
+name: deputy
+description: AIS deputy client application.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  web_socket_channel: 2.1.0
+  http: ^0.12.2
+  provider: any
+  global_configuration: ^1.6.0
+  ais_model:
+    path: '../client_plugins/ais_model'
+  ais_utils:
+    path: '../client_plugins/ais_utils'
+  virtual_keyboard_multi_language: ^0.2.4
+  pointer_interceptor: ^0.9.1
+  pwa: ^0.2.1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+  - assets/cfg/
+  - assets/images/emblem.png

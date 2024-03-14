@@ -1,0 +1,10 @@
+^C:\USERS\VLADIMIR\DESKTOP\AIS_VOTING-MASTER\SRC\CLIENTS\QUESTION_LIST_WIN\WINDOWS\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/windows -BC:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows --check-stamp-file C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

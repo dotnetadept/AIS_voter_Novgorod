@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Депутат
+Name[ru]=Депутат
+Type=Application
+NoDisplay=false
+Exec=bash /home/user/ais_voter/deputy/startDeputy.sh
+Icon=/home/user/ais_voter/icons/logod.png
+Hidden=false
+Terminal=false
+StartupNotify=false
+Categories=Utility;Application
+Version=1.0
+

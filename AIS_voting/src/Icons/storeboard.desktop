@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Табло
+Name[ru]=Табло
+Type=Application
+NoDisplay=false
+Exec=/home/user/ais_voter/storeboard/storeboard
+Icon==/home/user/ais_voter/icons/logot.png
+Hidden=false
+Terminal=false
+StartupNotify=false
+Categories=Utility;Application
+Version=1.0
+

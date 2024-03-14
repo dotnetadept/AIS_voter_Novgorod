@@ -1,0 +1,10 @@
+@import url("resource:///com/ubuntu/themes/Yaru/3.20/gtk.css");
+scrollbar slider {
+    /* Size of the slider */
+    min-width: 20px;
+    min-height: 20px;
+    border-radius: 22px;
+
+    /* Padding around the slider */
+    border: 1px solid transparent; 
+}

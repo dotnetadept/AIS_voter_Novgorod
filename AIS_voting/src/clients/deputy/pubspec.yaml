@@ -1,0 +1,58 @@
+name: deputy
+description: AIS deputy client application.
+publish_to: 'none'
+version: 1.03.04
+
+environment:
+  sdk: '>=2.10.0 <3.2.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  web_socket_channel: any
+  http: any
+  ntp: ^2.0.0
+  provider: any
+  global_configuration:
+    path: '../client_plugins/global_configuration-1.6.0'
+  synchronized: ^3.0.0
+  enum_to_string: 1.0.14
+  uuid: any
+  intl: any
+  ais_model:
+    path: '../client_plugins/ais_model'
+  ais_utils:
+    path: '../client_plugins/ais_utils'
+  window_to_front:
+    path: '../client_plugins/window_to_front'
+  jacarta_token:
+    path: '../client_plugins/jacarta_token'
+  virtual_keyboard_multi_language: ^0.2.4
+  window_size:
+    path: '../client_plugins/window_size'
+  desktop_window:
+    git:
+      url: https://github.com/mix1009/desktop_window.git
+  window_manager: ^0.2.3
+  auto_size_text: ^3.0.0
+  google_fonts: any
+  flutter_webrtc: #^0.9.48+hotfix.1
+    path: '../client_plugins/flutter-webrtc-main/'
+  dropdown_search: ^0.6.0
+  package_info_plus: ^4.2.0
+  sdp_transform: ^0.3.2
+  statsfl: ^2.3.0
+
+flutter:
+  uses-material-design: true
+  assets:
+  - assets/cfg/
+  - assets/fonts/
+  - assets/shellScripts/
+  - assets/streamPlayer/
+  - assets/images/emblem.png
+  - assets/images/storeboard_stub.png
+
+#export PATH=/home/vladimir/Desktop/Flutter/depot_tools:$PATH
+#export PATH=/home/vladimir/Desktop/Flutter/flutter/bin:$PATH
+#flutter run --local-engine=/home/vladimir/Desktop/Flutter/engine/src/out/host_debug_unopt --no-sound-null-safety -v

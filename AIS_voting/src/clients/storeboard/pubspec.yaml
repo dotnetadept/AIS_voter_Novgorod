@@ -1,0 +1,43 @@
+name: storeboard
+description: AIS storeboard client.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  intl: any
+  global_configuration: ^1.6.0
+  http: ^0.12.2
+  ntp: ^2.0.0
+  web_socket_channel: any
+  ais_model:
+    path: '../client_plugins/ais_model'
+  ais_utils:
+    path: '../client_plugins/ais_utils'
+  window_manager: ^0.2.3
+  provider: any
+  window_size:
+    path: '../client_plugins/window_size'
+  google_fonts: ^1.1.2
+  dropdown_search: ^0.6.0
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+  - assets/cfg/
+  - assets/fonts/
+  - assets/shellScripts/
+  - assets/streamPlayer/
+
+#dev_dependencies:
+#  flutter_test:
+#    sdk: flutter
+

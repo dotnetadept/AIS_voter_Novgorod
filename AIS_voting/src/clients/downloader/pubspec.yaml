@@ -1,0 +1,40 @@
+name: downloader
+description: A new Flutter project.
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  file_picker_cross: ^4.2.2
+  filesystem_picker: any
+  path_provider: ^1.6.8
+  permission_handler: any
+  uuid: 2.2.2
+  csv: any
+  http: any
+  path: any
+  intl: any
+  html_unescape: ^2.0.0
+
+  global_configuration: ^1.6.0
+  ais_model:
+    path: '../client_plugins/ais_model'
+  ais_utils:
+    path: '../client_plugins/ais_utils'
+
+dependency_overrides:
+  path_provider: 2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+  - assets/cfg/

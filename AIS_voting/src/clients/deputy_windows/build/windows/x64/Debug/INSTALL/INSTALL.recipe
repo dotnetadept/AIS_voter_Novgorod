@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>C:\AIS_voter\deputy_windows\build\windows\x64\Debug\ZERO_CHECK</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\AIS_voter\deputy_windows\build\windows\flutter\x64\Debug\flutter_assemble</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\AIS_voter\deputy_windows\build\windows\plugins\window_manager\Debug\window_manager_plugin.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\AIS_voter\deputy_windows\build\windows\plugins\window_size\Debug\window_size_plugin.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\AIS_voter\deputy_windows\build\windows\runner\Debug\deputy.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\AIS_voter\deputy_windows\build\windows\x64\Debug\ALL_BUILD</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\AIS_voter\deputy_windows\build\windows\x64\Debug\INSTALL</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles />
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>

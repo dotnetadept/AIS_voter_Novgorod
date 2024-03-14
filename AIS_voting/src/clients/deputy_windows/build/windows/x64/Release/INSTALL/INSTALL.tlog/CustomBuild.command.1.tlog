@@ -1,0 +1,10 @@
+^C:\AIS_VOTER\DEPUTY_WINDOWS\BUILD\WINDOWS\CMAKEFILES\C350D134832765B5FE1456CADEDC3A22\INSTALL_FORCE.RULE
+setlocal
+cd .
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

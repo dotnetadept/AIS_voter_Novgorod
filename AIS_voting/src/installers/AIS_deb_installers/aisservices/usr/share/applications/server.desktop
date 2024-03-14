@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Сервер АИС
+Name[ru]=Сервер АИС
+Type=Application
+NoDisplay=false
+Exec=bash /home/user/ais_voter/ais_server/startServer.sh
+Icon=/home/user/ais_voter/icons/log.png
+Hidden=false
+Terminal=true
+StartupNotify=false
+Categories=Utility;Application
+Version=1.0
+

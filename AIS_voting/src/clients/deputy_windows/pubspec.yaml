@@ -1,0 +1,38 @@
+name: deputy
+description: AIS deputy client application.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  web_socket_channel: any
+  http: ^0.12.2
+  ntp: ^2.0.0
+  uuid: ^3.0.5
+  provider: any
+  global_configuration: ^1.6.0
+  shared_preferences: any
+  window_manager: ^0.0.5
+  ais_model:
+    path: '../client_plugins/ais_model'
+  ais_utils:
+    path: '../client_plugins/ais_utils'
+  window_size:
+    git:
+      url: git://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+  - assets/cfg/
+  - assets/images/emblem.png
+  - assets/images/app_icon.ico

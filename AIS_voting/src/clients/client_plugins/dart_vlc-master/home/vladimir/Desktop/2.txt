@@ -1,0 +1,27 @@
+[3:56:16 PM]: Spawning /home/vladimir/snap/flutter/common/flutter/bin/flutter with args ["run","--machine","--target","lib/main.dart","-d","linux","--dart-define=flutter.inspector.structuredErrors=true","--start-paused","--web-server-debug-protocol","ws","--web-allow-expose-url","--no-sound-null-safety","--devtools-server-address","http://127.0.0.1:9102/"]
+[3:56:16 PM]: ..  in /home/vladimir/Desktop/dart_vlc-master/example
+[3:56:16 PM]: ..  with {"toolEnv":{"FLUTTER_HOST":"VSCode","PUB_ENVIRONMENT":"vscode.dart-code","FLUTTER_DESKTOP_EMBEDDING":true}}
+[3:56:16 PM]: PID: 110419
+[3:56:17 PM]: <== [{"event":"daemon.connected","params":{"version":"0.6.0","pid":110453}}]
+[3:56:17 PM]: <== [{"event":"app.start","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","deviceId":"linux","directory":"/home/vladimir/Desktop/dart_vlc-master/example","supportsRestart":true,"launchMode":"run"}}]
+[3:56:17 PM]: <== Launching lib/main.dart on Linux in debug mode...
+[3:56:17 PM]: <== [{"event":"app.progress","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","id":"0","progressId":null,"message":"Building Linux application...","finished":false}}]
+[3:56:37 PM]: <== [{"event":"app.progress","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","id":"0","progressId":null,"finished":true}}]
+[3:56:38 PM]: <== [{"event":"app.debugPort","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","port":36239,"wsUri":"ws://127.0.0.1:36239/Y0dNu-SYFAI=/ws","baseUri":"file:///tmp/exampleKRTLPX/example/"}}]
+[3:56:38 PM]: <== [{"event":"app.progress","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","id":"1","progressId":null,"message":"Syncing files to device Linux...","finished":false}}]
+[3:56:38 PM]: <== [{"event":"app.progress","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","id":"1","progressId":null,"finished":true}}]
+[3:56:38 PM]: <== [{"event":"app.started","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5"}}]
+[3:56:38 PM]: ==> [{"id":"1","method":"app.callServiceExtension","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","methodName":"ext.flutter.inspector.structuredErrors","params":{"enabled":true}}}]
+[3:56:38 PM]: ==> [{"id":"2","method":"app.callServiceExtension","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","methodName":"ext.flutter.platformOverride"}}]
+[3:56:38 PM]: ==> [{"id":"3","method":"app.callServiceExtension","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","methodName":"ext.flutter.brightnessOverride"}}]
+[3:56:38 PM]: ==> [{"id":"4","method":"app.callServiceExtension","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","methodName":"ext.flutter.inspector.isWidgetCreationTracked"}}]
+[3:56:38 PM]: ==> [{"id":"5","method":"app.callServiceExtension","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5","methodName":"ext.flutter.inspector.setPubRootDirectories","params":{"isolateId":"isolates/4265063141695739","arg0":"/home/vladimir/Desktop/dart_vlc-master","arg1":"/home/vladimir/Desktop/dart_vlc-master/example","arg2":"/home/vladimir/Desktop/dart_vlc-master/ffi"}}}]
+[3:56:39 PM]: <== [{"id":"1","result":{"enabled":"true","type":"_extensionType","method":"ext.flutter.inspector.structuredErrors"}}]
+[3:56:39 PM]: <== [{"id":"2","result":{"value":"linux","type":"_extensionType","method":"ext.flutter.platformOverride"}}]
+[3:56:39 PM]: <== [{"id":"3","result":{"value":"Brightness.light","type":"_extensionType","method":"ext.flutter.brightnessOverride"}}]
+[3:56:39 PM]: <== [{"id":"4","result":{"result":true,"type":"_extensionType","method":"ext.flutter.inspector.isWidgetCreationTracked"}}]
+[3:56:39 PM]: <== [{"id":"5","result":{"result":null,"type":"_extensionType","method":"ext.flutter.inspector.setPubRootDirectories"}}]
+[3:56:49 PM]: <== [00007f16c4002170] main filter error: Failed to create video converter
+[4:07:26 PM]: <== [00007f16c4002170] main filter error: Failed to create video converter
+[4:39:31 PM]: <== Lost connection to device.
+[4:39:32 PM]: <== [{"event":"app.stop","params":{"appId":"0f642826-c2db-4499-9fc1-15bf9e5874c5"}}]

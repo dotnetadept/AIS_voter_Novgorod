@@ -1,0 +1,17 @@
+{
+    "server": "192.168.0.104",
+    "ntp_server": "pool.ntp.org",
+    "http_port": "27153",
+    "ws_port": "27154",
+    "auto_reconnect": "true",
+    "reconnect_delay": "7",
+    "ping_interval": "1",
+    "use_auth_card": "false",
+    "start_browser_command": "google-chrome",
+    "start_browser_command_params": "--kiosk;--autoplay-policy=no-user-gesture-required",
+    "close_browser_command": "pkill",
+    "close_browser_command_params": "-f;google-chrome",
+    "stream_file": "file:///home/user/ais_voter/deputy/data/flutter_assets/assets/cfg/deputyStreamPlayer.html",
+    "terminal_timer_delay": "250",
+    "terminal_id": "013"
+}

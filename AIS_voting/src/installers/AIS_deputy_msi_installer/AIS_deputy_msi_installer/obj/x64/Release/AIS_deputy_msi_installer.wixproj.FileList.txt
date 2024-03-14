@@ -1,0 +1,6 @@
+C:\AIS_voter\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\x64\Release\ru-ru\AIS_deputy_msi_installer.msi
+C:\AIS_voter\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\x64\Release\ru-ru\AIS_deputy_msi_installer.wixpdb
+obj\x64\Release\Product.wixobj
+obj\x64\Release\AIS_deputy_msi_installer.wixproj.BindContentsFileListru-ru.txt
+obj\x64\Release\AIS_deputy_msi_installer.wixproj.BindOutputsFileListru-ru.txt
+obj\x64\Release\AIS_deputy_msi_installer.wixproj.BindBuiltOutputsFileListru-ru.txt

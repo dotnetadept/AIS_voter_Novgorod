@@ -1,0 +1,29 @@
+name: dart_vlc
+description: Flutter audio / video playback, broadcast & recording library for Windows & Linux. Based on libvlc.
+version: 0.4.0
+homepage: https://github.com/alexmercerind/dart_vlc
+repository: https://github.com/alexmercerind/dart_vlc
+documentation: https://github.com/alexmercerind/dart_vlc/blob/master/README.md
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  dart_vlc_ffi: ^0.2.0+1
+  path: ^1.8.2
+  audio_video_progress_bar: ^0.11.0
+
+dev_dependencies:
+  lints: ^2.0.1
+
+flutter:
+  # No platform channel implementation after migration to FFI.
+  plugin:
+    platforms:
+      windows:
+        pluginClass: DartVlcPlugin
+      linux:
+        pluginClass: DartVlcPlugin

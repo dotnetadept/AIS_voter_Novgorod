@@ -1,0 +1,51 @@
+name: operator_panel
+description: AIS Voter Operator Panel.
+publish_to: 'none'
+version: 1.03.04
+
+environment:
+  sdk: '>=2.10.0 <3.2.0'
+
+dependencies:
+  cupertino_icons: ^1.0.0
+  flutter:
+    sdk: flutter
+  web_socket_channel: any
+  http: any
+  provider: any
+  horizontal_data_table: 4.1.5
+  intl: any
+  uuid: any
+  enum_to_string: 1.0.14
+  flutter_colorpicker: ^0.3.5
+  global_configuration: 
+    path: '../client_plugins/global_configuration-1.6.0'
+  csv: any
+  ntp: ^2.0.0
+  media_kit: any
+  media_kit_libs_audio: any
+  searchable_dropdown:
+    git:
+        url: https://github.com/matheusfajardo/searchable_dropdown
+        ref: master
+  dropdown_search:
+    path: '../client_plugins/dropdown_search-0.6.3'
+  ais_model:
+    path: '../client_plugins/ais_model'
+  ais_utils:
+    path: '../client_plugins/ais_utils'
+  auto_size_text: ^3.0.0
+  google_fonts: any
+  aligned_dialog: ^0.0.6
+  drag_and_drop_lists:
+    path: '../client_plugins/DragAndDropLists-master'
+  transparent_pointer: ^1.0.0
+  file_selector: any
+  package_info_plus: ^4.2.0
+  select2dot1: ^2.0.7
+    
+flutter:
+  uses-material-design: true
+  assets:
+  - assets/cfg/
+  - assets/fonts/

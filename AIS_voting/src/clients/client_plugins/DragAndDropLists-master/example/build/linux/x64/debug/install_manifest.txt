@@ -1,0 +1,11 @@
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/example
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/data/icudtl.dat
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/lib/libflutter_linux_gtk.so
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/data/flutter_assets/FontManifest.json
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/data/flutter_assets/shaders/ink_sparkle.frag
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/data/flutter_assets/version.json
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES.Z
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
+/home/user/Downloads/DragAndDropLists-master/example/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.json

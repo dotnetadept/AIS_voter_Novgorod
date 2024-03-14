@@ -1,0 +1,4 @@
+#!/bin/bash
+export PGPASSWORD=postgres
+psql -h localhost -U postgres -c 'create database "AIS_voter"'
+psql -h localhost -U postgres -d AIS_voter < /home/user/ais_voter/ais_server/db/init.sql

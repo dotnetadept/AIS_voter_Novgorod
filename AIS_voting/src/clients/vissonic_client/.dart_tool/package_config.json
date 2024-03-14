@@ -1,0 +1,20 @@
+{
+  "configVersion": 2,
+  "packages": [
+    {
+      "name": "synchronized",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dartlang.org/synchronized-3.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "vissonic_client",
+      "rootUri": "../",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    }
+  ],
+  "generated": "2022-10-10T07:37:17.309983Z",
+  "generator": "pub",
+  "generatorVersion": "2.17.6"
+}

@@ -1,0 +1,12 @@
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/dart_vlc_example
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/data/icudtl.dat
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/lib/libflutter_linux_gtk.so
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/lib/libdart_vlc_plugin.so
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/data/flutter_assets/FontManifest.json
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/data/flutter_assets/shaders/ink_sparkle.frag
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/data/flutter_assets/version.json
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES.Z
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
+/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/client_plugins/dart_vlc-0.4.0/example/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.json

@@ -1,0 +1,5 @@
+Package: aisservices
+Version: 3.0
+Maintainer: Service TV
+Architecture: amd64
+Description: AIS Voter Server 

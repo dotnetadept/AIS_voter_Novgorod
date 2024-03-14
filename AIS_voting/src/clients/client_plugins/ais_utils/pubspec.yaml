@@ -1,0 +1,45 @@
+name: ais_utils
+description: Common UI widgets and utils for all clients of ais_voter.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  cupertino_icons: ^1.0.0
+  flutter:
+    sdk: flutter
+  intl: any
+  global_configuration: 
+    path: '../global_configuration-1.6.0'
+  ntp: ^2.0.0
+  ais_model:
+    path: '../ais_model'
+  auto_size_text: ^3.0.0
+  window_size:
+    path: '../window_size'
+  transparent_pointer: ^1.0.0
+  select2dot1: ^2.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+    
+flutter:
+
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts in packages, see
+  # https://flutter.dev/custom-fonts/#from-packages

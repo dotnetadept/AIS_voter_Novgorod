@@ -1,0 +1,10 @@
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/data/icudtl.dat
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/flutter_windows.dll
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/file_chooser_plugin.dll
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/data/flutter_assets/AssetManifest.json
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/data/flutter_assets/FontManifest.json
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/data/flutter_assets/kernel_blob.bin
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/data/flutter_assets/NOTICES.Z
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
+C:/Users/vladimir/Desktop/AIS_voting-master/src/clients/question_list_win/build/windows/runner/Debug/data/flutter_assets/shaders/ink_sparkle.frag

@@ -1,0 +1,13 @@
+{
+    "server": "172.16.10.11",
+    "ntp_server": "172.16.10.11",
+    "http_port": "27153",
+    "ws_port": "27154",
+    "auto_reconnect": "true",
+    "ping_interval": "3",
+    "reconnect_delay": "5",
+    "hide_after_voting": "5",
+    "window_width": "450",
+    "window_height": "718",
+    "bottom_margin": "42"
+}

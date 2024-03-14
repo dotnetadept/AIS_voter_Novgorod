@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Загрузчик
+Name[ru]=Загрузчик
+Type=Application
+NoDisplay=false
+Exec=/home/user/ais_voter/downloader/downloader
+Icon=/home/user/ais_voter/icons/log.png
+Hidden=false
+Terminal=false
+StartupNotify=false
+Categories=Utility;Application
+Version=1.0
+

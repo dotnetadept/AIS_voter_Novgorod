@@ -1,0 +1,47 @@
+name: deputy
+description: AIS deputy client application.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  web_socket_channel: ^2.1.0
+  http: ^0.12.2
+  ntp: ^2.0.0
+  provider: any
+  global_configuration: ^1.6.0
+  synchronized: ^3.0.0
+  ais_model:
+    path: '../client_plugins/ais_model'
+  ais_utils:
+    path: '../client_plugins/ais_utils'
+  window_to_front:
+    path: '../client_plugins/window_to_front'
+  jacarta_token:
+    path: '../client_plugins/jacarta_token'
+  virtual_keyboard_multi_language: ^0.2.4
+  window_size:
+    path: '../client_plugins/window_size'
+  #dart_vlc: 
+  #  path: '/home/vladimir/Downloads/dart_vlc-4eca6fe2e82eb30d3f582c58d90b9baa1343e94c'
+  #dart_vlc: ^0.1.4
+  #dart_vlc_ffi: ^0.1.1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+  - assets/cfg/
+  - assets/images/emblem.png
+
+#export PATH=/home/vladimir/Desktop/Flutter/depot_tools:$PATH
+#export PATH=/home/vladimir/Desktop/Flutter/flutter/bin:$PATH
+#flutter run --local-engine=/home/vladimir/Desktop/Flutter/engine/src/out/host_debug_unopt --no-sound-null-safety -v

@@ -1,0 +1,24 @@
+Открыть под админом /usr/lib/x86_64-linux-gnu  (перейти в папку и в контекстном меню папки выбрать опцию "Open as administrator") - установить nautilus admin (инструкции в низу документа) если такой опци нет
+Удалить все файлы libevview3.so*
+Вставить туда файлы из папки libevview3 
+Проверить что просмотрщик документов (evince) открывается и не реагирует на зум, выделение текста, и drag and drop
+
+Заменить под админом /usr/bin/evince на evince из данной папки
+Проверить что просмотрщик документов (evince) открывается в фиксированном режиме: без шапки, поверх других окон, посередине экрана
+
+Таким же образом заменить файлы: 
+/usr/share/themes/Yaru/gtk-3.0/gtk.css
+/usr/share/themes/Yaru/gtk-3.2/gtk.css
+
+Выполнить в терминале
+gsettings set org.gnome.desktop.interface overlay-scrolling false
+
+Перезагрузиться
+убедиться что внешний вид скролла просмотрщика документов изменен
+
+
+
+
+Установка nautilus admin: выполнить в терминале: 
+	sudo apt-get install nautilus-admin
+	nautilus -q

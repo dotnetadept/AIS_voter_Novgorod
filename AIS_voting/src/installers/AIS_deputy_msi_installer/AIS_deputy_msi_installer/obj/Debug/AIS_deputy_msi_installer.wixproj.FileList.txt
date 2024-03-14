@@ -1,0 +1,6 @@
+obj\Debug\Product.wixobj
+C:\Users\Vladimir\source\repos\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\Debug\ru-RU\AIS_deputy_msi_installer.msi
+C:\Users\Vladimir\source\repos\AIS_deputy_msi_installer\AIS_deputy_msi_installer\bin\Debug\ru-RU\AIS_deputy_msi_installer.wixpdb
+obj\Debug\AIS_deputy_msi_installer.wixproj.BindContentsFileListru-RU.txt
+obj\Debug\AIS_deputy_msi_installer.wixproj.BindOutputsFileListru-RU.txt
+obj\Debug\AIS_deputy_msi_installer.wixproj.BindBuiltOutputsFileListru-RU.txt

@@ -1,0 +1,115 @@
+!! PLEASE REVIEW THIS LOG FOR SENSITIVE INFORMATION BEFORE SHARING !!
+
+Dart Code extension: 3.22.0
+Flutter extension: 3.22.0 (not activated)
+
+App: Visual Studio Code
+Version: 1.56.2
+Platform: linux
+
+HTTP_PROXY: undefined
+NO_PROXY: undefined
+
+Logging Categories:
+    FlutterDaemon
+
+Mon May 31 2021 [14:12:47 GMT+0300 (Moscow Standard Time)] Log file started
+[2:12:47 PM] [FlutterDaemon] [Info] Spawning /home/vladimir/snap/flutter/common/flutter/bin/flutter with args ["daemon"]
+[2:12:47 PM] [FlutterDaemon] [Info] ..  in /home/vladimir/snap/flutter/common/flutter
+[2:12:47 PM] [FlutterDaemon] [Info] ..  with {"toolEnv":{"FLUTTER_HOST":"VSCode","PUB_ENVIRONMENT":"vscode.dart-code","FLUTTER_DESKTOP_EMBEDDING":true}}
+[2:12:47 PM] [FlutterDaemon] [Info]     PID: 7087
+[2:12:47 PM] [FlutterDaemon] [Info] ==> [{"id":"1","method":"emulator.getEmulators"}]
+[2:12:47 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[2:12:48 PM] [FlutterDaemon] [Info] <== [{"event":"daemon.connected","params":{"version":"0.6.0","pid":7252}}]
+[2:12:48 PM] [FlutterDaemon] [Info] ==> [{"id":"2","method":"device.enable"}]
+[2:12:48 PM] [FlutterDaemon] [Info] <== [{"event":"daemon.logMessage","params":{"level":"status","message":"Starting device daemon..."}}]
+[2:12:48 PM] [FlutterDaemon] [Info] <== [{"id":"2"}]
+[2:12:48 PM] [FlutterDaemon] [Info] <== [{"id":"1","result":[{"id":"Nexus_5_API_19","name":"Nexus 5 API 19","category":"mobile","platformType":"android"},{"id":"Nexus_7_API_19","name":"Nexus 7 API 19","category":"mobile","platformType":"android"},{"id":"Pixel_3_XL_API_19","name":"Pixel 3 XL API 19","category":"mobile","platformType":"android"}]}]
+[2:12:52 PM] [FlutterDaemon] [Info] <== [{"event":"device.added","params":{"id":"linux","name":"Linux","platform":"linux-x64","emulator":false,"category":"desktop","platformType":"linux","ephemeral":false,"emulatorId":null}}]
+[2:12:52 PM] [FlutterDaemon] [Info] ==> [{"id":"3","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master"}}]
+[2:12:52 PM] [FlutterDaemon] [Info] ==> [{"id":"4","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[2:12:52 PM] [FlutterDaemon] [Info] ==> [{"id":"5","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/ffi"}}]
+[2:12:52 PM] [FlutterDaemon] [Info] <== [{"id":"3","result":{"platforms":["linux"]}}]
+[2:12:52 PM] [FlutterDaemon] [Info] <== [{"id":"4","result":{"platforms":["linux"]}}]
+[2:12:52 PM] [FlutterDaemon] [Info] <== [{"id":"5","result":{"platforms":[]}}]
+[2:33:59 PM] [FlutterDaemon] [Info] ==> [{"id":"6","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[2:33:59 PM] [FlutterDaemon] [Info] <== [{"id":"6","result":{"platforms":["linux"]}}]
+[2:33:59 PM] [FlutterDaemon] [Info] ==> [{"id":"7","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[2:33:59 PM] [FlutterDaemon] [Info] <== [{"id":"7","result":{"platforms":["linux"]}}]
+[2:33:59 PM] [General] [Warn] Did not find session f528e596-f245-4f7e-8b42-a878dcc28c9e to handle dart.progressStart. There were 0 sessions:
+[2:33:59 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[2:45:24 PM] [General] [Error] Error during `edit.format`: source contains syntax errors.
+[2:45:29 PM] [FlutterRun] [Error] [Dart ] lib/main.dart:105:47: Error: Can't find ']' to match '['.
+                            children: <Widget>[
+                                              ^
+[2:45:29 PM] [FlutterRun] [Error] [Dart ] lib/main.dart:204:44: Error: The getter 'medias' isn't defined for the class 'Player?'.
+ - 'Player' is from 'package:dart_vlc/src/player.dart' ('../lib/src/player.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'medias'.
+player                                    .medias
+                                           ^^^^^^
+[2:46:40 PM] [FlutterDaemon] [Info] ==> [{"id":"8","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[2:46:40 PM] [FlutterDaemon] [Info] <== [{"id":"8","result":{"platforms":["linux"]}}]
+[2:46:40 PM] [FlutterDaemon] [Info] ==> [{"id":"9","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[2:46:40 PM] [FlutterDaemon] [Info] <== [{"id":"9","result":{"platforms":["linux"]}}]
+[2:46:40 PM] [General] [Warn] Did not find session 68deea40-22c9-4f55-9bee-86c6479fabc1 to handle dart.progressStart. There were 0 sessions:
+[2:46:40 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:06:07 PM] [FlutterDaemon] [Info] ==> [{"id":"10","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:06:07 PM] [FlutterDaemon] [Info] <== [{"id":"10","result":{"platforms":["linux"]}}]
+[3:06:07 PM] [FlutterDaemon] [Info] ==> [{"id":"11","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:06:07 PM] [FlutterDaemon] [Info] <== [{"id":"11","result":{"platforms":["linux"]}}]
+[3:06:07 PM] [General] [Warn] Did not find session 81d8076b-b48c-4f1c-b490-fca7bd3a97bf to handle dart.progressStart. There were 0 sessions:
+[3:06:07 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:15:34 PM] [FlutterDaemon] [Info] ==> [{"id":"12","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:15:34 PM] [FlutterDaemon] [Info] <== [{"id":"12","result":{"platforms":["linux"]}}]
+[3:15:34 PM] [FlutterDaemon] [Info] ==> [{"id":"13","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:15:34 PM] [FlutterDaemon] [Info] <== [{"id":"13","result":{"platforms":["linux"]}}]
+[3:15:34 PM] [General] [Warn] Did not find session db553031-7f44-4d5a-b6af-19a9e5ed2124 to handle dart.progressStart. There were 0 sessions:
+[3:15:34 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:33:53 PM] [FlutterDaemon] [Info] ==> [{"id":"14","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:33:53 PM] [FlutterDaemon] [Info] <== [{"id":"14","result":{"platforms":["linux"]}}]
+[3:33:53 PM] [FlutterDaemon] [Info] ==> [{"id":"15","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:33:53 PM] [FlutterDaemon] [Info] <== [{"id":"15","result":{"platforms":["linux"]}}]
+[3:33:54 PM] [General] [Warn] Did not find session 6973d7c6-5462-49a8-b625-c85763557aa3 to handle dart.progressStart. There were 0 sessions:
+[3:33:54 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:34:08 PM] [FlutterRun] [Error] [Dart ] clang: error: linker command failed with exit code 1 (use -v to see invocation)
+[3:34:09 PM] [FlutterRun] [Error] [Dart ] Exception: Build process failed
+[3:35:15 PM] [FlutterDaemon] [Info] ==> [{"id":"16","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:35:15 PM] [FlutterDaemon] [Info] <== [{"id":"16","result":{"platforms":["linux"]}}]
+[3:35:15 PM] [FlutterDaemon] [Info] ==> [{"id":"17","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:35:15 PM] [FlutterDaemon] [Info] <== [{"id":"17","result":{"platforms":["linux"]}}]
+[3:35:15 PM] [General] [Warn] Did not find session 3148d82b-b85e-4623-bb81-429548fa9f95 to handle dart.progressStart. There were 0 sessions:
+[3:35:15 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:35:31 PM] [FlutterRun] [Error] [Dart ] clang: error: linker command failed with exit code 1 (use -v to see invocation)
+[3:35:32 PM] [FlutterRun] [Error] [Dart ] Exception: Build process failed
+[3:36:47 PM] [FlutterDaemon] [Info] ==> [{"id":"18","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:36:47 PM] [FlutterDaemon] [Info] <== [{"id":"18","result":{"platforms":["linux"]}}]
+[3:36:47 PM] [FlutterDaemon] [Info] ==> [{"id":"19","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:36:47 PM] [FlutterDaemon] [Info] <== [{"id":"19","result":{"platforms":["linux"]}}]
+[3:36:47 PM] [General] [Warn] Did not find session 3ece0288-112d-4a36-a8dd-20e62cd9ae03 to handle dart.progressStart. There were 0 sessions:
+[3:36:47 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:50:33 PM] [FlutterDaemon] [Info] ==> [{"id":"20","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:50:33 PM] [FlutterDaemon] [Info] <== [{"id":"20","result":{"platforms":["linux"]}}]
+[3:50:33 PM] [FlutterDaemon] [Info] ==> [{"id":"21","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:50:33 PM] [FlutterDaemon] [Info] <== [{"id":"21","result":{"platforms":["linux"]}}]
+[3:50:34 PM] [General] [Warn] Did not find session 4735d3cb-d197-4c8d-b090-51912abff0a3 to handle dart.progressStart. There were 0 sessions:
+[3:50:34 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:52:06 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[3:52:06 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[3:52:10 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[3:52:11 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[3:52:30 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[3:52:30 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[3:52:32 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[3:52:33 PM] [General] [Error] Error during `edit.getFixes`: invalid file.
+[3:53:26 PM] [FlutterDaemon] [Info] ==> [{"id":"22","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:53:26 PM] [FlutterDaemon] [Info] <== [{"id":"22","result":{"platforms":["linux"]}}]
+[3:53:26 PM] [FlutterDaemon] [Info] ==> [{"id":"23","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:53:26 PM] [FlutterDaemon] [Info] <== [{"id":"23","result":{"platforms":["linux"]}}]
+[3:53:26 PM] [General] [Warn] Did not find session 61a954d6-2dc8-4b8c-a80d-d7d4339316f8 to handle dart.progressStart. There were 0 sessions:
+[3:53:26 PM] [General] [Warn] Event will be queued and processed when the session start event fires
+[3:56:16 PM] [FlutterDaemon] [Info] ==> [{"id":"24","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:56:16 PM] [FlutterDaemon] [Info] <== [{"id":"24","result":{"platforms":["linux"]}}]
+[3:56:16 PM] [FlutterDaemon] [Info] ==> [{"id":"25","method":"daemon.getSupportedPlatforms","params":{"projectRoot":"/home/vladimir/Desktop/dart_vlc-master/example"}}]
+[3:56:16 PM] [FlutterDaemon] [Info] <== [{"id":"25","result":{"platforms":["linux"]}}]
+[3:56:16 PM] [General] [Warn] Did not find session 323ab8ac-2727-4e4f-b3d9-935c7c3dd367 to handle dart.progressStart. There were 0 sessions:
+[3:56:16 PM] [General] [Warn] Event will be queued and processed when the session start event fires

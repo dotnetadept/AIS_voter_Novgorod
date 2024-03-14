@@ -1,0 +1,5 @@
+#Search text in folder
+grep "192.168.0.104" -irn ./* 
+
+#Search and replace text in folder
+grep -rl "192.168.0.105" ./* | xargs sed -i "s/192.168.0.105/192.168.0.104/g"
