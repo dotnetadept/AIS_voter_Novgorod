@@ -9,34 +9,38 @@ import 'package:http/http.dart' as http;
 import 'package:ais_utils/ais_utils.dart';
 
 class WorkplacesSchemeWidget extends StatefulWidget {
-  WorkplacesSchemeWidget(
-      {Key key,
-      this.settings,
-      this.serverState,
-      this.group,
-      this.interval,
-      this.isOperatorView,
-      this.setRegistration,
-      this.undoRegistration,
-      this.setSpeaker,
-      this.setCurrentSpeaker,
-      this.setTribuneSpeaker,
-      this.setUser,
-      this.setUserExit,
-      this.setTerminalReset,
-      this.setTerminalShutdown,
-      this.setTerminalScreenOff,
-      this.setTerminalScreenOn,
-      this.setResetAll,
-      this.setRefreshStreamAll,
-      this.setShutdownAll,
-      this.saveGroup,
-      this.addGuest,
-      this.removeGuest,
-      this.addGuestAskWord,
-      this.removeGuestAskWord,
-      this.addUserAskWord})
-      : super(key: key);
+  WorkplacesSchemeWidget({
+    Key key,
+    this.settings,
+    this.serverState,
+    this.group,
+    this.interval,
+    this.isOperatorView,
+    this.setRegistration,
+    this.undoRegistration,
+    this.setSpeaker,
+    this.setCurrentSpeaker,
+    this.setTribuneSpeaker,
+    this.setUser,
+    this.setUserExit,
+    this.setTerminalReset,
+    this.setTerminalShutdown,
+    this.setTerminalScreenOff,
+    this.setTerminalScreenOn,
+    this.setResetAll,
+    this.setRefreshStreamAll,
+    this.setShutdownAll,
+    this.saveGroup,
+    this.addGuest,
+    this.removeGuest,
+    this.addGuestAskWord,
+    this.removeGuestAskWord,
+    this.addUserAskWord,
+    this.reconnectToVissonic,
+    this.closeVissonic,
+    this.setMicsMode,
+    this.setMicsOff,
+  }) : super(key: key);
 
   final Settings settings;
   final ServerState serverState;
@@ -65,6 +69,11 @@ class WorkplacesSchemeWidget extends StatefulWidget {
   final void Function(String) removeGuestAskWord;
   final void Function(int) addUserAskWord;
 
+  final void Function() reconnectToVissonic;
+  final void Function() closeVissonic;
+  final void Function(bool) setMicsMode;
+  final void Function() setMicsOff;
+
   @override
   _WorkplacesSchemeStateWidgetState createState() =>
       _WorkplacesSchemeStateWidgetState();
@@ -74,6 +83,9 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
   bool _isSchemeInversed = false;
   bool _isShowTribune = false;
   bool _isControlSound = false;
+
+  bool _isBlockMicButton = false;
+  bool _isBlockConnectButton = false;
 
   TextEditingController _searchGuestController = TextEditingController();
 
@@ -104,7 +116,15 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
       schemeParts = schemeParts.reversed.toList();
     }
 
-    return Column(children: schemeParts);
+    return Stack(
+      children: [
+        Column(children: schemeParts),
+        Padding(
+          padding: EdgeInsets.all(10),
+          child: getVissonicButtons(),
+        ),
+      ],
+    );
   }
 
   Widget getWorkplacesScheme() {
@@ -179,14 +199,15 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
     }
 
     return Container(
-        margin: EdgeInsets.all(10),
-        child: Row(
-          crossAxisAlignment: _isSchemeInversed
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: columns,
-        ));
+      margin: EdgeInsets.fromLTRB(5, 0, 5, 5),
+      child: Row(
+        crossAxisAlignment: _isSchemeInversed
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: columns,
+      ),
+    );
   }
 
   Widget getManagementScheme() {
@@ -217,7 +238,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
     }
 
     return Container(
-        margin: EdgeInsets.all(10),
+        margin: EdgeInsets.all(5),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -255,21 +276,21 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
 
   Widget guestDropDownBuilder(
       BuildContext context, String item, String itemDesignation) {
+    var textSize = (widget.isOperatorView
+            ? widget.settings.operatorSchemeSettings.cellTextSize
+            : widget.settings.managerSchemeSettings.cellTextSize)
+        .toDouble();
     return Container(
-      height: 20,
+      height: textSize + 8,
       child: (item == null)
           ? Container()
-          : ListTile(
-              contentPadding: EdgeInsets.all(0.0),
-              tileColor: Colors.blue,
-              title: Align(
-                child: Text(
-                  item.toString(),
-                  style: TextStyle(fontSize: 14),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-                alignment: Alignment(0, -7),
+          : Padding(
+              padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
+              child: Text(
+                item.toString(),
+                style: TextStyle(fontSize: textSize),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
     );
@@ -286,8 +307,15 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
 
     var isUserAskSpeech =
         widget.serverState.guestsAskSpeech.contains(terminalId);
-    var isMicEnabled = widget.serverState.activeMics.entries
-        .any((element) => element.key == terminalId);
+
+    var isMicEnabled = terminalId != null &&
+        terminalId.split(',').any((part) => widget
+            .serverState.activeMics.entries
+            .any((element) => int.parse(part) == int.parse(element.key)));
+    var isMicWaiting = terminalId != null &&
+        terminalId.isNotEmpty &&
+        terminalId.split(',').any((part) => widget.serverState.waitingMics
+            .any((element) => int.parse(part) == element));
 
     Color defaultColor = Colors.white;
     Color userColor = isUserAskSpeech
@@ -316,11 +344,16 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
         : widget.settings.managerSchemeSettings.textMaxLines;
 
     // mic and speaker icons
-    var setSpeakerTooltip =
-        isMicEnabled ? 'Выключить микрофон' : 'Включить микрофон';
+    var setSpeakerTooltip = '';
+    if (widget.serverState.isVissonicServerOnline == true) {
+      setSpeakerTooltip =
+          isMicEnabled ? 'Выключить микрофон' : 'Включить микрофон';
+    } else {
+      setSpeakerTooltip = 'сервер Vissonic офлайн';
+    }
 
     Color micColor = Colors.transparent;
-    if (isUserAskSpeech) {
+    if (isMicWaiting) {
       micColor = Colors.green;
     }
     if (isMicEnabled) {
@@ -348,11 +381,11 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
     ));
 
     widget.isOperatorView
-        ? buttons.add(getUserOptions(terminalId, null, Colors.white))
+        ? buttons.add(getUserOptions(terminalId, null, Colors.white, iconSize))
         : buttons.add(Icon(
             Icons.person,
             color: Colors.white,
-            size: iconSize,
+            size: iconSize + 2,
           ));
     buttons.add(Container(
       width: 5,
@@ -414,8 +447,8 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
             0,
           ),
           child: SizedBox(
-            height: iconSize,
-            width: iconSize,
+            height: iconSize + 2,
+            width: iconSize + 2,
             child: Tooltip(
               preferBelow: !widget.isOperatorView,
               waitDuration: Duration(seconds: widget.isOperatorView ? 2 : 0),
@@ -427,7 +460,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
                         widget.serverState.speakerSession.name == guest)
                     ? Colors.green
                     : Colors.red,
-                icon: Icon(Icons.monitor, size: iconSize),
+                icon: Icon(Icons.monitor, size: iconSize + 2),
                 onPressed: () {
                   widget.setTribuneSpeaker(terminalId, guest);
                 },
@@ -466,17 +499,9 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
                 onPressed: !widget.isOperatorView
                     ? null
                     : () {
-                        if (isUserAskSpeech) {
-                          widget.setSpeaker(terminalId, true);
-                        } else {
-                          if (isMicEnabled) {
-                            widget.setSpeaker(terminalId, false);
-                          } else {
-                            widget.addGuestAskWord(terminalId);
-                          }
-                        }
-
-                        setState(() {});
+                        setState(() {
+                          widget.setSpeaker(terminalId, !isMicEnabled);
+                        });
                       },
               ),
             ),
@@ -485,138 +510,152 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
       }
     }
 
-    var textFieldHeight = (getCellHeight() / 2).floor().toDouble() -
-        cellPadding / 2 -
-        2 -
-        (widget.isOperatorView ? 0 : 3);
-
     var guests = (widget.group.guests ?? '').split(',').toList();
     guests.sort((a, b) => a.compareTo(b));
+
+    var textSize = widget.isOperatorView
+        ? widget.settings.operatorSchemeSettings.cellTextSize.toDouble()
+        : widget.settings.managerSchemeSettings.cellTextSize.toDouble();
 
     Widget cell = Column(
       children: [
         Container(
-          margin: EdgeInsets.fromLTRB(cellPadding,
-              cellPadding - (widget.isOperatorView ? 2 : 1), cellPadding, 0.0),
-          width: cellWidth,
-          height: textFieldHeight,
           decoration: BoxDecoration(
             color: userColor,
           ),
           child: widget.isOperatorView
-              ? DropdownSearch<String>(
-                  searchBoxController: _searchGuestController,
-                  searchBoxStyle: TextStyle(
-                    fontSize: 20,
-                  ),
-                  mode: Mode.DIALOG,
-                  showSearchBox: true,
-                  showClearButton: guest != null && guest.isNotEmpty,
-                  clearButtonBuilder: (context) {
-                    return Icon(Icons.clear);
-                  },
-                  dropdownButtonBuilder: (context) {
-                    return Icon(Icons.arrow_drop_down);
-                  },
-                  items: guests,
-                  popupTitle: Container(
-                    alignment: Alignment.center,
-                    color: Colors.blueAccent,
-                    padding: EdgeInsets.all(15),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Гости',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontSize: 28),
-                          ),
+              ? Container(
+                  margin: EdgeInsets.fromLTRB(
+                      cellPadding, cellPadding, cellPadding, 0.0),
+                  width: cellWidth,
+                  height: textSize + 8,
+                  child: DropdownSearch<String>(
+                    searchBoxController: _searchGuestController,
+                    searchBoxStyle: TextStyle(
+                      fontSize: textSize + 4,
+                    ),
+                    dropdownSearchTextAlignVertical: TextAlignVertical.top,
+                    mode: Mode.DIALOG,
+                    showSearchBox: true,
+                    showClearButton: guest != null && guest.isNotEmpty,
+                    clearButtonBuilder: (context) {
+                      return Align(
+                        child: Icon(
+                          Icons.clear,
+                          size: textSize + 6,
                         ),
-                        TextButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.indigoAccent),
-                            padding: MaterialStateProperty.all(
-                                EdgeInsets.fromLTRB(0, 15, 0, 15)),
-                            shape: MaterialStateProperty.all(
-                              CircleBorder(
-                                side: BorderSide(color: Colors.transparent),
-                              ),
+                      );
+                    },
+                    dropdownButtonBuilder: (context) {
+                      return Align(
+                        child: Icon(
+                          Icons.arrow_drop_down,
+                          size: textSize + 6,
+                        ),
+                      );
+                    },
+                    items: guests,
+                    popupTitle: Container(
+                      alignment: Alignment.center,
+                      color: Colors.blueAccent,
+                      padding: EdgeInsets.all(15),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Гости',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 28),
                             ),
                           ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Icon(Icons.close),
-                        ),
-                      ],
+                          TextButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(
+                                  Colors.indigoAccent),
+                              padding: MaterialStateProperty.all(
+                                  EdgeInsets.fromLTRB(0, 15, 0, 15)),
+                              shape: MaterialStateProperty.all(
+                                CircleBorder(
+                                  side: BorderSide(color: Colors.transparent),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  hint: 'Выберите гостя',
-                  selectedItem: guest,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.addGuest(value, terminalId);
-                    });
-                  },
-                  dropdownBuilder: guestDropDownBuilder,
-                  popupItemBuilder: guestPopupItemBuilder,
-                  emptyBuilder: (context, searchEntry) {
-                    return Center(
-                        child: TextButton(
-                      child: Text('Добавить гостя'),
-                      onPressed: () {
-                        setState(() {
-                          if (widget.group.guests != null &&
-                              widget.group.guests.isNotEmpty) {
-                            widget.group.guests +=
-                                ',' + _searchGuestController.text;
-                          } else {
-                            widget.group.guests = _searchGuestController.text;
-                          }
-                        });
+                    hint: 'Выберите гостя',
+                    selectedItem: guest,
+                    onChanged: (value) {
+                      setState(() {
+                        widget.addGuest(value, terminalId);
+                      });
+                    },
+                    dropdownBuilder: guestDropDownBuilder,
+                    popupItemBuilder: guestPopupItemBuilder,
+                    emptyBuilder: (context, searchEntry) {
+                      return Center(
+                          child: TextButton(
+                        child: Text('Добавить гостя'),
+                        onPressed: () {
+                          setState(() {
+                            if (widget.group.guests != null &&
+                                widget.group.guests.isNotEmpty) {
+                              widget.group.guests +=
+                                  ',' + _searchGuestController.text;
+                            } else {
+                              widget.group.guests = _searchGuestController.text;
+                            }
+                          });
 
-                        widget.saveGroup(widget.group);
-                        widget.addGuest(
-                            _searchGuestController.text, terminalId);
-                      },
-                    ));
-                  },
-                  onPopupDismissed: () {
-                    setState(() {
-                      _searchGuestController.text = '';
-                    });
-                  },
+                          widget.saveGroup(widget.group);
+                          widget.addGuest(
+                              _searchGuestController.text, terminalId);
+                        },
+                      ));
+                    },
+                    onPopupDismissed: () {
+                      setState(() {
+                        _searchGuestController.text = '';
+                      });
+                    },
+                  ),
                 )
               : Container(
+                  margin: EdgeInsets.fromLTRB(
+                      cellPadding, cellPadding, cellPadding, 0),
                   padding: EdgeInsets.fromLTRB(0, cellPadding, 0, cellPadding),
                   width: cellWidth,
+                  height: textSize + 6,
                   decoration: BoxDecoration(
                     color: userColor,
                   ),
-                  child: Tooltip(
-                    preferBelow: !widget.isOperatorView,
-                    waitDuration:
-                        Duration(seconds: widget.isOperatorView ? 2 : 0),
-                    message: guest,
-                    child: Text(
-                      '$guest',
-                      maxLines:
-                          overflowOption == 'Обрезать текст' ? maxLines : null,
-                      overflow: textOverflowOption,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: widget.isOperatorView
-                            ? widget
-                                .settings.operatorSchemeSettings.cellTextSize
-                                .toDouble()
-                            : widget.settings.managerSchemeSettings.cellTextSize
-                                .toDouble(),
-                        color: Color(
-                            widget.settings.palletteSettings.cellTextColor),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                    child: Tooltip(
+                      preferBelow: !widget.isOperatorView,
+                      waitDuration:
+                          Duration(seconds: widget.isOperatorView ? 2 : 0),
+                      message: guest,
+                      child: Text(
+                        '$guest',
+                        maxLines: overflowOption == 'Обрезать текст'
+                            ? maxLines
+                            : null,
+                        overflow: textOverflowOption,
+                        //textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: textSize,
+                          color: Color(
+                              widget.settings.palletteSettings.cellTextColor),
+                        ),
                       ),
                     ),
                   ),
@@ -796,8 +835,14 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
     var isDocumentsError =
         widget.serverState.terminalsDocumentErrors.keys.contains(terminalId);
 
-    var isMicEnabled = widget.serverState.activeMics.entries
-        .any((element) => element.key == terminalId);
+    var isMicEnabled = terminalId != null &&
+        terminalId.split(',').any((part) => widget
+            .serverState.activeMics.entries
+            .any((element) => int.parse(part) == int.parse(element.key)));
+    var isMicWaiting = terminalId != null &&
+        terminalId.isNotEmpty &&
+        terminalId.split(',').any((part) => widget.serverState.waitingMics
+            .any((element) => int.parse(part) == element));
 
     // user icon
     var userIconColor =
@@ -855,11 +900,16 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
     }
 
     // mic and speaker icons
-    var setSpeakerTooltip =
-        isMicEnabled ? 'Выключить микрофон' : 'Включить микрофон';
+    var setSpeakerTooltip = '';
+    if (widget.serverState.isVissonicServerOnline == true) {
+      setSpeakerTooltip =
+          isMicEnabled ? 'Выключить микрофон' : 'Включить микрофон';
+    } else {
+      setSpeakerTooltip = 'сервер Vissonic офлайн';
+    }
 
     Color micColor = Colors.transparent;
-    if (isUserAskSpeech) {
+    if (isMicWaiting) {
       micColor = Colors.green;
     }
     if (isMicEnabled) {
@@ -908,13 +958,14 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
             ? Icon(
                 Icons.person,
                 color: userIconColor,
-                size: iconSize,
+                size: iconSize + 2,
               )
             : Tooltip(
                 preferBelow: !widget.isOperatorView,
                 waitDuration: Duration(seconds: widget.isOperatorView ? 2 : 0),
                 message: selectedUserFullName,
-                child: getUserOptions(terminalId, userId, userIconColor),
+                child:
+                    getUserOptions(terminalId, userId, userIconColor, iconSize),
               ),
       );
     }
@@ -923,7 +974,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
       buttons.add(Icon(
         Icons.person,
         color: userIconColor,
-        size: iconSize,
+        size: iconSize + 2,
       ));
     }
 
@@ -980,8 +1031,8 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
             0,
           ),
           child: SizedBox(
-            height: iconSize,
-            width: iconSize,
+            height: iconSize + 2,
+            width: iconSize + 2,
             child: IconButton(
               padding: EdgeInsets.all(0),
               alignment: Alignment.topCenter,
@@ -990,7 +1041,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
                           terminalId)
                   ? Colors.green
                   : Colors.red,
-              icon: Icon(Icons.monitor, size: iconSize),
+              icon: Icon(Icons.monitor, size: iconSize + 2),
               onPressed: () {
                 setState(() {
                   widget.setCurrentSpeaker(terminalId, null);
@@ -1030,17 +1081,9 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
                 onPressed: !widget.isOperatorView
                     ? null
                     : () {
-                        if (isUserAskSpeech) {
-                          widget.setSpeaker(terminalId, true);
-                        } else {
-                          if (isMicEnabled) {
-                            widget.setSpeaker(terminalId, false);
-                          } else {
-                            widget.addUserAskWord(userId);
-                          }
-                        }
-
-                        setState(() {});
+                        setState(() {
+                          widget.setSpeaker(terminalId, !isMicEnabled);
+                        });
                       },
               ),
             ),
@@ -1053,29 +1096,26 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
         ? (showOverflow ? TextOverflow.ellipsis : TextOverflow.clip)
         : TextOverflow.clip;
 
+    var textSize = widget.isOperatorView
+        ? widget.settings.operatorSchemeSettings.cellTextSize.toDouble()
+        : widget.settings.managerSchemeSettings.cellTextSize.toDouble();
+
     Widget cellContent = Column(
       children: [
         InkWell(
           onTap: !widget.isOperatorView
               ? null
               : () {
-                  if (isUserAskSpeech) {
-                    widget.setSpeaker(terminalId, true);
-                  } else {
-                    if (isMicEnabled) {
-                      widget.setSpeaker(terminalId, false);
-                    } else {
-                      widget.addUserAskWord(userId);
-                    }
-                  }
-
-                  setState(() {});
+                  setState(() {
+                    widget.setSpeaker(terminalId, !isMicEnabled);
+                  });
                 },
           child: Container(
             margin:
                 EdgeInsets.fromLTRB(cellPadding, cellPadding, cellPadding, 0.0),
             padding: EdgeInsets.fromLTRB(0, cellPadding, 0, cellPadding),
             width: cellWidth,
+            height: textSize + 6,
             decoration: BoxDecoration(
               color: userColor,
             ),
@@ -1083,27 +1123,27 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
               preferBelow: !widget.isOperatorView,
               waitDuration: Duration(seconds: widget.isOperatorView ? 2 : 0),
               message: selectedUserFullName,
-              child: Text(
-                '$selectedUserName',
-                maxLines: overflowOption == 'Обрезать текст' ? maxLines : null,
-                overflow: textOverflowOption,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: widget.isOperatorView
-                        ? widget.settings.operatorSchemeSettings.cellTextSize
-                            .toDouble()
-                        : widget.settings.managerSchemeSettings.cellTextSize
-                            .toDouble(),
-                    color:
-                        Color(widget.settings.palletteSettings.cellTextColor)),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: Text(
+                  '$selectedUserName',
+                  maxLines:
+                      overflowOption == 'Обрезать текст' ? maxLines : null,
+                  overflow: textOverflowOption,
+                  style: TextStyle(
+                      fontSize: textSize,
+                      color: Color(
+                          widget.settings.palletteSettings.cellTextColor)),
+                ),
               ),
             ),
           ),
         ),
-        widget.isOperatorView
-            ? Container()
-            : Container(
-                height: widget.settings.managerSchemeSettings.cellInnerPadding
+        Container(
+            height: widget.isOperatorView
+                ? widget.settings.operatorSchemeSettings.cellInnerPadding
+                    .toDouble()
+                : widget.settings.managerSchemeSettings.cellInnerPadding
                     .toDouble()),
         Container(
           width: cellWidth,
@@ -1137,21 +1177,17 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
   double getCellHeight() {
     double cellheight = 0.0;
 
-    if (widget.isOperatorView) {
-      cellheight = widget.settings.operatorSchemeSettings.cellBorder * 4 +
-          widget.settings.operatorSchemeSettings.cellInnerPadding * 5 +
-          widget.settings.operatorSchemeSettings.cellTextSize +
-          widget.settings.operatorSchemeSettings.iconSize.toDouble();
-    } else {
-      cellheight = widget.settings.operatorSchemeSettings.cellBorder * 4.0 +
-          widget.settings.managerSchemeSettings.cellInnerPadding * 6 +
-          widget.settings.managerSchemeSettings.cellTextSize +
-          widget.settings.managerSchemeSettings.iconSize.toDouble();
-    }
+    cellheight = 2 +
+        widget.settings.operatorSchemeSettings.cellBorder * 4 +
+        widget.settings.operatorSchemeSettings.cellInnerPadding * 5 +
+        widget.settings.operatorSchemeSettings.cellTextSize +
+        widget.settings.operatorSchemeSettings.iconSize.toDouble();
+
     return cellheight;
   }
 
-  Widget getUserOptions(String terminalId, int userId, Color userIconColor) {
+  Widget getUserOptions(
+      String terminalId, int userId, Color userIconColor, double iconSize) {
     return PopupMenuButton(
       child: Container(
         decoration: BoxDecoration(
@@ -1159,6 +1195,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
         ),
         child: Icon(
           Icons.person,
+          size: iconSize + 2,
           color: userIconColor,
         ),
       ),
@@ -1393,17 +1430,19 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
   }
 
   Widget getTribuneScheme() {
-    if (!_isShowTribune) {
-      return Container();
-    }
-
-    if (widget.group == null) {
-      return Container();
+    if (!_isShowTribune ||
+        widget.group == null ||
+        widget.group.workplaces.tribuneTerminalIds.isEmpty) {
+      return Container(
+        width: MediaQuery.of(context).size.width -
+            widget.settings.storeboardSettings.width -
+            20,
+      );
     }
 
     List<Widget> tribuneCells = <Widget>[];
 
-    tribuneCells.add(Expanded(child: Container()));
+    tribuneCells.add(tribuneLeftPanel());
 
     for (int i = 0;
         i < widget.group.workplaces.tribuneTerminalIds.length;
@@ -1430,6 +1469,300 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
           children: tribuneCells,
         ),
       ),
+    );
+  }
+
+  Widget tribuneLeftPanel() {
+    return Expanded(
+      child: Row(
+        children: [],
+      ),
+    );
+  }
+
+  Widget getVissonicButtons() {
+    if (widget.group == null || !_isControlSound) {
+      return Container();
+    }
+
+    var isMicsUnBlocked = widget.serverState.micsEnabled == true;
+    var isMicsBlocked = widget.serverState.micsEnabled == false;
+    var isInProgress =
+        widget.serverState.isVissonicLoading || _isBlockConnectButton;
+
+    if (!widget.serverState.isVissonicModuleOnline ||
+        !widget.serverState.isVissonicModuleInit ||
+        !widget.serverState.isVissonicServerOnline) {
+      return Tooltip(
+        message: 'Подключиться к серверу Vissonic',
+        child: TextButton(
+          onPressed: isInProgress
+              ? null
+              : () {
+                  setState(() {
+                    _isBlockConnectButton = true;
+                  });
+
+                  widget.reconnectToVissonic();
+
+                  Timer(Duration(seconds: 3), () {
+                    setState(() {
+                      _isBlockConnectButton = false;
+                    });
+                  });
+                },
+          child: Row(children: [
+            Text(
+              'Подкл. Vissonic',
+              style: TextStyle(fontSize: 18),
+            ),
+            Container(
+              width: 10,
+            ),
+            isInProgress
+                ? Container(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  )
+                : Icon(Icons.wifi),
+          ]),
+        ),
+      );
+    }
+
+    return Row(
+      children: [
+        Column(
+          children: [
+            Tooltip(
+              message: 'Переподключиться к серверу Vissonic',
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    _isBlockConnectButton = true;
+                  });
+
+                  widget.reconnectToVissonic();
+
+                  Timer(Duration(seconds: 3), () {
+                    setState(() {
+                      _isBlockConnectButton = false;
+                    });
+                  });
+                },
+                child: Row(children: [
+                  Icon(Icons.refresh),
+                ]),
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            Tooltip(
+              message: 'Отключиться от сервера Vissonic',
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    _isBlockConnectButton = true;
+                  });
+
+                  widget.closeVissonic();
+
+                  Timer(Duration(seconds: 3), () {
+                    setState(() {
+                      _isBlockConnectButton = false;
+                    });
+                  });
+                },
+                child: Row(children: [
+                  Icon(Icons.close),
+                ]),
+              ),
+            ),
+          ],
+        ),
+        Container(
+          width: 10,
+        ),
+        Column(
+          children: [
+            SizedBox(
+              height: 25,
+              width: 134,
+              child: Tooltip(
+                message: isMicsBlocked
+                    ? 'Микрофоны заблокированы'
+                    : 'Блокировать все микрофоны',
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isMicsBlocked ? Colors.white : Colors.transparent,
+                      width: isMicsBlocked ? 2 : 0,
+                    ),
+                  ),
+                  child: TextButton(
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(
+                          EdgeInsets.fromLTRB(8, 0, 4, 0)),
+                    ),
+                    onPressed: _isBlockMicButton
+                        ? null
+                        : () {
+                            widget.setMicsMode(false);
+                            setState(() {
+                              _isBlockMicButton = true;
+                            });
+                            Timer(Duration(seconds: 1), () {
+                              setState(() {
+                                _isBlockMicButton = false;
+                              });
+                            });
+                          },
+                    child: Row(
+                      children: [
+                        Text('Блок. мик.'),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        _isBlockMicButton
+                            ? SizedBox(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                                height: 18.0,
+                                width: 18.0,
+                              )
+                            : Icon(
+                                Icons.mic_off_outlined,
+                                color: Colors.redAccent,
+                              ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            SizedBox(
+              height: 25,
+              width: 134,
+              child: Tooltip(
+                message: isMicsUnBlocked
+                    ? 'Микрофоны разблокированы'
+                    : 'Разблокировать все микрофоны',
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color:
+                          isMicsUnBlocked ? Colors.white : Colors.transparent,
+                      width: isMicsUnBlocked ? 2 : 0,
+                    ),
+                  ),
+                  child: TextButton(
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(
+                          EdgeInsets.fromLTRB(8, 0, 4, 0)),
+                    ),
+                    onPressed: _isBlockMicButton
+                        ? null
+                        : () {
+                            widget.setMicsMode(true);
+                            setState(() {
+                              _isBlockMicButton = true;
+                            });
+                            Timer(Duration(seconds: 1), () {
+                              setState(() {
+                                _isBlockMicButton = false;
+                              });
+                            });
+                          },
+                    child: Row(
+                      children: [
+                        Text('Разблок. мик.'),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        _isBlockMicButton
+                            ? SizedBox(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                                height: 18.0,
+                                width: 18.0,
+                              )
+                            : Icon(
+                                Icons.mic_none,
+                                color: Colors.greenAccent,
+                              ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            SizedBox(
+              height: 25,
+              width: 134,
+              child: Tooltip(
+                message: 'Выключить все микрофоны',
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color:
+                          isMicsUnBlocked ? Colors.white : Colors.transparent,
+                      width: isMicsUnBlocked ? 2 : 0,
+                    ),
+                  ),
+                  child: TextButton(
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(
+                          EdgeInsets.fromLTRB(8, 0, 4, 0)),
+                    ),
+                    onPressed: _isBlockMicButton
+                        ? null
+                        : () {
+                            widget.setMicsOff();
+                            setState(() {
+                              _isBlockMicButton = true;
+                            });
+                            Timer(Duration(seconds: 1), () {
+                              setState(() {
+                                _isBlockMicButton = false;
+                              });
+                            });
+                          },
+                    child: Row(
+                      children: [
+                        Text('Выкл. все'),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        _isBlockMicButton
+                            ? SizedBox(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                                height: 18.0,
+                                width: 18.0,
+                              )
+                            : Icon(Icons.mic_off),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -1471,7 +1804,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
             ),
             child: Icon(
               Icons.monitor,
-              size: iconSize - 2,
+              size: iconSize,
               color: isTribuneStoreboardEnabled ? Colors.green : Colors.red,
             ),
             onPressed: () {

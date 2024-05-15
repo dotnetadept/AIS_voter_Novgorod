@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ais_utils/ais_utils.dart';
 import 'package:ais_model/ais_model.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:global_configuration/global_configuration.dart';
@@ -21,6 +23,8 @@ class WebSocketConnection with ChangeNotifier {
 
   static void Function() onConnect;
   static void Function(String) onFail;
+  static void Function(ServerState) updateServerState;
+  static void Function() stopSound;
 
   static WebSocketConnection _singleton;
 
@@ -52,20 +56,12 @@ class WebSocketConnection with ChangeNotifier {
         json.encode(<String, String>{'refresh_stream': 'true'}).toString();
     if (responce == refreshStreamMessage) {
       if (AppState().getCurrentPage() == '/viewStream') {
-        await StreamUtils().refreshStream();
-
-        // await StreamUtils().closeBrowser().then((value) {
-        //   Timer(Duration(seconds: 1), () async {
-        //     //await StreamUtils().startStream();
-        //     String bashFilePath =
-        //         '${GlobalConfiguration().getValue('folder_path')}/data/flutter_assets/assets/shellScripts/refresh_stream.bash';
-        //     Process.run(bashFilePath, []);
-        //   });
-        // });
-
-        //String bashFilePath =
-        //    '${GlobalConfiguration().getValue('folder_path')}/data/flutter_assets/assets/shellScripts/refresh_stream.bash';
-        //Process.run(bashFilePath, []);
+        await StreamUtils().closeBrowser().then((value) async {
+          Timer(Duration(milliseconds: 100), StreamUtils().startStream);
+        });
+      }
+      if (AppState().getCurrentPage() == '/viewVideo') {
+        await AppState.refreshStream();
       }
     } else if (json.decode(responce)['update_agenda'] != null) {
       var decodedAgenda =
@@ -94,6 +90,10 @@ class WebSocketConnection with ChangeNotifier {
                   orElse: () => null));
         }
       }
+
+      if (updateServerState != null) {
+        updateServerState(serverState);
+      }
     }
 
     await processNavigation();
@@ -106,10 +106,13 @@ class WebSocketConnection with ChangeNotifier {
   Future<void> initNewChannel(String clientType) async {
     try {
       _webSocket?.close();
-
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
       _webSocket = await WebSocket.connect(
           ServerConnection.getWebSocketServerUrl(GlobalConfiguration()),
-          headers: {'type': clientType}).timeout(
+          headers: {
+            'type': clientType,
+            'version': packageInfo.version,
+          }).timeout(
         Duration(seconds: 10),
       );
       _webSocket.pingInterval = Duration(
@@ -132,6 +135,7 @@ class WebSocketConnection with ChangeNotifier {
 
   setOffline() {
     setIsOnline(false);
+    stopSound();
 
     AppState().setCurrentMeeting(null);
     AppState().setCurrentQuestion(null);
@@ -155,11 +159,8 @@ class WebSocketConnection with ChangeNotifier {
 
   Future<void> navigateToPage(String page) async {
     if (AppState().getCurrentPage() == '/viewStream' && page != '/viewStream') {
-      StreamUtils().closeBrowser();
-
-      print('setFullscreen');
-      await windowManager.show();
-      await windowManager.setAlwaysOnTop(true);
+      await StreamUtils().closeBrowser();
+      await windowManager.setFullScreen(true);
     }
 
     // executes navigation after build
@@ -175,7 +176,11 @@ class WebSocketConnection with ChangeNotifier {
   Future<void> processNavigation() async {
     if (AppState().getServerState().isStreamStarted == true &&
         GlobalConfiguration().getValue('show_stream') == 'true') {
-      await navigateToPage('/viewStream');
+      if (GlobalConfiguration().getValue('show_stream_in_browser') == 'true') {
+        await navigateToPage('/viewStream');
+      } else {
+        await navigateToPage('/viewVideo');
+      }
     } else {
       await navigateToPage('/storeboard');
     }

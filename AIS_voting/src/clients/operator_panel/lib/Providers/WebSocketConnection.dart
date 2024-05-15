@@ -157,6 +157,22 @@ class WebSocketConnection with ChangeNotifier {
     }));
   }
 
+  void setMicsMode(bool isEnabled) {
+    _channel.sink.add(json.encode({'isMicsEnabled': isEnabled}));
+  }
+
+  void setMicsOff() {
+    _channel.sink.add(json.encode({'setMicsOff': true}));
+  }
+
+  void closeVissonic() {
+    _channel.sink.add(json.encode({'close_vissonic': true}));
+  }
+
+  void reconnectToVissonic() {
+    _channel.sink.add(json.encode({'restore_vissonic': true}));
+  }
+
   void setSpeaker(String terminalID, bool isMicrophoneOn) {
     _channel.sink.add(
         json.encode({'speaker': terminalID, 'isMicrophoneOn': isMicrophoneOn}));

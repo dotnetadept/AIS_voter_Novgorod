@@ -9,6 +9,7 @@ class _Question {
   int id;
   String name;
   int orderNum;
+  @Column(nullable: true)
   String accessRights;
   String description;
   String folder;

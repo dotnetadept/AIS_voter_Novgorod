@@ -1,8 +1,8 @@
-# Install script for directory: /home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/deputy/linux/flutter/ephemeral/.plugin_symlinks/flutter_webrtc/linux
+# Install script for directory: /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/deputy/linux/flutter/ephemeral/.plugin_symlinks/flutter_webrtc/linux
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/deputy/build/linux/x64/release/bundle")
+  set(CMAKE_INSTALL_PREFIX "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/deputy/build/linux/x64/release/bundle")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

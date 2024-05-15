@@ -1,7 +1,7 @@
 name: deputy
 description: AIS deputy client application.
 publish_to: 'none'
-version: 1.03.04
+version: 1.04.26
 
 environment:
   sdk: '>=2.10.0 <3.2.0'

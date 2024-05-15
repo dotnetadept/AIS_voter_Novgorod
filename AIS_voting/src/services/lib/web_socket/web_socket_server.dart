@@ -16,7 +16,7 @@ import 'package:path/path.dart' as p;
 
 import '../models/ais_model.dart';
 import 'common_utils.dart';
-import 'external_client.dart';
+import 'vissonic_client/terminal_mic.dart';
 import 'ws_connection.dart';
 import 'server_state.dart';
 import '../settings.dart';
@@ -38,8 +38,6 @@ class WebSocketServer {
   int _timeOffset;
 
   bool _isSendState = false;
-
-  ExternalClient _externalClient;
 
   WebSocketServer(this._address, this._port, this._context);
 
@@ -68,9 +66,6 @@ class WebSocketServer {
 
     print(
         '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Синхронизация времени завершена');
-
-    // connect external client
-    _externalClient = ExternalClient();
 
     print(
         '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Чтение базы данных ${PSQL_SERVER + '/' + PSQL_DATABASE} ...');
@@ -276,6 +271,10 @@ class WebSocketServer {
       }
     }
 
+    // set mic sound settings
+    await sendVissonicMessage('setAllState',
+        isEnabled: !getIsMicsEnabledState());
+
     print(
         '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Завершена инициализация веб сервера $APP_NAME');
 
@@ -451,6 +450,10 @@ class WebSocketServer {
     ServerState.selectedMeeting.lastUpdated = updatedMeeting.lastUpdated;
   }
 
+  bool getIsMicsEnabledState() {
+    return !cm.SystemStateHelper.isStarted(ServerState.systemState);
+  }
+
   /// Bind the server
   void bind() {
     io.HttpServer.bind(_address, _port).then(connectServer);
@@ -550,6 +553,14 @@ class WebSocketServer {
     if (connection.terminalId != null &&
         (connection.type == 'deputy' || connection.type == 'manager')) {
       addUserTerminal(connection.terminalId, connection.deputyId);
+    }
+
+    if (connection.type == 'vissonic_client') {
+      ServerState.isVissonicModuleOnline = true;
+
+      print(
+          '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Подключен модуль Vissonic.');
+      initVissonicModule();
     }
 
     ServerState().setDevicesInfo(_connections);
@@ -709,8 +720,33 @@ class WebSocketServer {
           isMessageProcessed = true;
         }
 
+        if (value['restore_vissonic'] != null) {
+          await restoreVissonicConnection();
+          isMessageProcessed = true;
+        }
+
+        if (value['close_vissonic'] != null) {
+          await closeVissonicConnection();
+          isMessageProcessed = true;
+        }
+
         if (value['isMicrophoneOn'] != null) {
-          setActiveMic(value['speaker'], value['isMicrophoneOn']);
+          await sendVissonicMessage('setMicSound',
+              terminalId: value['speaker'], isEnabled: value['isMicrophoneOn']);
+
+          isMessageProcessed = true;
+        }
+
+        if (value['isMicsEnabled'] != null) {
+          await sendVissonicMessage('setAllState',
+              isEnabled: value['isMicsEnabled']);
+
+          isMessageProcessed = true;
+        }
+
+        if (value['setMicsOff'] != null) {
+          await sendVissonicMessage('setMicSound',
+              terminalId: 'fff', isEnabled: false);
 
           isMessageProcessed = true;
         }
@@ -839,15 +875,19 @@ class WebSocketServer {
       } else if (connection.type == 'guest') {
         //guest functions
         await processGuestMessage(connection, value['value'].toString());
+
         if (value['isMicrophoneOn'] != null) {
-          setActiveMic(value['speaker'], value['isMicrophoneOn']);
+          await sendVissonicMessage('setMicSound',
+              terminalId: value['speaker'], isEnabled: value['isMicrophoneOn']);
         }
+
         if (value['guest'] != null || value['guestTerminalId'] != null) {
           processSetGuest(
             value['guest'],
             value['guestTerminalId'],
           );
         }
+
         if (value['remove_guest'] != null) {
           removeGuest(value['remove_guest']);
         }
@@ -856,9 +896,22 @@ class WebSocketServer {
         var isMessageProcessed = await processDeputyMessage(
             connection, value['deputyId'], value['value'].toString());
 
-        if (value['isMicrophoneOn'] != null) {
-          setActiveMic(value['speaker'], value['isMicrophoneOn']);
+        if (value['isMicsEnabled'] != null) {
+          await sendVissonicMessage('setAllState',
+              isEnabled: value['isMicsEnabled']);
+          isMessageProcessed = true;
+        }
 
+        if (value['setMicsOff'] != null) {
+          await sendVissonicMessage('setMicSound',
+              terminalId: 'fff', isEnabled: false);
+
+          isMessageProcessed = true;
+        }
+
+        if (value['isMicrophoneOn'] != null) {
+          await sendVissonicMessage('setMicSound',
+              terminalId: value['speaker'], isEnabled: value['isMicrophoneOn']);
           isMessageProcessed = true;
         }
 
@@ -916,6 +969,10 @@ class WebSocketServer {
             }
           }
         }
+      }
+
+      if (connection.type == 'vissonic_client') {
+        processVissonicClientMessage(value);
       }
 
       if (value['value'] == 'ЗАГРУЖЕНЫ') {
@@ -988,6 +1045,11 @@ class WebSocketServer {
     Map<dynamic, dynamic> longState;
     if (connections.isNotEmpty) {
       for (var connection in connections) {
+        // do not sent any state to vissonic client
+        if (connection.type == 'vissonic_client') {
+          continue;
+        }
+
         if (connection.type == 'operator' ||
             connection.type == 'manager' ||
             connection.type == 'deputy' ||
@@ -1012,6 +1074,28 @@ class WebSocketServer {
       ServerState.terminalsOnline.remove(connection.terminalId);
       ServerState.terminalsWithDocuments.remove(connection.terminalId);
       ServerState.usersAskSpeech.remove(connection.deputyId);
+
+      // disable sound on deputy mics
+      if (connection.type == 'deputy') {
+        await sendVissonicMessage('setMicSound',
+            terminalId: connection.terminalId, isEnabled: false);
+      }
+      // block managerMics
+      if (connection.type == 'manager') {
+        await sendVissonicMessage('blockMic',
+            terminalId: connection.terminalId);
+      }
+
+      // disable mic state on vissonic client disconnect
+      if (connection.type == 'vissonic_client') {
+        ServerState.isVissonicModuleOnline = false;
+        ServerState.isVissonicServerOnline = false;
+        ServerState.isVissonicModuleInit = false;
+        ServerState.isVissonicLoading = false;
+        ServerState.micsEnabled = null;
+        ServerState.activeMics = <String, String>{};
+        ServerState.waitingMics = <int>[];
+      }
 
       ServerState.usersTerminals.removeWhere((key, value) =>
           key == connection.terminalId || value == connection.deputyId);
@@ -1117,26 +1201,6 @@ class WebSocketServer {
         '${CommonUtils.getDateTimeNow(_timeOffset).toString()} ${connection.id} ${connection.type} информация удалена ${connection.terminalId}');
   }
 
-  void setActiveMic(String terminalId, bool isEnabled) {
-    var userId = ServerState.usersTerminals[terminalId];
-    ServerState.usersAskSpeech.remove(userId);
-
-    ServerState.guestsAskSpeech.remove(terminalId);
-
-    if (isEnabled) {
-      ServerState.activeMics.putIfAbsent(terminalId,
-          () => CommonUtils.getDateTimeNow(_timeOffset).toIso8601String());
-
-      _externalClient.push(terminalId);
-    } else {
-      ServerState.activeMics.removeWhere((key, value) => key == terminalId);
-
-      _externalClient.remove(terminalId);
-    }
-
-    _isSendState = true;
-  }
-
   void removeGuest(String quest) {
     var foundGuestPlace = ServerState.guestsPlaces.firstWhere(
       (element) => element.name == quest,
@@ -1186,6 +1250,23 @@ class WebSocketServer {
 
     if (terminalId != null && deputyId != null) {
       ServerState.usersTerminals.putIfAbsent(terminalId, () => deputyId);
+    }
+
+    // enable managers mics
+    if (ServerState.selectedMeeting != null) {
+      var managerIds = ServerState.selectedMeeting.group.groupUsers
+          .where((element) => element.isManager)
+          .map((e) => e.user.id)
+          .toList();
+      var managerTerminals = ServerState.usersTerminals.entries
+          .where((element) => managerIds.contains(element.value))
+          .toList();
+      if (managerTerminals.any((element) => terminalId == element.key)) {
+        print(
+            '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Микрофон $terminalId разблокирован при входе председателя');
+
+        sendVissonicMessage('unblockMic', terminalId: terminalId);
+      }
     }
   }
 
@@ -1473,6 +1554,12 @@ class WebSocketServer {
       if (deputyId != null) {
         addUserTerminal(connection.terminalId, deputyId);
       } else {
+        // disable connection mics
+        print(
+            '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Микрофон ${connection.terminalId} отключен при выходе пользователя');
+        await sendVissonicMessage('setMicSound',
+            terminalId: connection.terminalId, isEnabled: false);
+
         ServerState.usersAskSpeech.remove(connection.deputyId);
         ServerState.usersTerminals.removeWhere((key, value) =>
             key == connection.terminalId || value == connection.deputyId);
@@ -1600,13 +1687,15 @@ class WebSocketServer {
     }
 
     // update meeting session
-    ServerState.meetingSession.guestPlaces =
-        json.encode(ServerState.guestsPlaces);
+    if (ServerState.meetingSession != null) {
+      ServerState.meetingSession.guestPlaces =
+          json.encode(ServerState.guestsPlaces);
 
-    final updateMeetingSession = Query<MeetingSession>(_context)
-      ..values.guestPlaces = ServerState.meetingSession.guestPlaces
-      ..where((ms) => ms.id).equalTo(ServerState.meetingSession.id);
-    updateMeetingSession.update();
+      final updateMeetingSession = Query<MeetingSession>(_context)
+        ..values.guestPlaces = ServerState.meetingSession.guestPlaces
+        ..where((ms) => ms.id).equalTo(ServerState.meetingSession.id);
+      updateMeetingSession.update();
+    }
 
     _isSendState = true;
   }
@@ -1690,8 +1779,6 @@ class WebSocketServer {
       ServerState.autoEnd = autoEnd;
 
       _interval = ServerState.speakerSession.interval;
-
-      setActiveMic(session.terminalId, true);
     } else {
       await completeSpeaker();
     }
@@ -2038,6 +2125,10 @@ class WebSocketServer {
       ServerState.questionSession = null;
       ServerState.usersDecisions = <String, String>{};
 
+      // set mic sound settings
+      await sendVissonicMessage('setAllState',
+          isEnabled: getIsMicsEnabledState());
+
       return;
     }
 
@@ -2069,6 +2160,10 @@ class WebSocketServer {
       ServerState.selectedQuestion = null;
       ServerState.questionSession = null;
       ServerState.registrationSession = null;
+
+      // set mic sound settings
+      await sendVissonicMessage('setAllState',
+          isEnabled: getIsMicsEnabledState());
 
       return;
     }
@@ -2104,10 +2199,15 @@ class WebSocketServer {
       ServerState.usersAskSpeech = <int>[];
       ServerState.guestsAskSpeech = <String>[];
 
+      // set mic sound settings
+      await sendVissonicMessage('setAllState',
+          isEnabled: getIsMicsEnabledState());
+
       if (ServerState.selectedMeeting.group.isFastRegistrationUsed) {
         await fastRegistration();
         await processSetFlushMeeting();
       }
+
       return;
     }
 
@@ -2164,6 +2264,10 @@ class WebSocketServer {
           : cm.Signal.fromJson(json.decode(json.decode(params)['endSignal']));
 
       ServerState.autoEnd = json.decode(params)['autoEnd'];
+
+      // set mic sound settings
+      await sendVissonicMessage('setAllState',
+          isEnabled: getIsMicsEnabledState());
 
       return;
     }
@@ -2338,6 +2442,10 @@ class WebSocketServer {
       ServerState.selectedQuestion = null;
       ServerState.questionSession = null;
       ServerState.registrationSession = null;
+
+      // set mic sound settings
+      await sendVissonicMessage('setAllState',
+          isEnabled: getIsMicsEnabledState());
 
       return;
     }
@@ -2566,9 +2674,8 @@ class WebSocketServer {
       ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
     var updatedMeeting = (await updateMeeting.update()).first;
 
-    ServerState.activeMics.removeWhere(
-        (key, value) => key == ServerState.speakerSession.terminalId);
-    _externalClient.remove(ServerState.speakerSession.terminalId);
+    await sendVissonicMessage('setMicSound',
+        terminalId: ServerState.speakerSession.terminalId, isEnabled: false);
 
     ServerState.storeboardState = cm.StoreboardState.None;
     updateServerStateMeeting(updatedMeeting);
@@ -2591,5 +2698,251 @@ class WebSocketServer {
             defaultUserTerminals[i].key, defaultUserTerminals[i].value);
       }
     }
+  }
+
+  List<TerminalMic> loadDefaultTerminalMics() {
+    var currentMics = <TerminalMic>[];
+
+    if (ServerState.selectedMeeting == null) {
+      return currentMics;
+    }
+
+    var unblockedMics = CommonUtils.getUnblockedMicsList(
+        ServerState.selectedMeeting, ServerState.usersTerminals);
+
+    // add workplaces mics
+    var defaultUserTerminals =
+        CommonUtils.getDefaultUsersTerminals(ServerState.selectedMeeting)
+            .entries
+            .toList();
+
+    for (var i = 0; i < defaultUserTerminals.length; i++) {
+      var parts = defaultUserTerminals[i].key.split(',');
+
+      for (var j = 0; j < parts.length; j++) {
+        if (parts[j].isNotEmpty) {
+          var micId = int.parse(parts[j]);
+          var terminalMic = TerminalMic(
+            defaultUserTerminals[i].key,
+            micId,
+            unblockedMics.contains(micId),
+            _timeOffset,
+          );
+
+          if (!currentMics
+              .any((element) => element.micId == terminalMic.micId)) {
+            currentMics.add(terminalMic);
+          }
+        }
+      }
+    }
+
+    // add tribune mics
+    var workplaces = Workplaces.fromJson(
+        json.decode(ServerState.selectedMeeting.group.workplaces));
+
+    for (var i = 0; i < workplaces.tribuneTerminalIds.length; i++) {
+      var parts = workplaces.tribuneTerminalIds[i].split(',');
+
+      for (var j = 0; j < parts.length; j++) {
+        if (parts[j].isNotEmpty) {
+          var micId = int.parse(parts[j]);
+          var terminalMic = TerminalMic(
+            workplaces.tribuneTerminalIds[i],
+            micId,
+            unblockedMics.contains(micId),
+            _timeOffset,
+          );
+
+          if (!currentMics
+              .any((element) => element.micId == terminalMic.micId)) {
+            currentMics.add(terminalMic);
+          }
+        }
+      }
+    }
+
+    return currentMics;
+  }
+
+  void processVissonicClientMessage(dynamic message) {
+    var vissonicServerState = VissonicServerState.fromJson(message);
+
+    if (!ServerState.isVissonicServerOnline &&
+        vissonicServerState.isVissonicServerOnline) {
+      print(
+          '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Подключен сервер Vissonic.');
+    }
+    if (ServerState.isVissonicServerOnline &&
+        !vissonicServerState.isVissonicServerOnline) {
+      print(
+          '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Отключен сервер Vissonic.');
+    }
+
+    if (!ServerState.isVissonicModuleInit &&
+        vissonicServerState.isVissonicModuleInit) {
+      print(
+          '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Завершена инициализация модуля Vissonic.');
+    }
+
+    ServerState.isVissonicServerOnline =
+        vissonicServerState.isVissonicServerOnline;
+    ServerState.isVissonicModuleInit = vissonicServerState.isVissonicModuleInit;
+
+    ServerState.micsEnabled = vissonicServerState.micsEnabled;
+    ServerState.activeMics = vissonicServerState.activeMics;
+    ServerState.waitingMics = vissonicServerState.waitingMics;
+    ServerState.isVissonicLoading = false;
+
+    // remove enabled ask word users
+    for (var i = 0; i < ServerState.usersAskSpeech.length; i++) {
+      var foundUserTerminal = ServerState.usersTerminals.entries.firstWhere(
+          (element) => element.value == ServerState.usersAskSpeech[i],
+          orElse: () => null);
+
+      if (foundUserTerminal != null) {
+        var parts = foundUserTerminal.key.split(',');
+
+        for (var j = 0; j < parts.length; j++) {
+          if (parts[j].isNotEmpty &&
+              ServerState.activeMics.entries
+                  .any((element) => element.key == parts[j])) {
+            ServerState.usersAskSpeech.removeAt(i);
+            break;
+          }
+        }
+      }
+    }
+
+    _isSendState = true;
+  }
+
+  Future<void> sendVissonicMessage(String command,
+      {String terminalId, bool isEnabled}) async {
+    var vissonicClientConnection = _connections.firstWhere(
+        (element) => element.type == 'vissonic_client',
+        orElse: () => null);
+
+    if (vissonicClientConnection != null) {
+      vissonicClientConnection.socket.add(json.encode({
+        'command': command,
+        'terminalId': terminalId,
+        'isEnabled': isEnabled
+      }));
+    }
+  }
+
+  Future<void> closeVissonicConnection() async {
+    try {
+      var aisVissonicClientCheck =
+          Process.runSync('pgrep', <String>['ais_visson']);
+      if (aisVissonicClientCheck.stdout.toString().isNotEmpty) {
+        Process.runSync('kill', <String>[
+          aisVissonicClientCheck.stdout.toString().replaceAll('\n', '')
+        ]);
+      }
+      print(
+          '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Остановлена работа модуля Vissonic.');
+    } catch (exc) {
+      print(
+          '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Запущенных модулей Vissonic не найдено.');
+    }
+  }
+
+  // restores connection from ais_server to vissonic_main_unit
+  // uses connected ais_vissonic_client module
+  // otherwise start new ais_vissonic_client module
+  Future<void> restoreVissonicConnection() async {
+    ServerState.isVissonicServerOnline = true;
+    ServerState.isVissonicModuleInit = false;
+    ServerState.isVissonicLoading = true;
+
+    if (!initVissonicModule()) {
+      // killall previous ais_vissonic_client if they can't connect to ais_server
+      // for some reasons
+      try {
+        var aisVissonicClientCheck =
+            Process.runSync('pgrep', <String>['ais_visson']);
+        if (aisVissonicClientCheck.stdout.toString().isNotEmpty) {
+          Process.runSync('kill', <String>[
+            aisVissonicClientCheck.stdout.toString().replaceAll('\n', '')
+          ]);
+        }
+        print(
+            '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Остановлена работа модуля Vissonic.');
+      } catch (exc) {
+        print(
+            '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Запущенных модулей Vissonic не найдено.');
+      }
+      // start new ais_vissonic_client and await till it connects to ais_server
+      try {
+        print(
+            '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Запуск модуля Vissonic');
+        // await Process.run(
+        //     '/home/user/Desktop/AIS_voter/AIS_voting/src/clients/vissonic_client/bin/ais_vissonic_client.exe',
+        //     [
+        //       '//home/user/Desktop/AIS_voter/AIS_voting/src/clients/vissonic_client/bin/app_settings.json'
+        //     ]);
+        await Process.run(
+            'gnome-terminal', ['--wait', '--', VISSONIC_MODULE_PATH]);
+
+        await waitUntilVissonicModuleConnect(5, Duration(milliseconds: 200));
+      } catch (exc) {
+        print(
+            '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Ошибка запуска модуля Vissonic: ${exc.toString()}');
+      }
+    }
+
+    ServerState.isVissonicLoading = false;
+  }
+
+  // awaits till ais_vissonic_client connects to ais_server
+  // and starts ais_vissonic_client module initialization
+  Future<int> waitUntilVissonicModuleConnect(
+      int maxIterations, Duration step) async {
+    var iterationsConnect = 0;
+
+    for (; iterationsConnect < maxIterations; iterationsConnect++) {
+      await Future.delayed(step);
+      if (ServerState.isVissonicModuleOnline) {
+        initVissonicModule();
+        break;
+      }
+    }
+
+    if (iterationsConnect >= maxIterations) {
+      print(
+          '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Превышено время ожидания подключения модуля Vissonic ${step.inMilliseconds * maxIterations} мс.');
+      ServerState.isVissonicModuleOnline = false;
+      ServerState.isVissonicModuleInit = false;
+      ServerState.isVissonicServerOnline = false;
+
+      _isSendState = true;
+    }
+
+    return iterationsConnect;
+  }
+
+  // returns true if init was started, false otherwise
+  bool initVissonicModule() {
+    var wasInit = false;
+    print(
+        '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Инициализация модуля Vissonic.');
+    var vissonicClientConnection = _connections.firstWhere(
+        (element) => element.type == 'vissonic_client',
+        orElse: () => null);
+
+    if (vissonicClientConnection != null) {
+      var currentMics = loadDefaultTerminalMics();
+
+      vissonicClientConnection.socket.add(json.encode(currentMics));
+      sendVissonicMessage('connect', isEnabled: getIsMicsEnabledState());
+      wasInit = true;
+    } else {
+      print(
+          '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Не найдено подключение модуля Vissonic.');
+    }
+
+    return wasInit;
   }
 }

@@ -588,12 +588,14 @@ class ReportSettings {
 
 class VotingSettings {
   bool isVotingFixed;
+  bool isCountNotVotingAsIndifferent;
   int defaultShowResultInterval;
   int defaultVotingModeId;
   String votingRegim;
 
   VotingSettings() {
     isVotingFixed = true;
+    isCountNotVotingAsIndifferent = false;
     defaultShowResultInterval = 10;
     defaultVotingModeId = null;
     votingRegim = 'Открытое';
@@ -601,6 +603,7 @@ class VotingSettings {
 
   Map toJson() => {
         'isVotingFixed': isVotingFixed,
+        'isCountNotVotingAsIndifferent': isCountNotVotingAsIndifferent,
         'defaultShowResultInterval': defaultShowResultInterval,
         'defaultVotingModeId': defaultVotingModeId,
         'votingRegim': votingRegim,
@@ -608,6 +611,7 @@ class VotingSettings {
 
   VotingSettings.fromJson(Map<String, dynamic> json)
       : isVotingFixed = json['isVotingFixed'],
+        isCountNotVotingAsIndifferent = json['isCountNotVotingAsIndifferent'],
         defaultShowResultInterval = json['defaultShowResultInterval'],
         defaultVotingModeId = json['defaultVotingModeId'],
         votingRegim = json['votingRegim'];

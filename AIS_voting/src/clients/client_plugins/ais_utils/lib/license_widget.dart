@@ -67,7 +67,7 @@ class _LicenseWidgetState extends State<LicenseWidget> {
     }
 
     var text = 'Количество карт: $cardCount';
-    text += '\t\tWindows клиенты: $terminalsCount';
+    //text += '\t\tWindows клиенты: $terminalsCount';
 
     return Container(
       child: Text(text),

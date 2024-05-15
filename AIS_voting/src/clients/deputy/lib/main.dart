@@ -187,12 +187,12 @@ class _MyAppState extends State<MyApp> with WindowListener {
       return;
     }
 
-    var windowHeight = Utils().showBottomPanel() ? 60 : 0.1;
+    var windowHeight = Utils().showBottomPanel() ? 60 : 1;
 
     await windowManager.getSize().then((size) async {
       if (size.height == windowHeight) {
         await windowManager.isAlwaysOnTop().then((value) {
-          if (!value) {
+          if (!value && windowHeight != 1) {
             windowManager.setAlwaysOnTop(true);
           }
         });
@@ -225,10 +225,10 @@ class _MyAppState extends State<MyApp> with WindowListener {
       return;
     }
 
-    var windowHeight = Utils().showBottomPanel() ? 60.0 : 0.1;
+    var windowHeight = Utils().showBottomPanel() ? 60.0 : 1.0;
     await getCurrentScreen().then((screen) async {
-      await windowManager
-          .setSize(Size(screen.visibleFrame.width, windowHeight));
+      await windowManager.setSize(Size(
+          windowHeight == 1 ? 1 : screen.visibleFrame.width, windowHeight));
     });
   }
 

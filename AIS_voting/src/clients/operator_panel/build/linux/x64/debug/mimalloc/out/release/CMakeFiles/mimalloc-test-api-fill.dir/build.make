@@ -43,10 +43,10 @@ RM = /snap/flutter/145/usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2
+CMAKE_SOURCE_DIR = /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release
+CMAKE_BINARY_DIR = /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release
 
 # Include any dependencies generated for this target.
 include CMakeFiles/mimalloc-test-api-fill.dir/depend.make
@@ -58,17 +58,17 @@ include CMakeFiles/mimalloc-test-api-fill.dir/progress.make
 include CMakeFiles/mimalloc-test-api-fill.dir/flags.make
 
 CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.o: CMakeFiles/mimalloc-test-api-fill.dir/flags.make
-CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.o: /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/test/test-api-fill.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.o   -c /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/test/test-api-fill.c
+CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.o: /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/test/test-api-fill.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.o   -c /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/test/test-api-fill.c
 
 CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/test/test-api-fill.c > CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/test/test-api-fill.c > CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.i
 
 CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/test/test-api-fill.c -o CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/test/test-api-fill.c -o CMakeFiles/mimalloc-test-api-fill.dir/test/test-api-fill.c.s
 
 # Object files for target mimalloc-test-api-fill
 mimalloc__test__api__fill_OBJECTS = \
@@ -83,7 +83,7 @@ mimalloc-test-api-fill: libmimalloc.so.2.1
 mimalloc-test-api-fill: /usr/lib/x86_64-linux-gnu/libpthread.so
 mimalloc-test-api-fill: /usr/lib/x86_64-linux-gnu/librt.so
 mimalloc-test-api-fill: CMakeFiles/mimalloc-test-api-fill.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable mimalloc-test-api-fill"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable mimalloc-test-api-fill"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mimalloc-test-api-fill.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -96,6 +96,6 @@ CMakeFiles/mimalloc-test-api-fill.dir/clean:
 .PHONY : CMakeFiles/mimalloc-test-api-fill.dir/clean
 
 CMakeFiles/mimalloc-test-api-fill.dir/depend:
-	cd /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2 /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2 /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/mimalloc-test-api-fill.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2 /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2 /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/mimalloc-test-api-fill.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/mimalloc-test-api-fill.dir/depend
 

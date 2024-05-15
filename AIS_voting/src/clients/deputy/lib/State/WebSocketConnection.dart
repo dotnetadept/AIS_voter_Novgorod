@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'package:deputy/Utils/utils.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
@@ -588,6 +589,7 @@ class WebSocketConnection with ChangeNotifier {
 
   Future<void> initNewChannel(String clientType) async {
     _isConnectStarted = true;
+    print('on init new channel');
     _clientType = clientType;
 
     if (_webSocket != null && _websocketState != WebSocket.closed) {
@@ -605,6 +607,7 @@ class WebSocketConnection with ChangeNotifier {
           'version': packageInfo.version,
           'terminalId': GlobalConfiguration().getValue('terminal_id')
         }).then((value) {
+      print('on init complete');
       _isConnectStarted = false;
       if (value == null) {
         processConnectionLoss();
@@ -629,11 +632,13 @@ class WebSocketConnection with ChangeNotifier {
 
           AppState().setWsChannel(_channel);
         } catch (exc) {
+          print('on catch');
           _isConnectStarted = false;
           processConnectionLoss(error: exc.toString());
         }
       }
     }).onError((error, stackTrace) {
+      print('on error');
       _isConnectStarted = false;
       processConnectionLoss(error: error.toString());
     });
@@ -701,6 +706,7 @@ class WebSocketConnection with ChangeNotifier {
               milliseconds:
                   int.parse(GlobalConfiguration().getValue('reconnect_delay'))),
           () {
+        print('on recconect');
         connect();
       });
     }
@@ -794,7 +800,7 @@ class WebSocketConnection with ChangeNotifier {
     // stream
     if (AppState().getServerState().isStreamStarted == true &&
         !AppState().getExitStream()) {
-      if (!AppState().isCurrentUserManager()) {
+      if (!AppState().isCurrentUserManager() || Utils().showToManager()) {
         if (GlobalConfiguration().getValue('show_stream_in_browser') ==
             'true') {
           if (AppState().getCurrentPage() != '/viewStream') {
@@ -820,7 +826,7 @@ class WebSocketConnection with ChangeNotifier {
       return;
     }
 
-    // process  further navigation on systemStateChange
+    // process further navigation on systemStateChange
     if (_previousSystemState == AppState().getServerState().systemState &&
         _previousRegistredState == AppState().getIsRegistred() &&
         AppState().getCurrentPage() != '/viewVideo' &&
@@ -849,11 +855,13 @@ class WebSocketConnection with ChangeNotifier {
     // unknown_client
     if (_clientType == '' || _clientType == 'unknown_client') {
       if (AppState().getServerState().systemState == SystemState.Registration) {
-        navigateToPage('/insertCard');
+        navigateToPage('/login');
       } else if (SystemStateHelper.isStarted(
-              AppState().getServerState().systemState) ||
-          SystemStateHelper.isPreparation(
-              AppState().getServerState().systemState)) {
+              AppState().getServerState().systemState)
+          //     ||
+          // SystemStateHelper.isPreparation(
+          //     AppState().getServerState().systemState)
+          ) {
         if (GlobalConfiguration().getValue('use_auth_card') == 'true') {
           if (GlobalConfiguration().getValue('use_manual_login') == 'true') {
             navigateToPage('/insertCard');
@@ -879,7 +887,7 @@ class WebSocketConnection with ChangeNotifier {
     // guest
     if (_clientType == 'guest') {
       if (AppState().getServerState().systemState == SystemState.Registration) {
-        navigateToPage('/insertCard');
+        navigateToPage('/login');
       } else if (AppState().getCurrentPage() != '/viewAgenda' &&
           AppState().getCurrentPage() != '/viewDocument')
         navigateToPage('/viewAgenda');

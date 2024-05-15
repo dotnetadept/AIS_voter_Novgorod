@@ -43,10 +43,10 @@ RM = /snap/flutter/145/usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2
+CMAKE_SOURCE_DIR = /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release
+CMAKE_BINARY_DIR = /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release
 
 # Utility rule file for mimalloc-obj-target.
 
@@ -57,8 +57,8 @@ CMakeFiles/mimalloc-obj-target: mimalloc.o
 
 
 mimalloc.o:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating mimalloc.o"
-	/snap/flutter/145/usr/bin/cmake -E copy /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/mimalloc-obj.dir/src/static.c.o /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/mimalloc.o
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating mimalloc.o"
+	/snap/flutter/145/usr/bin/cmake -E copy /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/mimalloc-obj.dir/src/static.c.o /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/mimalloc.o
 
 mimalloc-obj-target: CMakeFiles/mimalloc-obj-target
 mimalloc-obj-target: mimalloc.o
@@ -76,6 +76,6 @@ CMakeFiles/mimalloc-obj-target.dir/clean:
 .PHONY : CMakeFiles/mimalloc-obj-target.dir/clean
 
 CMakeFiles/mimalloc-obj-target.dir/depend:
-	cd /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2 /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2 /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/mimalloc-obj-target.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2 /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2 /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/mimalloc-obj-target.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/mimalloc-obj-target.dir/depend
 

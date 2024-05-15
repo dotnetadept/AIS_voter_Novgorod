@@ -16,15 +16,48 @@ static void my_application_activate(GApplication* application) {
     GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
   g_application_set_application_id(application, "com.example.operator_panel");
 
-  GdkRectangle workarea = {0};
-  gdk_monitor_get_workarea(
-    gdk_display_get_primary_monitor(gdk_display_get_default()),
-    &workarea);
+  // GdkRectangle workarea = {0};
+  // gdk_monitor_get_workarea(
+  //   gdk_display_get_primary_monitor(gdk_display_get_default()),
+  //   &workarea);
 
-  printf("Рабочее место оператора v1.32 запущено");
-  printf ("Width: %u x Height:%u\n", workarea.width, workarea.height);
+  printf("Рабочее место оператора v1.32 запущено\n");
+
+  GdkDisplay *display = gdk_display_get_default();
+  int n_monitors = gdk_display_get_n_monitors(display);
+  printf ("Найдено мониторов: %u\n", n_monitors);
+
+  bool isResolutionSet = false;
+  for (int nth = 0; nth < n_monitors; nth++) 
+  {
+    GdkMonitor *monitor = gdk_display_get_monitor(display, nth);
+    GdkRectangle geo;
+    gdk_monitor_get_geometry(monitor, &geo);
+
+    if(geo.width > 0 && geo.height >0){
+      gtk_window_set_default_size(window, geo.width, geo.height-28);
+      printf ("Width: %u x Height:%u\n", geo.width, geo.height-28);
+      isResolutionSet = true;
+      break;
+    }
+  }
+
+  if(!isResolutionSet) {
+     gtk_window_set_default_size(window, 1920, 1080-28);
+     printf ("Set default Width: %u x Height:%u\n", 1920, 1080-28);
+  }
+
   
-  gtk_window_set_default_size(window, workarea.width, workarea.height);
+  //GdkMonitor *monitor = gdk_display_get_primary_monitor(gdk_display_get_default());
+  //GdkRectangle geo;
+  //gdk_monitor_get_geometry(monitor, &geo);
+  
+  //gtk_window_set_default_size(window, workarea.width, workarea.height);
+
+  //gtk_window_set_default_size(window, geo.width, geo.height);
+  
+  //printf ("Width: %u x Height:%u\n", workarea.width, workarea.height);
+
   gtk_window_set_title (GTK_WINDOW(window), "Рабочее место оператора v1.32");
   gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);

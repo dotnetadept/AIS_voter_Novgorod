@@ -6,9 +6,8 @@ import 'package:flutter/material.dart';
 import '../State/AppState.dart';
 
 class TableUtils {
-  Widget getUnregistredTable({int flex = 1}) {
+  Widget getUnregistredTable(ScrollController controller, {int flex = 1}) {
     List<User> users = getUnregisterUserList();
-    ScrollController controller = new ScrollController();
 
     return Expanded(
       flex: flex,
@@ -95,9 +94,10 @@ class TableUtils {
 
   AutoSizeGroup _micsEnabled = AutoSizeGroup();
 
-  Widget getMicsEnabledTable(Function(String) setSpeaker) {
+  Widget getMicsEnabledTable(
+      ScrollController controller, Function(String) setSpeaker) {
     Map<String, String> mics = getMicEnabledList();
-    ScrollController controller = new ScrollController();
+
     return Expanded(
       flex: 10,
       child: Container(
@@ -161,10 +161,8 @@ class TableUtils {
                                     style: TextStyle(fontSize: 14),
                                   ),
                                 ),
-                               
                                 Text(
                                     "${activeTimeMinutes}:${activeTimeSeconds}"),
-                              
                               ],
                             ),
                           ),

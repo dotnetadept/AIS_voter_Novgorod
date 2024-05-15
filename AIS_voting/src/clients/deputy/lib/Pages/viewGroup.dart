@@ -25,6 +25,8 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
   var _schemeScrollControllerHorisontal = ScrollController();
   var _askWordTableScrollController = new ScrollController();
   var _askWordGuestsScrollController = new ScrollController();
+  var _micsEnabledTableScrollController = new ScrollController();
+  var _unregistredTableScrollController = new ScrollController();
   var _setStoreboardDialog;
 
   int _defaultButtonsHeight;
@@ -155,6 +157,8 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                                 addGuest: _connection.setGuest,
                                 addGuestAskWord: _connection.setGuestAskWord,
                                 removeGuestAskWord: removeGuestAskWord,
+                                reconnectToVissonic:
+                                    _connection.reconnectToVissonic,
                               ),
                             ),
                           ),
@@ -367,7 +371,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
         view = Column(
           children: [
             Expanded(
-              child: getTables(),
+              child: Container(),
             ),
             Column(
               children: [
@@ -410,10 +414,10 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                 //     context,
                 //     setState,
                 //     _autoSizeGroup),
-                Container(
-                  height: 10,
-                ),
               ],
+            ),
+            Expanded(
+              child: Container(),
             ),
           ],
         );
@@ -586,7 +590,8 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
         Expanded(
           child: Row(
             children: [
-              TableUtils().getUnregistredTable(),
+              TableUtils()
+                  .getUnregistredTable(_unregistredTableScrollController),
               Container(
                 width: 1,
                 color: Colors.black,
@@ -615,7 +620,8 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                         ],
                       ),
                     ),
-                    TableUtils().getMicsEnabledTable((terminalId) {
+                    TableUtils().getMicsEnabledTable(
+                        _micsEnabledTableScrollController, (terminalId) {
                       _connection.setSpeaker(terminalId, false);
                     }),
                   ],

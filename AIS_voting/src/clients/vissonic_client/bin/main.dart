@@ -8,10 +8,7 @@ import 'package:vissonic_client/vissonic_client/vissonic_client.dart';
 void main(List<String> arguments) async {
   print('Запуск Vissonic клиента системы АИС Голосование');
 
-  await File(
-          '/home/user/ais_voter/ais_server/ais_vissonic_client/app_settings.json')
-      .readAsString()
-      .then((value) {
+  await File(arguments[0]).readAsString().then((value) {
     AppSettings.settings = jsonDecode(value);
   }).then((value) {
     print('Чтение файла настроек успешно завершено');
@@ -92,7 +89,7 @@ class ConsoleApp {
         _vissonicClient?.processSetMicBlocked(decodedResponce['terminalId']);
       }
     } else {
-      ServerState.micsFromJson(json.decode(responce));
+      ServerState.micsFromJson(decodedResponce);
     }
   }
 

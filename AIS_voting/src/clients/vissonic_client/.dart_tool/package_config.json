@@ -3,7 +3,7 @@
   "packages": [
     {
       "name": "synchronized",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dartlang.org/synchronized-3.0.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/synchronized-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -14,7 +14,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2022-10-10T07:37:17.309983Z",
+  "generated": "2024-05-03T09:25:28.087266Z",
   "generator": "pub",
-  "generatorVersion": "2.17.6"
+  "generatorVersion": "2.19.5"
 }

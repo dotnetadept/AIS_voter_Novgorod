@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.question_list_win">
+    package="com.example.agenda">
    <application
-        android:label="question_list_win"
+        android:label="agenda"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,18 +1,24 @@
 {
-    "server": "192.168.0.104",
-    "ntp_server": "192.168.0.104",
+    "server": "192.168.15.110",
+    "ntp_server": "192.168.15.110",
     "http_port": "27153",
     "ws_port": "27154",
     "ping_interval": "60",
 
-    "height": "900",
-    "width": "1700",
+    "height": "630",
+    "width": "840",
 
-    "show_stream":"false",
+    "oven_media_server": "192.168.15.100",
+    "oven_signaling_port": "3333",
+    "player_show_fps": "true",
+    "player_show_reload": "false",
+
+    "show_stream_in_browser":"false",
+    "show_stream":"true",
     "terminal_timer_delay": "250",
     "start_browser_command": "google-chrome",
     "start_browser_command_params": "--kiosk;--autoplay-policy=no-user-gesture-required;--no-sandbox",
     "close_browser_command": "pkill",
     "close_browser_command_params": "-f;chrome",
-    "folder_path": "//home/user/Desktop/AIS_voter/AIS_voting/src/clients/storeboard/build/linux/x64/release/bundle"
+    "folder_path": "//home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/storeboard/build/linux/x64/release/bundle"
 }

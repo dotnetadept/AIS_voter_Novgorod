@@ -5,7 +5,8 @@ packages:
     dependency: "direct main"
     description:
       name: synchronized
-      url: "https://pub.dartlang.org"
+      sha256: "271977ff1e9e82ceefb4f08424b8839f577c1852e0726b5ce855311b46d3ef83"
+      url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
 sdks:

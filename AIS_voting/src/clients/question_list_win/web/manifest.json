@@ -1,6 +1,6 @@
 {
-    "name": "question_list_win",
-    "short_name": "question_list_win",
+    "name": "agenda",
+    "short_name": "agenda",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

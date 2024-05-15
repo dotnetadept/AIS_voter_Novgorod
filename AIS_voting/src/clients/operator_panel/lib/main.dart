@@ -29,12 +29,12 @@ import 'Pages/reconnect.dart';
 import 'Providers/WebSocketConnection.dart';
 import 'Providers/AppState.dart';
 import 'Utility/db_helper.dart';
+import 'Utility/report_helper.dart';
 import 'Widgets/rightPanelTop.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Necessary initialization for package:media_kit.
   MediaKit.ensureInitialized();
 
   await GlobalConfiguration()
@@ -339,7 +339,8 @@ class _OperatorPageState extends State<OperatorPage> {
 
   void setServerState(ServerState serverState) {
     // update mic status on setStoreboardDialog dialog window
-    _setStoreboardDialog?.update(serverState.activeMics);
+    _setStoreboardDialog?.update(
+        serverState.activeMics, serverState.waitingMics);
 
     int selectedMeetingId = json.decode(serverState.params)['selectedMeeting'];
     int selectedQuestionId =
@@ -415,6 +416,50 @@ class _OperatorPageState extends State<OperatorPage> {
     }
 
     _connection.setServerState(serverState);
+
+    // // print reports on registration end
+    // if (serverState != null &&
+    //     serverState.systemState == SystemState.RegistrationComplete &&
+    //     _prevSystemState != serverState.systemState &&
+    //     AppState().isLoadingComplete) {
+    //   ReportHelper().getRegistrationReport(
+    //       _selectedMeeting, _settings, _users, _connection, _timeOffset);
+    // }
+
+    // print reports on voting end
+    if (serverState != null &&
+        serverState.systemState == SystemState.QuestionVotingComplete &&
+        _prevSystemState != serverState.systemState &&
+        AppState().isLoadingComplete) {
+      var votingMode = _votingModes.firstWhere(
+          (element) =>
+              element.id ==
+              _connection.getServerState.questionSession?.votingModeId,
+          orElse: () => null);
+
+      ReportHelper().getVotingNamedReport(
+          _selectedMeeting,
+          _settings,
+          votingMode,
+          _users,
+          _connection.getServerState.usersRegistered,
+          _lockedQuestion,
+          null,
+          null,
+          _timeOffset);
+
+      // ReportHelper().getVotingCommonReport(
+      //     _selectedMeeting,
+      //     _settings,
+      //     votingMode,
+      //     _users,
+      //     _connection.getServerState.usersRegistered,
+      //     _lockedQuestion,
+      //     null,
+      //     null,
+      //     _timeOffset);
+    }
+
     _prevSystemState = serverState.systemState;
 
     setState(() {});
@@ -790,7 +835,8 @@ class _OperatorPageState extends State<OperatorPage> {
   }
 
   void navigateHistoryPage() {
-    HistoryDialog(context, _settings, _timeOffset).openDialog();
+    HistoryDialog(context, _settings, _users, _votingModes, _timeOffset)
+        .openDialog();
   }
 
   void navigateAgendasPage() {
@@ -935,6 +981,11 @@ class _OperatorPageState extends State<OperatorPage> {
                                 addGuestAskWord: addGuestAskWord,
                                 removeGuestAskWord: removeGuestAskWord,
                                 addUserAskWord: addUserAskWord,
+                                reconnectToVissonic:
+                                    _connection.reconnectToVissonic,
+                                closeVissonic: _connection.closeVissonic,
+                                setMicsMode: _connection.setMicsMode,
+                                setMicsOff: _connection.setMicsOff,
                               ),
                             ),
                           ),

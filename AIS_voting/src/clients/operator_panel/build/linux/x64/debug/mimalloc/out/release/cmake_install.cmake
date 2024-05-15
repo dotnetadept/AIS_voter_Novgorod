@@ -1,4 +1,4 @@
-# Install script for directory: /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2
+# Install script for directory: /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,8 +50,8 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
     endif()
   endforeach()
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
-    "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/libmimalloc.so.2.1"
-    "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/libmimalloc.so.2"
+    "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/libmimalloc.so.2.1"
+    "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/libmimalloc.so.2"
     )
   foreach(file
       "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libmimalloc.so.2.1"
@@ -73,7 +73,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libmimalloc.so"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/libmimalloc.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/libmimalloc.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libmimalloc.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libmimalloc.so")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -86,7 +86,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1/mimalloc.cmake")
     file(DIFFERENT EXPORT_FILE_CHANGED FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1/mimalloc.cmake"
-         "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc.cmake")
+         "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc.cmake")
     if(EXPORT_FILE_CHANGED)
       file(GLOB OLD_CONFIG_FILES "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1/mimalloc-*.cmake")
       if(OLD_CONFIG_FILES)
@@ -95,21 +95,21 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
       endif()
     endif()
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc.cmake")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc-release.cmake")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc-release.cmake")
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/mimalloc-2.1" TYPE STATIC_LIBRARY FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/libmimalloc.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/mimalloc-2.1" TYPE STATIC_LIBRARY FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/libmimalloc.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1/mimalloc.cmake")
     file(DIFFERENT EXPORT_FILE_CHANGED FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1/mimalloc.cmake"
-         "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc.cmake")
+         "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc.cmake")
     if(EXPORT_FILE_CHANGED)
       file(GLOB OLD_CONFIG_FILES "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1/mimalloc-*.cmake")
       if(OLD_CONFIG_FILES)
@@ -118,38 +118,38 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
       endif()
     endif()
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc.cmake")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc-release.cmake")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/Export/lib/cmake/mimalloc-2.1/mimalloc-release.cmake")
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include/mimalloc.h")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include/mimalloc.h")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include/mimalloc-override.h")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include/mimalloc-override.h")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include/mimalloc-new-delete.h")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include/mimalloc-new-delete.h")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/cmake/mimalloc-config.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/cmake/mimalloc-config.cmake")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/cmake/mimalloc-config-version.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/mimalloc-2.1" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/cmake/mimalloc-config-version.cmake")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/mimalloc-2.1" TYPE FILE RENAME "mimalloc.o" FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/mimalloc-obj.dir/src/static.c.o")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/mimalloc-2.1" TYPE FILE RENAME "mimalloc.o" FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/CMakeFiles/mimalloc-obj.dir/src/static.c.o")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/mimalloc.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/mimalloc.pc")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -160,5 +160,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/out/release/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:storeboard/Pages/viewStream.dart';
+import 'package:storeboard/Pages/viewVideo.dart';
 import 'package:window_manager/window_manager.dart';
 import 'Pages/storeboard.dart';
 import 'State/AppState.dart';
+import 'State/SoundPlayer.dart';
 import 'State/WebSocketConnection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
+
+  // Necessary initialization for package:media_kit.
+  MediaKit.ensureInitialized();
 
   await GlobalConfiguration()
       .loadFromAsset('app_settings')
@@ -37,7 +43,10 @@ class _StoreboardAppState extends State<StoreboardApp> {
   void initState() {
     super.initState();
 
+    SoundPlayer.init();
     WebSocketConnection.init(widget.navigatorKey);
+
+    WebSocketConnection.stopSound = SoundPlayer.cancelSound;
   }
 
   @override
@@ -76,6 +85,9 @@ class _StoreboardAppState extends State<StoreboardApp> {
     }
     if (settings.name == '/viewStream') {
       return _buildRoute(settings, new ViewStreamPage());
+    }
+    if (settings.name == '/viewVideo') {
+      return _buildRoute(settings, new ViewVideoPage());
     }
 
     return null;

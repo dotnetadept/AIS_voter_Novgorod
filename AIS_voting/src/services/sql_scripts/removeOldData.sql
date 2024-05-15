@@ -8,4 +8,7 @@ DELETE FROM public._question;
 DELETE FROM public._agenda;
 DELETE FROM public._meeting;
 DELETE FROM public._speakersession;
+DELETE FROM public._groupuser;
+DELETE FROM public._user;
+DELETE FROM public._group;
 DELETE FROM public._systemlog;

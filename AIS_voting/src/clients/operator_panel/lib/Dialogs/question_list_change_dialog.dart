@@ -189,39 +189,6 @@ class QuestionListChangeDialog {
   }
 
   Widget getQuestionsTable(BuildContext context, Function setStateForDialog) {
-    var newQuestionItem = DragAndDropItem(
-      child: Column(children: [
-        Container(
-          height: 6,
-        ),
-        Container(
-          width: 900,
-          alignment: Alignment.centerLeft,
-          margin: EdgeInsets.fromLTRB(40, 0, 0, 0),
-          child: Text(
-            _newQuestionStub.toString(),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        Container(
-          height: 6,
-        ),
-        Container(
-          width: 900,
-          height: 55,
-          margin: EdgeInsets.fromLTRB(30, 0, 0, 0),
-          child: AgendaUtil.getQuestionDescriptionText(
-            _newQuestionStub,
-            14,
-            isAutoSize: true,
-            showHiddenSections: true,
-          ),
-        ),
-      ]),
-    );
-
     return Column(
       children: [
         Container(
@@ -247,29 +214,28 @@ class QuestionListChangeDialog {
               Row(
                 children: [
                   Tooltip(
-                    message: 'Переместите вопрос в список вопросов',
-                    child: Center(
-                      child: Draggable<DragAndDropItem>(
-                        feedback: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle, color: Colors.blue),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ),
-                        ),
-                        data: newQuestionItem,
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle, color: Colors.blue),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ),
+                    message: 'Добавить вопрос',
+                    child: TextButton(
+                      style: ButtonStyle(
+                        padding: MaterialStateProperty.all(EdgeInsets.all(15)),
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.transparent),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.black),
+                        overlayColor: MaterialStateProperty.all(Colors.black12),
+                        shape: MaterialStateProperty.all(
+                          CircleBorder(side: BorderSide(color: Colors.black)),
                         ),
                       ),
+                      onPressed: () {
+                        onNewItemAdd(
+                            context, setStateForDialog, _questions.length);
+                        _questionsScrollController.animateTo(
+                            87.0 * _questions.length,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.linear);
+                      },
+                      child: Icon(Icons.add),
                     ),
                   ),
                   Container(
@@ -556,8 +522,7 @@ class QuestionListChangeDialog {
                                             shape: MaterialStateProperty.all(
                                               CircleBorder(
                                                   side: BorderSide(
-                                                      color:
-                                                          Colors.transparent)),
+                                                      color: Colors.black)),
                                             ),
                                           ),
                                           onPressed: () {
@@ -1010,6 +975,7 @@ class QuestionListChangeDialog {
                     ],
                   ),
                 ),
+                getFilesTable(context, setStateForDialog),
                 Container(
                   padding: EdgeInsets.fromLTRB(25, 15, 15, 15),
                   color: Colors.lightBlue,
@@ -1074,11 +1040,6 @@ class QuestionListChangeDialog {
             columns: [
               DataColumn(
                 label: Text(
-                  'Имя файла',
-                ),
-              ),
-              DataColumn(
-                label: Text(
                   'Описание',
                 ),
               ),
@@ -1087,9 +1048,6 @@ class QuestionListChangeDialog {
                 .map(
                   ((element) => DataRow(
                         cells: <DataCell>[
-                          DataCell(
-                            Text(element.fileName),
-                          ),
                           DataCell(
                             Row(
                               children: [
@@ -1434,6 +1392,7 @@ class QuestionListChangeDialog {
 
     var folderUploadName = _filesFolder;
     var agendaFolderName = _selectedMeeting.agenda.folder;
+
     var request = http.MultipartRequest(
         'POST', Uri.parse(ServerConnection.getFileServerUploadUrl(_settings)));
 

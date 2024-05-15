@@ -29,7 +29,7 @@ class Question {
         'name': name,
         'folder': folder,
         'orderNum': orderNum,
-        'accessRights': jsonEncode(accessRights),
+        'accessRights': accessRights == null ? '' : jsonEncode(accessRights),
         'description': '\'' + jsonEncode(descriptions).toString() + '\'',
         'files': files,
         'agenda': {'id': agendaId},
@@ -42,6 +42,7 @@ class Question {
         folder = json['folder'],
         orderNum = json['orderNum'],
         accessRights = json['accessRights'] == null ||
+                json['accessRights'] == '' ||
                 !jsonDecode(json['accessRights']).any((e) => e != null)
             ? <int>[]
             : jsonDecode(json['accessRights'])

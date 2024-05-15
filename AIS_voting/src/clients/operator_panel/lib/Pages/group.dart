@@ -429,6 +429,8 @@ class _GroupPageState extends State<GroupPage>
                 widget.group.isManagerCastingVote ||
             _originalGroup.isDeputyAutoRegistration !=
                 widget.group.isDeputyAutoRegistration ||
+            _originalGroup.isFastRegistrationUsed !=
+                widget.group.isFastRegistrationUsed ||
             _originalGroup.isManagerAutoRegistration !=
                 widget.group.isManagerAutoRegistration ||
             _originalGroup.isActive != widget.group.isActive ||

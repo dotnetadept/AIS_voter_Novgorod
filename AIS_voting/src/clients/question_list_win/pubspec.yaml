@@ -1,4 +1,4 @@
-name: question_list_win
+name: agenda
 description: A new Flutter project.
 publish_to: 'none'
 version: 1.0.0+1
@@ -22,6 +22,7 @@ dependencies:
   drag_and_drop_lists:
     path: '../client_plugins/DragAndDropLists-master'
   dropdown_search: ^0.6.0  
+  charset: ^2.0.1
 
 dev_dependencies:
   flutter_test:

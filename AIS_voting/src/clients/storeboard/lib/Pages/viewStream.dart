@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:storeboard/Utils/stream_utils.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -14,11 +17,12 @@ class _ViewStreamPageState extends State<ViewStreamPage> {
   void initState() {
     super.initState();
 
-    StreamUtils().refreshStream();
-
-    print('setFullscreenFalse');
-    windowManager.setAlwaysOnTop(false);
-    windowManager.minimize();
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await windowManager.setFullScreen(false);
+      await StreamUtils().closeBrowser().then((value) async {
+        Timer(Duration(milliseconds: 100), StreamUtils().startStream);
+      });
+    });
   }
 
   @override

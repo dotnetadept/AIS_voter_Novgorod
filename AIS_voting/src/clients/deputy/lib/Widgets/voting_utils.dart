@@ -333,7 +333,7 @@ class VotingUtils {
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 300,
+                          fontSize: 200,
                           color: Colors.red,
                         ),
                       ),
@@ -341,7 +341,7 @@ class VotingUtils {
                     Icon(
                       Icons.mic,
                       color: Colors.red,
-                      size: defaultButtonsHeight.toDouble(),
+                      size: defaultButtonsHeight * 0.80,
                     ),
                   ],
                 ),
@@ -404,7 +404,7 @@ class VotingUtils {
               children: [
                 AppState().getAskWordStatus()
                     ? Container(
-                        height: defaultButtonsHeight.toDouble(),
+                        height: defaultButtonsHeight * 0.5,
                         child: AutoSizeText(
                           'ВЫ ЗАПИСАНЫ - $queueOrder',
                           maxLines: 1,
@@ -418,7 +418,7 @@ class VotingUtils {
                         ),
                       )
                     : Container(
-                        height: defaultButtonsHeight.toDouble(),
+                        height: defaultButtonsHeight * 0.5.toDouble(),
                       ),
                 Container(
                   decoration: BoxDecoration(

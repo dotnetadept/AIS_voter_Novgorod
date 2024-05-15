@@ -261,7 +261,9 @@ class _ViewVideoPageState extends State<ViewVideoPage> {
           Row(
             children: [
               Expanded(child: Container()),
-              AppState().getServerState().streamControl == 'user'
+              AppState().getServerState().streamControl == 'user' &&
+                      AppState().getCurrentMeeting() != null &&
+                      !AppState().isCurrentUserManager()
                   ? Padding(
                       padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
                       child: GestureDetector(

@@ -1,3 +1,0 @@
-# Hashes of file build rules.
-b9e5d57101ecee8b429b85e334898b19 CMakeFiles/mimalloc-obj-target
-24f75b64441196b703c198090c339d75 mimalloc.o

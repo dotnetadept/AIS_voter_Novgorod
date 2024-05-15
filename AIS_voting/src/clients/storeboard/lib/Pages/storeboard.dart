@@ -1,8 +1,12 @@
+import 'package:ais_model/ais_model.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:provider/provider.dart';
 import 'package:storeboard/State/AppState.dart';
 import 'package:ais_utils/ais_utils.dart';
+
+import '../State/SoundPlayer.dart';
+import '../State/WebSocketConnection.dart';
 
 class StoreboardPage extends StatefulWidget {
   StoreboardPage({Key key}) : super(key: key);
@@ -15,6 +19,8 @@ class _StoreboardPageState extends State<StoreboardPage> {
   @override
   void initState() {
     super.initState();
+    WebSocketConnection.updateServerState = setServerState;
+    StoreboardWidget.onIntervalEndingSignal = SoundPlayer.playEndingSignal;
   }
 
   @override
@@ -88,5 +94,41 @@ class _StoreboardPageState extends State<StoreboardPage> {
         ],
       ),
     );
+  }
+
+  static SystemState _prevSystemState;
+  static String _prevPlaySoundTimestamp;
+
+  void setServerState(ServerState serverState) {
+    SoundPlayer.setVolume(serverState.soundVolume);
+
+    if (serverState != null &&
+        (serverState.systemState == SystemState.Registration ||
+            serverState.systemState == SystemState.QuestionVoting ||
+            serverState.systemState == SystemState.AskWordQueue) &&
+        _prevSystemState != serverState.systemState) {
+      SoundPlayer.playSignal(serverState.startSignal);
+    } else if (serverState != null &&
+        (serverState.systemState == SystemState.QuestionVotingComplete ||
+            serverState.systemState == SystemState.RegistrationComplete ||
+            serverState.systemState == SystemState.AskWordQueueCompleted) &&
+        _prevSystemState != serverState.systemState) {
+      SoundPlayer.playSignal(serverState.endSignal);
+    }
+
+    if (serverState.playSoundTimestamp != _prevPlaySoundTimestamp) {
+      if (serverState.playSound == 'hymn_start') {
+        SoundPlayer.playSoundByType('hymn_start');
+      } else if (serverState.playSound == 'hymn_end') {
+        SoundPlayer.playSoundByType('hymn_end');
+      } else if (serverState.playSound == 'cancel') {
+        SoundPlayer.cancelSound();
+      } else if (serverState.playSound != '') {
+        SoundPlayer.playSoundByPath(serverState.playSound);
+      }
+    }
+
+    _prevSystemState = serverState.systemState;
+    _prevPlaySoundTimestamp = serverState.playSoundTimestamp;
   }
 }

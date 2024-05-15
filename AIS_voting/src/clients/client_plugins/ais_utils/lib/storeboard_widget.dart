@@ -266,7 +266,8 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     }
 
     if (widget.serverState.systemState == SystemState.RegistrationComplete) {
-      return getRegistrationResultStoreBoard();
+      return getMeetingCompletedStoreboard();
+      //return getRegistrationResultStoreBoard();
     }
     if (widget.serverState.systemState == SystemState.QuestionVotingComplete) {
       bool isQuorumSuccess =
@@ -624,60 +625,6 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
             ],
           ),
           Container(height: getScaledSize(5)),
-          Row(
-            children: [
-              Text(
-                'Установлено: ${widget.meeting.group.lawUsersCount.toString()}',
-                style: TextStyle(
-                  fontSize: getScaledSize(11),
-                ),
-              ),
-              Container(
-                constraints: BoxConstraints(
-                  minWidth: getScaledSize(5),
-                ),
-              ),
-              Text(
-                'Избрано: ${widget.meeting.group.chosenCount.toString()}',
-                style: TextStyle(
-                  fontSize: getScaledSize(11),
-                ),
-              ),
-              Container(
-                constraints: BoxConstraints(
-                  minWidth: getScaledSize(5),
-                ),
-              ),
-              Text(
-                'Кворум: ${widget.meeting.group.quorumCount.toString()}',
-                style: TextStyle(
-                  fontSize: getScaledSize(11),
-                ),
-              ),
-              Container(
-                constraints: BoxConstraints(
-                  minWidth: getScaledSize(5),
-                ),
-              ),
-              Text(
-                'Присутствуют: ${widget.serverState.usersRegistered.length}',
-                style: TextStyle(
-                  fontSize: getScaledSize(11),
-                ),
-              ),
-              Container(
-                constraints: BoxConstraints(
-                  minWidth: getScaledSize(5),
-                ),
-              ),
-              Text(
-                'Отсутствуют: ${widget.meeting.group.chosenCount - widget.serverState.usersRegistered.length}',
-                style: TextStyle(
-                  fontSize: getScaledSize(11),
-                ),
-              ),
-            ],
-          ),
         ],
       );
     }
@@ -816,11 +763,13 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
             Container(
               width: getScaledSize(1),
             ),
-            Icon(Icons.circle,
-                size: getScaledSize(8),
-                color: widget.serverState.usersRegistered.contains(user?.id)
-                    ? Colors.green
-                    : Colors.red),
+            user == null
+                ? Container()
+                : Icon(Icons.circle,
+                    size: getScaledSize(8),
+                    color: widget.serverState.usersRegistered.contains(user?.id)
+                        ? Colors.green
+                        : Colors.red),
             Container(
               width: getScaledSize(1),
             ),
@@ -1107,6 +1056,16 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
   }
 
   Widget getVotingResultStoreBoard(VotingHistory votingHistory) {
+    var indifferentCount = votingHistory.indifferentVotes;
+
+    var noVotedCount = votingHistory.usersDecisions.values
+        .where((element) => element == 'н/д')
+        .length;
+
+    if (widget.settings.votingSettings.isCountNotVotingAsIndifferent) {
+      indifferentCount += noVotedCount;
+    }
+
     return Column(
       children: [
         getTopRow(),
@@ -1130,21 +1089,21 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
         Expanded(
           child: Container(),
         ),
-        Padding(
-          padding:
-              EdgeInsets.fromLTRB(getScaledSize(20), 0, getScaledSize(20), 0),
-          child: AutoSizeText(
-            'ДЛЯ ПРИНЯТИЯ РЕШЕНИЯ НЕОБХОДИМО ${votingHistory.usersCountForSuccessDisplay}',
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            softWrap: true,
-            style: TextStyle(
-              fontSize: 100,
-              fontWeight: FontWeight.w500,
-              color: Color(widget.settings.storeboardSettings.textColor),
-            ),
-          ),
-        ),
+        // Padding(
+        //   padding:
+        //       EdgeInsets.fromLTRB(getScaledSize(20), 0, getScaledSize(20), 0),
+        //   child: AutoSizeText(
+        //     'ДЛЯ ПРИНЯТИЯ РЕШЕНИЯ НЕОБХОДИМО ${votingHistory.usersCountForSuccessDisplay}',
+        //     overflow: TextOverflow.ellipsis,
+        //     maxLines: 1,
+        //     softWrap: true,
+        //     style: TextStyle(
+        //       fontSize: 100,
+        //       fontWeight: FontWeight.w500,
+        //       color: Color(widget.settings.storeboardSettings.textColor),
+        //     ),
+        //   ),
+        // ),
         Expanded(
           child: Container(),
         ),
@@ -1164,7 +1123,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   ),
                 ),
                 Container(
-                  height: getScaledSize(5),
+                  height: getScaledSize(2),
                 ),
                 Text(
                   'ПРОТИВ',
@@ -1177,7 +1136,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   ),
                 ),
                 Container(
-                  height: getScaledSize(5),
+                  height: getScaledSize(2),
                 ),
                 Text(
                   'ВОЗДЕРЖАЛИСЬ',
@@ -1189,6 +1148,24 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                     color: Color(widget.settings.storeboardSettings.textColor),
                   ),
                 ),
+                widget.settings.votingSettings.isCountNotVotingAsIndifferent
+                    ? Container()
+                    : Container(
+                        height: getScaledSize(2),
+                      ),
+                // widget.settings.votingSettings.isCountNotVotingAsIndifferent
+                //     ? Container()
+                //     : Text(
+                //         'НЕ ГОЛОСОВАЛО',
+                //         style: TextStyle(
+                //           fontSize: widget
+                //               .settings.storeboardSettings.resultItemsFontSize
+                //               .toDouble(),
+                //           fontWeight: FontWeight.w500,
+                //           color: Color(
+                //               widget.settings.storeboardSettings.textColor),
+                //         ),
+                //       ),
               ],
             ),
             Expanded(
@@ -1208,7 +1185,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   ),
                 ),
                 Container(
-                  height: getScaledSize(5),
+                  height: getScaledSize(2),
                 ),
                 Text(
                   '${votingHistory.noVotes}',
@@ -1221,10 +1198,10 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   ),
                 ),
                 Container(
-                  height: getScaledSize(5),
+                  height: getScaledSize(2),
                 ),
                 Text(
-                  '${votingHistory.indifferentVotes}',
+                  '$indifferentCount',
                   style: TextStyle(
                     fontSize: widget
                         .settings.storeboardSettings.resultItemsFontSize
@@ -1233,6 +1210,24 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                     color: Color(widget.settings.storeboardSettings.textColor),
                   ),
                 ),
+                // widget.settings.votingSettings.isCountNotVotingAsIndifferent
+                //     ? Container()
+                //     : Container(
+                //         height: getScaledSize(2),
+                //       ),
+                // widget.settings.votingSettings.isCountNotVotingAsIndifferent
+                //     ? Container()
+                //     : Text(
+                //         '$noVotedCount',
+                //         style: TextStyle(
+                //           fontSize: widget
+                //               .settings.storeboardSettings.resultItemsFontSize
+                //               .toDouble(),
+                //           fontWeight: FontWeight.w500,
+                //           color: Color(
+                //               widget.settings.storeboardSettings.textColor),
+                //         ),
+                //       ),
               ],
             )
           ],
@@ -1535,7 +1530,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                 : MainAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(0, getScaledSize(5), 0, 0),
+                padding: EdgeInsets.fromLTRB(0, getScaledSize(20), 0, 0),
                 child: AutoSizeText(
                   getQuestionName(),
                   overflow: TextOverflow.ellipsis,
@@ -1554,6 +1549,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   ? Container()
                   : Expanded(
                       child: Container(
+                        alignment: Alignment.topLeft,
                         padding: EdgeInsets.fromLTRB(0, getScaledSize(5), 0, 0),
                         child: AgendaUtil.getQuestionDescriptionText(
                             widget.question,
@@ -1632,7 +1628,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           padding:
               EdgeInsets.fromLTRB(getScaledSize(20), 0, getScaledSize(20), 0),
           child: AutoSizeText(
-            '${widget.meeting.name.toUpperCase() + 'ОТКРЫТО'}',
+            '${widget.meeting.name.toUpperCase() + ' ОТКРЫТО'}',
             textAlign: TextAlign.center,
             stepGranularity: 0.1,
             minFontSize: 1,
@@ -1659,7 +1655,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           padding:
               EdgeInsets.fromLTRB(getScaledSize(45), 0, getScaledSize(45), 0),
           child: AutoSizeText(
-            'ПРИСУТСТВУЕТ  ${widget.serverState.formattedDevicesOnline['Количество карт']}',
+            'ПРИСУТСТВУЕТ  ${widget.serverState.usersRegistered.length}',
             stepGranularity: 0.1,
             minFontSize: 1,
             softWrap: true,

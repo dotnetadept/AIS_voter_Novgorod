@@ -141,7 +141,7 @@ class Signaling {
       RTCPeerConnection pc, List<dynamic> candidates) async {
     for (int i = 0; i < candidates.length; i++) {
       var candidate = RTCIceCandidate(
-          candidates[i]['candidate'], null, candidates[i]['sdpMLineIndex']);
+          candidates[i]['candidate'], '', candidates[i]['sdpMLineIndex']);
 
       await pc.addCandidate(candidate);
     }

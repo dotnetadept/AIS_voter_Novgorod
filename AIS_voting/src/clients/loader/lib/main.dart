@@ -7,6 +7,7 @@ import 'package:csv/csv.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
+import 'package:loader/AgendaListUtil.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
@@ -60,8 +61,7 @@ class LoaderForm extends StatefulWidget {
 class LoaderFormState extends State<LoaderForm> {
   final _formKey = GlobalKey<FormState>();
   var _tecName = TextEditingController();
-  var _tecFile = TextEditingController(
-      text: '/home/user/Downloads/31.03.2022/31.03.2022.txt');
+  var _tecFile = TextEditingController(text: '');
   var _tecDirectoryName = TextEditingController(
       text: '_' + DateFormat('dd.MM.yyyy').format(DateTime.now()));
   ScrollController _scrollController = ScrollController();
@@ -784,7 +784,7 @@ class LoaderFormState extends State<LoaderForm> {
     // Проверяем вопросы
     for (int i = 0; i < questions.length; i++) {
       RegExp regExp = new RegExp(
-          r'("[^"]*"),("?[^"]+"?),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*")');
+          r'("[^"]*"),("?[^"]+"?),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*")');
 
       if (!regExp.hasMatch(questions[i])) {
         isStructureCheckSuccess = false;
@@ -796,40 +796,78 @@ class LoaderFormState extends State<LoaderForm> {
 
       var isQuestionCorrect = true;
       var questionNumberData =
-          regExp.firstMatch(questions[i]).group(2).replaceAll('"', '');
+          regExp.firstMatch(questions[i])?.group(2)?.replaceAll('"', '') ?? '';
 
       var questionNumber = int.tryParse(questionNumberData);
-      if (questionNumber != null && questionNumber != i) {
+      var expectedQuestionNumber = AgendaListUtil.getQuestionNumber(
+          i, questions, _settings.questionListSettings);
+      if (questionNumber != null && questionNumber != expectedQuestionNumber) {
         isQuestionCorrect = false;
         isStructureCheckSuccess = false;
 
         await addDialogResultItem(
-            'Номер вопроса $questionNumber не соответвует ожидаемому $i',
+            'Номер вопроса $questionNumber не соответвует ожидаемому $expectedQuestionNumber',
             false);
       }
 
-      var documentFolder = documentFolders.firstWhere(
-          (element) => path.basename(element.path) == questionNumberData,
-          orElse: () => null);
+      bool isDocumentFolderExists = documentFolders
+          .any((element) => path.basename(element.path) == questionNumberData);
 
-      if (documentFolder == null) {
+      if (!isDocumentFolderExists) {
         isQuestionCorrect = false;
         isStructureCheckSuccess = false;
 
         await addDialogResultItem(
             'Не найдена директория для вопроса $questionNumberData', false);
       } else {
-        var questionfilesItems = regExp
-            .firstMatch(questions[i])
-            .group(8)
-            .replaceAll('"', '')
-            .split(',');
-        questionfilesItems.removeWhere((element) => element.trim().isEmpty);
-        var realFileNames = <String>[];
+        var documentFolder = documentFolders.firstWhere(
+            (element) => path.basename(element.path) == questionNumberData);
 
+        var descriptionFile = File(
+            '${File(agendaFilePath).parent.path}/$questionNumberData/Описание.txt');
+
+        if (!await descriptionFile.exists() && questions[i].isNotEmpty) {
+          isQuestionCorrect = false;
+          isStructureCheckSuccess = false;
+
+          await addDialogResultItem(
+              'Отсутствуeт файл описания документов: ${descriptionFile.path}',
+              false);
+          continue;
+        }
+
+        var realFileNames = <String>[];
         var documentFolderContents = documentFolder.listSync();
+
+        documentFolderContents.sort((a, b) {
+          return path.basename(a.path).compareTo(path.basename(b.path));
+        });
+
+        var descriptionsBytes = await descriptionFile.readAsBytes();
+        var descriptionsFileContent =
+            String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
+        Map<String, dynamic> descriptions =
+            json.decode(descriptionsFileContent.substring(1));
+
+        if (descriptions.length != documentFolderContents.length - 1) {
+          isQuestionCorrect = false;
+          isStructureCheckSuccess = false;
+
+          await addDialogResultItem(
+              'Количество документов[${(documentFolderContents.length - 1)}] и их описаний[${descriptions.length}] не совпадают ${documentFolder.path}',
+              false);
+          continue;
+        }
+
+        var j = 0;
         for (var fileOrDir in documentFolderContents) {
           var fullPath = fileOrDir.path;
+
+          if (fileOrDir is File &&
+              path.basename(fileOrDir.path) == 'Описание.txt') {
+            continue;
+          }
+
           if (fileOrDir is Directory ||
               path.extension(fileOrDir.path) != '.pdf') {
             isQuestionCorrect = false;
@@ -840,9 +878,23 @@ class LoaderFormState extends State<LoaderForm> {
           } else {
             realFileNames.add(path.basename(fileOrDir.path));
           }
+
+          String expectedFileName =
+              AgendaListUtil.getFileName(questionNumberData, j + 1);
+
+          if (realFileNames.last != expectedFileName) {
+            isQuestionCorrect = false;
+            isStructureCheckSuccess = false;
+
+            await addDialogResultItem(
+                'Имя файла: ${realFileNames.last} не соответвует ожидаемому: $expectedFileName',
+                false);
+          }
+
+          j++;
         }
 
-        if (questionfilesItems.length != realFileNames.length) {
+        if (descriptions.length != realFileNames.length) {
           isQuestionCorrect = false;
           isStructureCheckSuccess = false;
 
@@ -851,23 +903,22 @@ class LoaderFormState extends State<LoaderForm> {
               false);
         }
 
-        for (var questionFile in questionfilesItems) {
-          if (!realFileNames.contains(questionFile)) {
+        for (var fileDescription in descriptions.keys) {
+          if (!realFileNames.contains(fileDescription)) {
             isQuestionCorrect = false;
             isStructureCheckSuccess = false;
 
             await addDialogResultItem(
-                'Не найден файл $questionNumberData/$questionFile', false);
+                'Не найден файл $questionNumberData/$fileDescription', false);
           } else {
             await addDialogResultItem(
-                'Проверка файла $questionNumberData/$questionFile ', true);
+                'Проверка файла $questionNumberData/$fileDescription ', true);
           }
         }
       }
 
       await addDialogResultItem(
-          'Проверка вопроса $questionNumberData [${documentFolder?.path ?? 'Директория не найдена'}]',
-          isQuestionCorrect);
+          'Проверка вопроса $questionNumberData', isQuestionCorrect);
     }
 
     return isStructureCheckSuccess;
@@ -1188,7 +1239,7 @@ class LoaderFormState extends State<LoaderForm> {
     // Загружаем вопросы
     for (int i = 0; i < questions.length; i++) {
       RegExp regExp = new RegExp(
-          r'("[^"]*"),("?[^"]+"?),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*")');
+          r'("[^"]*"),("?[^"]+"?),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*")');
 
       var questionNumberData =
           regExp.firstMatch(questions[i]).group(2).replaceAll('"', '');
@@ -1218,34 +1269,34 @@ class LoaderFormState extends State<LoaderForm> {
         questionSettings = _settings.questionListSettings.additionalQiestion;
       }
 
-      if (questionDescriptionData1.trim().isNotEmpty) {
-        questionDescriptions.add(new QuestionDescriptionItem(
-            caption: questionSettings.descriptionCaption1,
-            text: questionDescriptionData1.toString(),
-            showOnStoreboard: questionSettings.showCaption1OnStoreboard,
-            showInReports: questionSettings.showCaption1InReports));
-      }
-      if (questionDescriptionData2.trim().isNotEmpty) {
-        questionDescriptions.add(new QuestionDescriptionItem(
-            caption: questionSettings.descriptionCaption2,
-            text: questionDescriptionData2.toString(),
-            showOnStoreboard: questionSettings.showCaption2OnStoreboard,
-            showInReports: questionSettings.showCaption2InReports));
-      }
-      if (questionDescriptionData3.trim().isNotEmpty) {
-        questionDescriptions.add(new QuestionDescriptionItem(
-            caption: questionSettings.descriptionCaption3,
-            text: questionDescriptionData3.toString(),
-            showOnStoreboard: questionSettings.showCaption3OnStoreboard,
-            showInReports: questionSettings.showCaption3InReports));
-      }
-      if (questionDescriptionData4.trim().isNotEmpty) {
-        questionDescriptions.add(new QuestionDescriptionItem(
-            caption: questionSettings.descriptionCaption4,
-            text: questionDescriptionData4.toString(),
-            showOnStoreboard: questionSettings.showCaption4OnStoreboard,
-            showInReports: questionSettings.showCaption4InReports));
-      }
+      //if (questionDescriptionData1.trim().isNotEmpty) {
+      questionDescriptions.add(new QuestionDescriptionItem(
+          caption: questionSettings.descriptionCaption1,
+          text: questionDescriptionData1.toString(),
+          showOnStoreboard: questionSettings.showCaption1OnStoreboard,
+          showInReports: questionSettings.showCaption1InReports));
+      //}
+      //if (questionDescriptionData2.trim().isNotEmpty) {
+      questionDescriptions.add(new QuestionDescriptionItem(
+          caption: questionSettings.descriptionCaption2,
+          text: questionDescriptionData2.toString(),
+          showOnStoreboard: questionSettings.showCaption2OnStoreboard,
+          showInReports: questionSettings.showCaption2InReports));
+      //}
+      //if (questionDescriptionData3.trim().isNotEmpty) {
+      questionDescriptions.add(new QuestionDescriptionItem(
+          caption: questionSettings.descriptionCaption3,
+          text: questionDescriptionData3.toString(),
+          showOnStoreboard: questionSettings.showCaption3OnStoreboard,
+          showInReports: questionSettings.showCaption3InReports));
+      //}
+      //if (questionDescriptionData4.trim().isNotEmpty) {
+      questionDescriptions.add(new QuestionDescriptionItem(
+          caption: questionSettings.descriptionCaption4,
+          text: questionDescriptionData4.toString(),
+          showOnStoreboard: questionSettings.showCaption4OnStoreboard,
+          showInReports: questionSettings.showCaption4InReports));
+      //}
 
       // Загружаем файлы вопроса
       var questionFolder = Uuid().v4();
@@ -1258,10 +1309,22 @@ class LoaderFormState extends State<LoaderForm> {
       var documentFolderContents = documentFolder.listSync();
       documentFolderContents.sort((a, b) => a.path.compareTo(b.path));
 
+      var descriptionFile = documentFolderContents.firstWhere(
+          (element) => path.basename(element.path) == 'Описание.txt',
+          orElse: () => null);
+      Map<String, dynamic> filesDescriptions = {};
+      if (descriptionFile != null) {
+        var descriptionsBytes = File(descriptionFile.path).readAsBytesSync();
+        var descriptionsFileContent =
+            String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
+        filesDescriptions = json.decode(descriptionsFileContent.substring(1));
+      }
+
       for (var fileOrDir in documentFolderContents) {
         if (fileOrDir is File && path.extension(fileOrDir.path) == '.pdf') {
           String fileDescription =
-              path.basenameWithoutExtension(fileOrDir.path);
+              filesDescriptions[path.basename(fileOrDir.path)] ??
+                  path.basenameWithoutExtension(fileOrDir.path);
 
           RegExp fileNameTrimmer =
               new RegExp(_settings.questionListSettings.fileNameTrimmer);

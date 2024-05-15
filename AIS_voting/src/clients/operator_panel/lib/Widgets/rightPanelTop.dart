@@ -659,6 +659,11 @@ class _RightPanelTopState extends State<RightPanelTop> {
         .where((element) => element != 'СБРОС')
         .length;
 
+    if (widget.settings.votingSettings.isCountNotVotingAsIndifferent) {
+      totalVotes = widget.selectedMeeting.group.groupUsers.length;
+      indifferentCount = totalVotes - votedYes - votedNo;
+    }
+
     return Column(
       children: [
         Padding(
@@ -800,6 +805,8 @@ class _RightPanelTopState extends State<RightPanelTop> {
       widget.votingModes,
       _selectedVotingMode,
       DecisionModeHelper.getEnumValue(_selectedDecision),
+      widget.timeOffset,
+      widget.users,
     ).openDialog().then((value) {
       AppState().refreshDialog = null;
     });

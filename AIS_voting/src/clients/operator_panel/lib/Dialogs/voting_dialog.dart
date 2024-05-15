@@ -11,6 +11,8 @@ import '../Providers/AppState.dart';
 import '../Providers/WebSocketConnection.dart';
 import 'package:ais_model/ais_model.dart' as ais;
 
+import '../Utility/report_helper.dart';
+
 class VotingDialog {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _tecInterval;
@@ -29,6 +31,8 @@ class VotingDialog {
   DecisionMode _selectedDecisionMode;
   int _selectedSuccessValue;
   WebSocketConnection _connection;
+  int _timeOffset;
+  List<User> _users;
 
   bool _isVotingStarted = false;
   bool _isAskQueueStarted = false;
@@ -43,6 +47,8 @@ class VotingDialog {
     this._votingModes,
     this._selectedVotingMode,
     this._selectedDecisionMode,
+    this._timeOffset,
+    this._users,
   ) {
     _connection = Provider.of<WebSocketConnection>(_context, listen: false);
     var serverState = Provider.of<WebSocketConnection>(_context, listen: false)
@@ -377,7 +383,7 @@ class VotingDialog {
                           child: Row(
                             children: [
                               Padding(
-                                padding: EdgeInsets.fromLTRB(10, 0, 14, 10),
+                                padding: EdgeInsets.fromLTRB(5, 0, 14, 10),
                                 child: TextButton(
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -390,6 +396,56 @@ class VotingDialog {
                                   ),
                                   onPressed: () {
                                     Navigator.of(context).pop();
+                                  },
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.fromLTRB(5, 0, 10, 10),
+                                child: TextButton(
+                                  child: Text(
+                                    'Протокол',
+                                    style: TextStyle(fontSize: 24),
+                                  ),
+                                  onPressed: () async {
+                                    await ReportHelper().getVotingNamedReport(
+                                        _selectedMeeting,
+                                        _settings,
+                                        _selectedVotingMode,
+                                        _users,
+                                        _connection
+                                            .getServerState.usersRegistered,
+                                        _lockedQuestion,
+                                        null,
+                                        null,
+                                        _timeOffset);
+
+                                    // if (_connection
+                                    //     .getServerState.isDetailsStoreboard) {
+                                    //   await ReportHelper().getVotingNamedReport(
+                                    //       _selectedMeeting,
+                                    //       _settings,
+                                    //       _selectedVotingMode,
+                                    //       _users,
+                                    //       _connection
+                                    //           .getServerState.usersRegistered,
+                                    //       _lockedQuestion,
+                                    //       null,
+                                    //       null,
+                                    //       _timeOffset);
+                                    // } else {
+                                    //   await ReportHelper()
+                                    //       .getVotingCommonReport(
+                                    //           _selectedMeeting,
+                                    //           _settings,
+                                    //           _selectedVotingMode,
+                                    //           _users,
+                                    //           _connection.getServerState
+                                    //               .usersRegistered,
+                                    //           _lockedQuestion,
+                                    //           null,
+                                    //           null,
+                                    //           _timeOffset);
+                                    // }
                                   },
                                 ),
                               ),

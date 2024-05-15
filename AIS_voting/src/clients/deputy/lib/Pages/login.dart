@@ -21,19 +21,17 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   var _tecPassword = TextEditingController();
   final _globalKey = GlobalKey<ScaffoldState>();
-  Widget _currentView;
+  User _confirmUser = null;
 
   @override
   void initState() {
-    _currentView = loginView();
     super.initState();
   }
 
   void onLogin() async {
     await http
-        .get(Uri.parse(
-            ServerConnection.getHttpServerUrl(GlobalConfiguration()) +
-                "/settings"))
+        .get(Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
+            "/settings"))
         .then((response) {
       var settings = (json.decode(response.body) as List)
           .map((data) => Settings.fromJson(data))
@@ -44,9 +42,8 @@ class _LoginPageState extends State<LoginPage> {
 
     var users = <User>[];
     await http
-        .get(Uri.parse(
-            ServerConnection.getHttpServerUrl(GlobalConfiguration()) +
-                "/users"))
+        .get(Uri.http(
+            ServerConnection.getHttpServerUrl(GlobalConfiguration()), "/users"))
         .then((response) {
       users = (json.decode(response.body) as List)
           .map((data) => User.fromJson(data))
@@ -66,13 +63,13 @@ class _LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       setState(() {
-        _currentView = loginConfirmView(user);
+        _confirmUser = user;
       });
     } else {
       rootScaffoldMessengerKey.currentState?.removeCurrentSnackBar();
       rootScaffoldMessengerKey.currentState?.showSnackBar(
         SnackBar(
-          content: Text("Неверно введен пароль"),
+          content: Text("Неверно введен ПИН-код"),
         ),
       );
     }
@@ -92,9 +89,11 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final connection = Provider.of<WebSocketConnection>(context, listen: true);
+
     return Scaffold(
       key: _globalKey,
-      body: _currentView,
+      body: _confirmUser == null ? loginView() : loginConfirmView(_confirmUser),
       backgroundColor: Colors.blue[100],
     );
   }
@@ -119,14 +118,14 @@ class _LoginPageState extends State<LoginPage> {
         children: <Widget>[
           Text(
             "Войти как:",
-            style: TextStyle(fontSize: 34),
+            style: TextStyle(fontSize: 44),
           ),
           Container(
             height: 10,
           ),
           Text(
             user.toString(),
-            style: TextStyle(fontSize: 34),
+            style: TextStyle(fontSize: 44),
           ),
           Container(
             height: 40,
@@ -140,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 onPressed: () {
                   setState(() {
-                    _currentView = loginView();
+                    _confirmUser = null;
                   });
                 },
                 child: Text(
@@ -194,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
           style: TextStyle(fontSize: 30),
           decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: 'Пароль',
+            labelText: 'ПИН-код',
           ),
         ),
       ),
@@ -233,16 +232,28 @@ class _LoginPageState extends State<LoginPage> {
         child: Text(
           AppState().getCurrentMeeting()?.group?.name ?? '',
           style: TextStyle(
-            fontSize: 34,
+            fontSize: 44,
           ),
         ),
       ),
+      AppState().getServerState().systemState == SystemState.Registration
+          ? Container(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Text(
+                'ИДЕТ РЕГИСТРАЦИЯ',
+                style: TextStyle(
+                  fontSize: 44,
+                  color: Colors.red,
+                ),
+              ),
+            )
+          : Container(),
       Container(
         padding: EdgeInsets.all(20),
         child: Text(
           AppState().getCurrentMeeting()?.name ?? '',
           style: TextStyle(
-            fontSize: 30,
+            fontSize: 42,
           ),
         ),
       ),

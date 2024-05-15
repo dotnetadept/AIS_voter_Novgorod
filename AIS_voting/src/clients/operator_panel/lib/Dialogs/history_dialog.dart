@@ -7,10 +7,13 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ais_utils/ais_utils.dart';
 import '../Providers/WebSocketConnection.dart';
+import '../Utility/report_helper.dart';
 
 class HistoryDialog {
   BuildContext _context;
   Settings _settings;
+  List<User> _users;
+  List<VotingMode> _votingModes;
 
   List<Meeting> _meetings;
   List<MeetingSession> _meetingSessions;
@@ -66,6 +69,8 @@ class HistoryDialog {
   HistoryDialog(
     this._context,
     this._settings,
+    this._users,
+    this._votingModes,
     this._timeOffset,
   ) {
     _historyMeetingTableScrollController = ScrollController();
@@ -89,8 +94,10 @@ class HistoryDialog {
               _meetingSessions = (json.decode(response.body) as List)
                   .map((data) => MeetingSession.fromJson(data))
                   .toList();
-              _meetingSessions.sort((a, b) => a.startDate.compareTo(
-                  b.startDate ?? TimeUtil.getDateTimeNow(_timeOffset)));
+              _meetingSessions.sort((a, b) =>
+                  -1 *
+                  a.startDate.compareTo(
+                      b.startDate ?? TimeUtil.getDateTimeNow(_timeOffset)));
 
               processSearch(_tecSearch.text, null);
 
@@ -481,6 +488,31 @@ class HistoryDialog {
         orElse: () => null);
     var decisions = <String, String>{};
 
+    // find current registration session
+    var registrationSessionsResponse = await http.get(Uri.http(
+        ServerConnection.getHttpServerUrl(GlobalConfiguration()),
+        "/registrationsessions/${meeting.id}"));
+
+    var registrationSessions =
+        (json.decode(registrationSessionsResponse.body) as List)
+            .map((data) => RegistrationSession.fromJson(data))
+            .toList();
+
+    var currentRegistrationSessions = <RegistrationSession>[];
+    for (var j = 0; j < registrationSessions.length; j++) {
+      if (registrationSessions[j].startDate.microsecondsSinceEpoch >
+              meetingSession.startDate.microsecondsSinceEpoch &&
+          registrationSessions[j].endDate.microsecondsSinceEpoch <
+              (meetingSession.endDate?.microsecondsSinceEpoch ??
+                  TimeUtil.getDateTimeNow(_timeOffset).microsecondsSinceEpoch))
+        currentRegistrationSessions.add(registrationSessions[j]);
+    }
+    var registrationSession = currentRegistrationSessions.firstWhere(
+        (element) =>
+            element.endDate.microsecondsSinceEpoch <
+            questionSession.endDate.microsecondsSinceEpoch,
+        orElse: () => null);
+
     var resultResponce = await http.get(Uri.http(
         ServerConnection.getHttpServerUrl(GlobalConfiguration()),
         "/result/${questionSession.id}"));
@@ -499,21 +531,9 @@ class HistoryDialog {
       );
       decisions.putIfAbsent(
         voter.getShortName(),
-        () => decision == null
-            ? _settings.storeboardSettings.noDataText
-            : decision.result,
+        () => decision == null ? 'н/д' : decision.result,
       );
     }
-
-    var questionName = meeting.toString() +
-        ' ' +
-        DateFormat('dd.MM.yy').format(meetingSession.startDate.toLocal()) +
-        ' ' +
-        question.toString() +
-        ' ' +
-        DateFormat('HH:mm').format(questionSession.startDate.toLocal()) +
-        '-' +
-        DateFormat('HH:mm').format(questionSession.endDate.toLocal());
 
     var isQuorumSuccess =
         questionSession.usersCountRegistred >= meeting.group.quorumCount;
@@ -544,6 +564,16 @@ class HistoryDialog {
       }
     }
 
+    var questionName = meeting.toString() +
+        ' ' +
+        DateFormat('dd.MM.yy').format(meetingSession.startDate.toLocal()) +
+        ' ' +
+        question.toString() +
+        ' ' +
+        DateFormat('HH:mm').format(questionSession.startDate.toLocal()) +
+        '-' +
+        DateFormat('HH:mm').format(questionSession.endDate.toLocal());
+
     VotingHistory votingHistory = VotingHistory(
         questionName,
         isQuorumSuccess,
@@ -559,6 +589,50 @@ class HistoryDialog {
         decisions);
     Provider.of<WebSocketConnection>(_context, listen: false)
         .setHistory(votingHistory);
+
+    ReportHelper().getVotingNamedReport(
+        meeting,
+        _settings,
+        _votingModes.firstWhere(
+          (element) => element.id == questionSession.votingModeId,
+          orElse: () => null,
+        ),
+        _users,
+        registrationSession.registrations.map((e) => e.userId).toList(),
+        question,
+        questionSession,
+        meetingSession,
+        _timeOffset);
+
+    // if (isDetailed) {
+    //   ReportHelper().getVotingNamedReport(
+    //       meeting,
+    //       _settings,
+    //       _votingModes.firstWhere(
+    //         (element) => element.id == questionSession.votingModeId,
+    //         orElse: () => null,
+    //       ),
+    //       _users,
+    //       registrationSession.registrations.map((e) => e.userId).toList(),
+    //       question,
+    //       questionSession,
+    //       meetingSession,
+    //       _timeOffset);
+    // } else {
+    //   ReportHelper().getVotingCommonReport(
+    //       meeting,
+    //       _settings,
+    //       _votingModes.firstWhere(
+    //         (element) => element.id == questionSession.votingModeId,
+    //         orElse: () => null,
+    //       ),
+    //       _users,
+    //       registrationSession.registrations.map((e) => e.userId).toList(),
+    //       question,
+    //       questionSession,
+    //       meetingSession,
+    //       _timeOffset);
+    // }
   }
 
   String getMeetingSessionText(MeetingSession session) {

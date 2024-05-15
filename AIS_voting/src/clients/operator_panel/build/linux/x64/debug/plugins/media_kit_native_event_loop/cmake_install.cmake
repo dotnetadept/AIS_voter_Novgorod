@@ -1,8 +1,8 @@
-# Install script for directory: /home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/linux/flutter/ephemeral/.plugin_symlinks/media_kit_native_event_loop/linux
+# Install script for directory: /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/linux/flutter/ephemeral/.plugin_symlinks/media_kit_native_event_loop/linux
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/bundle")
+  set(CMAKE_INSTALL_PREFIX "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/bundle")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/plugins/media_kit_native_event_loop/shared/cmake_install.cmake")
+  include("/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/plugins/media_kit_native_event_loop/shared/cmake_install.cmake")
 
 endif()
 

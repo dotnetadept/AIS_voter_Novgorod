@@ -1,10 +1,7 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:ais_model/ais_model.dart';
-import 'package:global_configuration/global_configuration.dart';
 import 'package:provider/provider.dart';
-import 'package:ais_utils/ais_utils.dart';
 import '../Providers/WebSocketConnection.dart';
 
 class StreamDialog {

@@ -7,10 +7,10 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/CMakeLists.txt"
-  "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/cmake/JoinPaths.cmake"
-  "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/cmake/mimalloc-config-version.cmake"
-  "/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/mimalloc.pc.in"
+  "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/CMakeLists.txt"
+  "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/cmake/JoinPaths.cmake"
+  "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/cmake/mimalloc-config-version.cmake"
+  "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/mimalloc.pc.in"
   "CMakeFiles/3.16.3/CMakeCCompiler.cmake"
   "CMakeFiles/3.16.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.16.3/CMakeSystem.cmake"

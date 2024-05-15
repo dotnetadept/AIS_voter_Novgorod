@@ -60,7 +60,13 @@ class ServerState {
 
   Map<String, String> usersDecisions;
 
+  bool isVissonicModuleOnline;
+  bool isVissonicServerOnline;
+  bool isVissonicModuleInit;
+  bool isVissonicLoading;
+  bool micsEnabled;
   Map<String, String> activeMics;
+  List<int> waitingMics;
 
   String playSound;
   double soundVolume;
@@ -150,9 +156,17 @@ class ServerState {
         usersTerminals = json['usersTerminals'] == null
             ? <String, int>{}
             : jsonDecode(json['usersTerminals']).cast<String, int>(),
+        isVissonicModuleOnline = json['isVissonicModuleOnline'],
+        isVissonicModuleInit = json['isVissonicModuleInit'],
+        isVissonicLoading = json['isVissonicLoading'],
+        isVissonicServerOnline = json['isVissonicServerOnline'],
+        micsEnabled = json['micsEnabled'],
         activeMics = json['activeMics'] == null
             ? <String, String>{}
             : jsonDecode(json['activeMics']).cast<String, String>(),
+        waitingMics = json['waitingMics'] == null
+            ? <int>[]
+            : json['waitingMics'].toList().cast<int>(),
         timestamp = DateTime.now(),
         isStreamStarted = json['isStreamStarted'],
         streamUrl = json['streamUrl'],

@@ -6,5 +6,5 @@ C_FLAGS = -O3 -DNDEBUG   -Wall -Wextra -Wno-unknown-pragmas -fvisibility=hidden 
 
 C_DEFINES = 
 
-C_INCLUDES = -I/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include 
+C_INCLUDES = -I/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include 
 

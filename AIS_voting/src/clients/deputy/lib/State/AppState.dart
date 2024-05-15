@@ -388,6 +388,10 @@ class AppState with ChangeNotifier {
   }
 
   void setSettings(Settings settings) {
+    settings.storeboardSettings.width =
+        (settings.storeboardSettings.width * 1.2).round();
+    settings.storeboardSettings.height =
+        (settings.storeboardSettings.height * 1.2).round();
     _settings = settings;
   }
 

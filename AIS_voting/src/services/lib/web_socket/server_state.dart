@@ -1,5 +1,5 @@
 import 'ws_connection.dart';
-import 'dart:convert' show json;
+import 'dart:convert' show json, jsonDecode;
 import '../models/ais_model.dart';
 import 'package:ais_model/ais_model.dart' as client_models;
 import 'package:enum_to_string/enum_to_string.dart';
@@ -45,8 +45,16 @@ class ServerState {
   static bool showToManager = false;
   static bool showAskWordButton = false;
 
+  // vissonic settings
+  static bool isVissonicModuleOnline = true;
+  static bool isVissonicServerOnline = true;
+  static bool isVissonicModuleInit = true;
+  static bool isVissonicLoading = false;
+  static bool micsEnabled;
+
   // active microphones
   static Map<String, String> activeMics = <String, String>{};
+  static List<int> waitingMics = <int>[];
 
   // Storeboard params
   static int registrationResult;
@@ -121,7 +129,13 @@ class ServerState {
         'usersAskSpeech': usersAskSpeech,
         'guestsAskSpeech': guestsAskSpeech,
         'guestsPlaces': guestsPlaces,
+        'isVissonicModuleOnline': isVissonicModuleOnline,
+        'isVissonicServerOnline': isVissonicServerOnline,
+        'isVissonicModuleInit': isVissonicModuleInit,
+        'isVissonicLoading': isVissonicLoading,
+        'micsEnabled': micsEnabled,
         'activeMics': json.encode(activeMics),
+        'waitingMics': waitingMics,
         'registrationResult': registrationResult,
         'votingResultIndiffirent': votingResultIndiffirent,
         'votingResultNo': votingResultNo,
@@ -224,4 +238,23 @@ class ServerState {
     }
     versions = json.encode(connectionVersions);
   }
+}
+
+class VissonicServerState {
+  bool isVissonicServerOnline = false;
+  bool isVissonicModuleInit = false;
+  bool micsEnabled;
+  Map<String, String> activeMics = <String, String>{};
+  List<int> waitingMics = <int>[];
+
+  VissonicServerState.fromJson(Map<String, dynamic> json)
+      : isVissonicServerOnline = json['isVissonicServerOnline'],
+        isVissonicModuleInit = json['isVissonicModuleInit'],
+        micsEnabled = json['micsEnabled'],
+        activeMics = json['activeMics'] == null
+            ? <int, String>{}
+            : jsonDecode(json['activeMics']).cast<String, String>(),
+        waitingMics = json['waitingMics'] == null
+            ? <int>[]
+            : json['waitingMics'].toList().cast<int>();
 }

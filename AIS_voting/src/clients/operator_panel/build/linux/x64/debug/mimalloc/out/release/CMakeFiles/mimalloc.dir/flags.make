@@ -6,5 +6,5 @@ C_FLAGS = -O3 -DNDEBUG -fPIC   -Wall -Wextra -Wno-unknown-pragmas -fvisibility=h
 
 C_DEFINES = -DMI_MALLOC_OVERRIDE -DMI_SHARED_LIB -DMI_SHARED_LIB_EXPORT -Dmimalloc_EXPORTS
 
-C_INCLUDES = -I/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include 
+C_INCLUDES = -I/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug/mimalloc/mimalloc-2.1.2/include 
 

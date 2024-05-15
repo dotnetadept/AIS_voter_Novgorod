@@ -65,6 +65,10 @@ class UsersFilterUtil {
       }
     }
 
+    usersAbsent.sort((a, b) {
+      return a.toString().compareTo(b.toString());
+    });
+
     return usersAbsent;
   }
 }

@@ -24,6 +24,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
   ScrollController _questionsTableScrollController;
   ScrollController _questionDescriptionScrollController;
   ScrollController _questionFilesTableScrollController;
+  ScrollController _unregistredTableScrollController;
 
   List<Question> _questions;
   Question _firstQuestion;
@@ -97,6 +98,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
     _questionsTableScrollController.addListener(scrollPosition);
     _questionDescriptionScrollController = new ScrollController();
     _questionFilesTableScrollController = new ScrollController();
+    _unregistredTableScrollController = new ScrollController();
 
     if (AppState().getCurrentDocument() != null) {
       if (AppState().canUserNavigate()) {
@@ -257,7 +259,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
                 ),
                 child: VotingUtils().getExpandedButton(
                   context,
-                  'Повестка пленарного заседания',
+                  'Повестка заседания',
                   () {
                     setState(() {
                       setSelectedQuestion(null);
@@ -462,7 +464,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
           padding: EdgeInsets.all(10),
           child: VotingUtils().getExpandedButton(
             context,
-            'Повестка пленарного заседания',
+            'Повестка заседания',
             () {
               setState(() {
                 setSelectedQuestion(null);
@@ -645,7 +647,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
         itemBuilder: (BuildContext context, int index) {
           var element = _questions[index];
           return InkWell(
-            onTap: () {
+            onTapDown: (tapDownDetails) {
               setState(() {
                 setSelectedQuestion(element);
               });
@@ -677,7 +679,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
                         child: Container(
                           padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                           child: IgnorePointer(
-                            ignoring: true,
+                            ignoring: false,
                             child: _isSelectedQuestionPage
                                 ? AgendaUtil.getQuestionDescriptionText(
                                     element,
@@ -862,10 +864,10 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
     var emblemHeight = MediaQuery.of(context).size.height -
         (Utils().getIsAskWordButtonDisabled()
             ? 0
-            : _defaultButtonsHeight * 2 + 22) -
+            : _defaultButtonsHeight * 1.5 + 22) -
         ((!_showExitButtonRight || !connection.getIsManualLogin)
             ? 0
-            : _defaultButtonsHeight * 2 + 22) -
+            : _defaultButtonsHeight * 1.5 + 22) -
         AppState().getSettings().storeboardSettings.height;
 
     emblemHeight = emblemHeight < 0 ? 0 : emblemHeight;
@@ -880,7 +882,9 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 _showUnregistred
-                    ? TableUtils().getUnregistredTable(flex: 10)
+                    ? TableUtils().getUnregistredTable(
+                        _unregistredTableScrollController,
+                        flex: 10)
                     : Container(
                         child: ConstrainedBox(
                           constraints: BoxConstraints(

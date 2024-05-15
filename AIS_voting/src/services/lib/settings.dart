@@ -6,7 +6,7 @@ const NTP_SERVER = '192.168.0.104';
 
 const PSQL_SERVER = 'localhost';
 const PSQL_PORT = 5432;
-const PSQL_DATABASE = 'ais_yar_02022024';
+const PSQL_DATABASE = 'ais_novgorod_0430';
 const PSQL_USER = 'postgres';
 const PSQL_PASSWORD = 'postgres';
 
@@ -16,6 +16,7 @@ const CONNECTION_INTERVAL = 1000;
 const STATE_INTERVAL = 1000;
 const CLIENT_PING_INTERVAL = 1000;
 
+const VISSONIC_MODULE_PATH =
+    '/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/services/external_resources/ais_vissonic_client.sh';
+
 const ENABLE_LOG = true;
-const EXTERNAL_RESOURCES_FOLDER =
-    '//home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/services/external_resources/';

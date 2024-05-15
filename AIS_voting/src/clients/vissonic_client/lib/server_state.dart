@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'vissonic_client/terminal_mic.dart';
 
 class ServerState {
@@ -10,10 +11,9 @@ class ServerState {
         'isVissonicServerOnline': isVissonicServerOnline,
         'isVissonicModuleInit': isVissonicModuleInit,
         'micsEnabled': micsEnabled,
-        'activeMics': currentMics
+        'activeMics': jsonEncode(Map.fromEntries(currentMics
             .where((element) => element.getIsSound())
-            .map((e) => e.micId)
-            .toList(),
+            .map((e) => MapEntry(e.micId.toString(), e.startTime)))),
         'waitingMics': currentMics
             .where((element) => element.getIsWaiting())
             .map((e) => e.micId)

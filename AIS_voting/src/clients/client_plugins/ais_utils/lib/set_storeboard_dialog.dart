@@ -76,6 +76,7 @@ class SetStoreboardDialog {
   final Function(int) _removeUserAskWord;
 
   bool _isMicActive = false;
+  bool _isMicWaiting = false;
   bool _isBlockMicButton = false;
   Map<StoreboardTemplate, TextEditingController> _templateNameControllers =
       new Map<StoreboardTemplate, TextEditingController>();
@@ -181,7 +182,7 @@ class SetStoreboardDialog {
       _currentTabIndex = 2;
     }
 
-    updateMics(_serverState.activeMics);
+    updateMics(_serverState.activeMics, _serverState.waitingMics);
 
     generateSpeakersList();
   }
@@ -262,13 +263,13 @@ class SetStoreboardDialog {
     return null;
   }
 
-  void update(Map<String, String> activeMics) {
+  void update(Map<String, String> activeMics, List<int> waitingMics) {
     _setStateForDialog(() {
-      updateMics(activeMics);
+      updateMics(activeMics, waitingMics);
     });
   }
 
-  void updateMics(Map<String, String> activeMics) {
+  void updateMics(Map<String, String> activeMics, List<int> waitingMics) {
     var terminalId = _terminalId;
 
     if (_group.workplaces.tribuneNames.contains(_speakerPlace)) {
@@ -277,6 +278,13 @@ class SetStoreboardDialog {
 
     _isMicActive =
         activeMics.entries.any((element) => element.key == terminalId);
+
+    var parts = <int>[];
+    if (terminalId != null) {
+      parts = terminalId.split(',').map((e) => int.parse(e)).toList();
+    }
+
+    _isMicWaiting = waitingMics.any((element) => parts.contains(element));
   }
 
   DateTime roundMinutes(DateTime d, int roundInterval) {
@@ -487,85 +495,85 @@ class SetStoreboardDialog {
                           ),
                         ],
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
-                              child: TextButton(
-                                child: Text('Добавить в очередь',
-                                    style: TextStyle(fontSize: 20)),
-                                onPressed: () async {
-                                  setStateForDialog(() {
-                                    _wasError = _selectDataController
-                                            .selectedList.length ==
-                                        0;
-                                  });
-                                  if (!_formKeySetSpeaker.currentState
-                                          .validate() ||
-                                      _wasError) {
-                                    return;
-                                  }
+                      // Row(
+                      //   children: [
+                      //     Expanded(
+                      //       child: Padding(
+                      //         padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      //         child: TextButton(
+                      //           child: Text('Добавить в очередь',
+                      //               style: TextStyle(fontSize: 20)),
+                      //           onPressed: () async {
+                      //             setStateForDialog(() {
+                      //               _wasError = _selectDataController
+                      //                       .selectedList.length ==
+                      //                   0;
+                      //             });
+                      //             if (!_formKeySetSpeaker.currentState
+                      //                     .validate() ||
+                      //                 _wasError) {
+                      //               return;
+                      //             }
 
-                                  if (GroupUtil.isTerminalGuest(
-                                      _serverState, _terminalId)) {
-                                    await _addGuestAskWord(_selectDataController
-                                        .selectedList.first.nameSingleItem);
-                                  } else {
-                                    var userId = _serverState
-                                        .usersTerminals[_terminalId];
+                      //             if (GroupUtil.isTerminalGuest(
+                      //                 _serverState, _terminalId)) {
+                      //               await _addGuestAskWord(_selectDataController
+                      //                   .selectedList.first.nameSingleItem);
+                      //             } else {
+                      //               var userId = _serverState
+                      //                   .usersTerminals[_terminalId];
 
-                                    if (userId != null &&
-                                        _serverState.terminalsOnline
-                                            .contains(_terminalId)) {
-                                      await _addUserAskWord(userId);
-                                    }
-                                  }
+                      //               if (userId != null &&
+                      //                   _serverState.terminalsOnline
+                      //                       .contains(_terminalId)) {
+                      //                 await _addUserAskWord(userId);
+                      //               }
+                      //             }
 
-                                  setStateForDialog(() {});
-                                },
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(0, 0, 20, 20),
-                              child: TextButton(
-                                child: Text('Исключить из очереди',
-                                    style: TextStyle(fontSize: 20)),
-                                onPressed: () async {
-                                  setStateForDialog(() {
-                                    _wasError = _selectDataController
-                                            .selectedList.length ==
-                                        0;
-                                  });
-                                  if (!_formKeySetSpeaker.currentState
-                                          .validate() ||
-                                      _wasError) {
-                                    return;
-                                  }
-                                  if (GroupUtil.isTerminalGuest(
-                                      _serverState, _terminalId)) {
-                                    await _removeGuestAskWord(
-                                        _selectDataController
-                                            .selectedList.first.nameSingleItem);
-                                  } else {
-                                    var userId = _serverState
-                                        .usersTerminals[_terminalId];
+                      //             setStateForDialog(() {});
+                      //           },
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     Expanded(
+                      //       child: Padding(
+                      //         padding: EdgeInsets.fromLTRB(0, 0, 20, 20),
+                      //         child: TextButton(
+                      //           child: Text('Исключить из очереди',
+                      //               style: TextStyle(fontSize: 20)),
+                      //           onPressed: () async {
+                      //             setStateForDialog(() {
+                      //               _wasError = _selectDataController
+                      //                       .selectedList.length ==
+                      //                   0;
+                      //             });
+                      //             if (!_formKeySetSpeaker.currentState
+                      //                     .validate() ||
+                      //                 _wasError) {
+                      //               return;
+                      //             }
+                      //             if (GroupUtil.isTerminalGuest(
+                      //                 _serverState, _terminalId)) {
+                      //               await _removeGuestAskWord(
+                      //                   _selectDataController
+                      //                       .selectedList.first.nameSingleItem);
+                      //             } else {
+                      //               var userId = _serverState
+                      //                   .usersTerminals[_terminalId];
 
-                                    if (userId != null &&
-                                        _serverState.terminalsOnline
-                                            .contains(_terminalId)) {
-                                      await _removeUserAskWord(userId);
-                                    }
-                                  }
-                                  setStateForDialog(() {});
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      //               if (userId != null &&
+                      //                   _serverState.terminalsOnline
+                      //                       .contains(_terminalId)) {
+                      //                 await _removeUserAskWord(userId);
+                      //               }
+                      //             }
+                      //             setStateForDialog(() {});
+                      //           },
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ],
@@ -809,8 +817,14 @@ class SetStoreboardDialog {
 
     var micButtonText =
         _isMicActive ? 'Отключить микрофон' : 'Включить микрофон';
+    if (_isMicWaiting) {
+      micButtonText = 'Микрофон ожидает';
+    }
 
     Color micColor = Colors.black;
+    if (_isMicWaiting) {
+      micColor = Colors.green;
+    }
     if (_isMicActive) {
       micColor = Colors.red;
     }

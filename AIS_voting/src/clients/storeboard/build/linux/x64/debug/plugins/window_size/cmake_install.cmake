@@ -1,8 +1,8 @@
-# Install script for directory: /home/user/Desktop/AIS_voter/AIS_voting/src/clients/storeboard/linux/flutter/ephemeral/.plugin_symlinks/window_size/linux
+# Install script for directory: /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/storeboard/linux/flutter/ephemeral/.plugin_symlinks/window_size/linux
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/user/Desktop/AIS_voter/AIS_voting/src/clients/storeboard/build/linux/x64/debug/bundle")
+  set(CMAKE_INSTALL_PREFIX "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/storeboard/build/linux/x64/debug/bundle")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

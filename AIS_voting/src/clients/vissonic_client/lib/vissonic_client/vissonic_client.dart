@@ -282,6 +282,7 @@ class VissonicClient {
     // process keepAlive message
     // FE 00 0E 00 FC
     if (terminalId == 0x000 && command == 0x00e) {
+      _insertToQueue(<VissonicCommand>[VissonicBasicCommand.keepAlive()]);
       return;
     }
 
@@ -428,6 +429,47 @@ class VissonicClient {
     var commands = <VissonicCommand>[];
 
     if (terminalIds == null) {
+      return;
+    }
+
+    if (terminalIds == 'fff' && isMicrophoneOn == false) {
+      // Disable sound on waiting and active mics
+      // for (var i = 0; i < ServerState.currentMics.length; i++) {
+      //   if (ServerState.currentMics[i].getIsWaiting() &&
+      //       !ServerState.currentMics[i].isUnblockedMic) {
+      //     commands.addAll(ServerState.currentMics[i].processSetMicSound(false));
+      //   }
+      // }
+      for (var i = 0; i < ServerState.currentMics.length; i++) {
+        if (ServerState.currentMics[i].getIsSound() &&
+            !ServerState.currentMics[i].isUnblockedMic) {
+          commands.addAll(ServerState.currentMics[i].processSetMicSound(false));
+        }
+      }
+
+      Timer(Duration(milliseconds: 500), () {
+        _addToQueue(<VissonicCommand>[
+          VissonicCommand([
+            0x00,
+            0x06,
+            0x00,
+            0x11,
+            0xF1,
+            0xFF,
+            0xFC,
+            0xFC
+          ], [
+            0xFE,
+            0x11,
+            0xF1,
+            0xFF,
+            0xFC,
+          ])
+        ]);
+      });
+
+      _addToQueue(commands);
+
       return;
     }
 

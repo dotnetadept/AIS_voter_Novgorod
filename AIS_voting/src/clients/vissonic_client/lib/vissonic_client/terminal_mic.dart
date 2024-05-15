@@ -14,8 +14,14 @@ class TerminalMic {
   bool? _isEnabled;
   bool _isWaiting = false;
   bool _isSound = false;
+  int _timeOffset = 0;
+  String startTime = getDateTimeNow(0).toIso8601String();
 
-  TerminalMic(this.terminalId, this.micId);
+  TerminalMic(this.terminalId, this.micId, this.startTime);
+
+  static DateTime getDateTimeNow(int clientTimeOffset) {
+    return DateTime.now().add(Duration(milliseconds: clientTimeOffset));
+  }
 
   void setIsEnabled(bool? isEnabled) {
     _isEnabled = isEnabled;
@@ -39,6 +45,9 @@ class TerminalMic {
     setIsWaiting(false);
 
     _isSound = isSound;
+
+    // set start time
+    startTime = getDateTimeNow(_timeOffset).toIso8601String();
   }
 
   bool getIsSound() {
@@ -48,8 +57,8 @@ class TerminalMic {
   List<VissonicCommand> processSetMicSound(bool isSound) {
     var commands = <VissonicCommand>[];
 
-    // do not change sound if it same
-    if (_isSound != isSound) {
+    // change sound if it not same or mic waiting
+    if (_isSound != isSound || _isWaiting == true) {
       // enable mic state of disabled mics before set sound
       if (isSound) {
         var stateCommand = processSetMicEnabled(true);
@@ -80,6 +89,7 @@ class TerminalMic {
       : terminalId = json['terminalId'],
         micId = json['micId'],
         isUnblockedMic = json['isUnblockedMic'],
+        _timeOffset = json['timeOffset'],
         _isEnabled = null,
         _isWaiting = false,
         _isSound = false;

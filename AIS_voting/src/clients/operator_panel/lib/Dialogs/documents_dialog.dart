@@ -16,7 +16,7 @@ class DocumentsDialog {
   Map<String, bool> _sendDocuments = {};
 
   List<String> _filteredTerminals;
-  String _filter = 'deputy';
+  String _filter = 'online';
 
   ScrollController _documentsTableScrollController;
 

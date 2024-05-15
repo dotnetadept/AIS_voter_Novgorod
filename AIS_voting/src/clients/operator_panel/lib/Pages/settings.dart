@@ -2644,6 +2644,30 @@ class _SettingsPageState extends State<SettingsPage>
                   ],
                 ),
               ),
+              getDefaultVotingCountHeader(),
+              Container(
+                padding: EdgeInsets.fromLTRB(15, 10, 0, 10),
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: _currentSettings
+                              .votingSettings.isCountNotVotingAsIndifferent ==
+                          true,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _currentSettings.votingSettings
+                              .isCountNotVotingAsIndifferent = value;
+                        });
+
+                        DbHelper.saveSettings(_currentSettings);
+                      },
+                    ),
+                    Text(
+                      'Учитывать не голосовавших как воздержавшихся',
+                    ),
+                  ],
+                ),
+              ),
               getDefaultSignalsHeader(),
               getIntSettingItem((value) {
                 _currentSettings.votingSettings.defaultShowResultInterval =
@@ -2981,6 +3005,26 @@ class _SettingsPageState extends State<SettingsPage>
             color: Colors.lightBlue,
             child: Text(
               'Настройки режима голосования',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 20),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getDefaultVotingCountHeader() {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.fromLTRB(10, 18, 10, 17),
+            color: Colors.lightBlue,
+            child: Text(
+              'Настройки подсчета результатов голосования',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,

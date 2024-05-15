@@ -4,7 +4,7 @@ import 'package:global_configuration/global_configuration.dart';
 class StreamUtils {
   Future<void> closeBrowser() async {
     try {
-      Process.run(
+      await Process.run(
           GlobalConfiguration().getValue('close_browser_command'),
           GlobalConfiguration()
               .getValue('close_browser_command_params')
@@ -15,7 +15,7 @@ class StreamUtils {
     }
   }
 
-  Future<void> startStream() async {
+  void startStream() async {
     try {
       var startBrowserParams = GlobalConfiguration()
           .getValue('start_browser_command_params')
@@ -30,10 +30,5 @@ class StreamUtils {
     } catch (exc) {
       print('${DateTime.now()} Start Chrome Exception: $exc\n');
     }
-  }
-
-  Future<void> refreshStream() async {
-    await closeBrowser();
-    await startStream();
   }
 }

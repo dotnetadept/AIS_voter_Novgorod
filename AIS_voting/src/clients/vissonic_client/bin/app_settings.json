@@ -1,8 +1,8 @@
 {
-    "server": "192.168.0.104",
+    "server": "192.168.15.110",
     "http_port": "27153",
     "ws_port": "27154",
-    "vissonic_server": "192.168.0.101",
+    "vissonic_server": "192.168.100.100",
     "vissonic_port": 10166,
     "vissonic_server_timeout_sec": 10,
     "ais_server_timeout_sec": 10,

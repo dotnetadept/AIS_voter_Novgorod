@@ -329,6 +329,7 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
   Widget _defaultSelectItemWidget(T? data) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Expanded(
           child: widget.dropdownBuilder != null
@@ -381,8 +382,10 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
   InputDecoration _manageDropdownDecoration(FormFieldState state, T? data) {
     return (widget.dropdownSearchDecoration ??
             InputDecoration(
-                contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                border: OutlineInputBorder()))
+              contentPadding: EdgeInsets.fromLTRB(
+                  (widget.dropDownButton != null ? 12 : 5), 12, 0, 0),
+              border: OutlineInputBorder(),
+            ))
         .applyDefaults(Theme.of(state.context).inputDecorationTheme)
         .copyWith(
             enabled: widget.enabled,

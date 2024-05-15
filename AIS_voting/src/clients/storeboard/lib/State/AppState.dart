@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:ais_utils/ais_utils.dart';
 import 'package:ais_model/ais_model.dart';
+import 'package:storeboard/State/SoundPlayer.dart';
 import 'package:storeboard/Utils/stream_utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:global_configuration/global_configuration.dart';
@@ -29,28 +30,21 @@ class AppState with ChangeNotifier {
   // selected agenda items
   static Question _currentQuestion;
 
+  //stream
+  static Future<void> Function() refreshStream;
+
   factory AppState() {
     return _singleton;
   }
 
-  AppState._internal() {
-    Timer.periodic(
-        Duration(
-            milliseconds: int.parse(
-                GlobalConfiguration().getValue('terminal_timer_delay'))),
-        (timer) async {
-      //close browser if current page is not streamView
-      if (AppState().getCurrentPage() != '/viewStream') {
-        await StreamUtils().closeBrowser();
-      }
-    });
-  }
+  AppState._internal();
 
   Future<void> loadData(int meetingId, int selectedQuestionId) async {
     if (meetingId != null) {
       await http
-          .get(ServerConnection.getHttpServerUrl(GlobalConfiguration()) +
-              '/meetings/$meetingId')
+          .get(Uri.http(
+              ServerConnection.getHttpServerUrl(GlobalConfiguration()),
+              '/meetings/$meetingId'))
           .then((response) {
         _currentMeeting = Meeting.fromJson(json.decode(response.body));
         _currentQuestion = _currentMeeting.agenda.questions.firstWhere(
@@ -64,31 +58,50 @@ class AppState with ChangeNotifier {
     }
 
     await http
-        .get(ServerConnection.getHttpServerUrl(GlobalConfiguration()) +
-            '/settings')
+        .get(Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
+            '/settings'))
         .then((response) {
       _settings = (json.decode(response.body) as List)
           .map((data) => Settings.fromJson(data))
           .toList()
           .firstWhere((element) => element.isSelected, orElse: () => null);
+
+      SoundPlayer.setIsActive(_settings.signalsSettings.isStoreboardPlaySound);
     });
     await http
-        .get(Uri.parse(
-            ServerConnection.getHttpServerUrl(GlobalConfiguration()) +
-                "/voting_modes"))
+        .get(Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
+            "/voting_modes"))
         .then((response) {
       _votingModes = (json.decode(response.body) as List)
           .map((data) => VotingMode.fromJson(data))
           .toList();
     });
     await http
-        .get(Uri.parse(
-            ServerConnection.getHttpServerUrl(GlobalConfiguration()) +
-                "/users"))
+        .get(Uri.http(
+            ServerConnection.getHttpServerUrl(GlobalConfiguration()), "/users"))
         .then((response) {
       _users = (json.decode(response.body) as List)
           .map((data) => User.fromJson(data))
           .toList();
+
+      _users.sort((a, b) => a.getShortName().compareTo(b.getShortName()));
+    });
+    await http
+        .get(Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
+            "/signals"))
+        .then((response) {
+      var signals = (json.decode(response.body) as List)
+          .map((data) => Signal.fromJson(data))
+          .toList();
+
+      for (int i = 0; i < signals.length; i++) {
+        if (signals[i].soundPath != null && signals[i].soundPath.isNotEmpty) {
+          SoundPlayer.loadSound(signals[i].soundPath, signals[i].id.toString());
+        }
+      }
+
+      SoundPlayer.loadSound(_settings.signalsSettings.hymnStart, 'hymn_start');
+      SoundPlayer.loadSound(_settings.signalsSettings.hymnEnd, 'hymn_end');
     });
     await NTP
         .getNtpOffset(

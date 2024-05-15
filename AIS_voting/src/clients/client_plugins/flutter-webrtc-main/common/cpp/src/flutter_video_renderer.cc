@@ -45,15 +45,15 @@ const FlutterDesktopPixelBuffer* FlutterVideoRenderer::CopyPixelBuffer(
 void FlutterVideoRenderer::OnFrame(scoped_refptr<RTCVideoFrame> frame) {
  
 
-  // std::time_t now = std::time(nullptr);
-  //   struct tm* dateTime = std::localtime(&now);
+  std::time_t now = std::time(nullptr);
+    struct tm* dateTime = std::localtime(&now);
 
-  //   char buffer[80];
-  //   strftime(buffer, 80, "%Y-%m-%d %H:%M:%S.%f", dateTime);
+    char buffer[80];
+    strftime(buffer, 80, "%Y-%m-%d %H:%M:%S.%f", dateTime);
 
-  //   std::string formattedDateTime(buffer);
+    std::string formattedDateTime(buffer);
 
-  //   std::cout << formattedDateTime << std::endl;
+    std::cout << formattedDateTime << std::endl;
 
   if (!first_frame_rendered) {
     EncodableMap params;

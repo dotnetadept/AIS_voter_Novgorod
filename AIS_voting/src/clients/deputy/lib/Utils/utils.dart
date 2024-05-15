@@ -4,6 +4,11 @@ import '../State/WebSocketConnection.dart';
 
 class Utils {
   bool getIsAskWordButtonDisabled() {
+    if (AppState().getServerState().isStreamStarted == true &&
+        !AppState().getServerState().showAskWordButton) {
+      return true;
+    }
+
     return false;
   }
 

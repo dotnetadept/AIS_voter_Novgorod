@@ -118,7 +118,7 @@ rule CXX_SHARED_LIBRARY_LINKER__media_kit_native_event_loop
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /snap/flutter/145/usr/bin/cmake -S/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/linux -B/home/user/Desktop/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug
+  command = /snap/flutter/145/usr/bin/cmake -S/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/linux -B/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/operator_panel/build/linux/x64/debug
   description = Re-running CMake...
   generator = 1
 

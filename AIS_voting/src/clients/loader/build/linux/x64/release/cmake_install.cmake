@@ -1,8 +1,8 @@
-# Install script for directory: /home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/linux
+# Install script for directory: /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/linux
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle")
+  set(CMAKE_INSTALL_PREFIX "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -39,112 +39,112 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
   
-  file(REMOVE_RECURSE "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/")
+  file(REMOVE_RECURSE "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/")
   
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader")
+  if(EXISTS "$ENV{DESTDIR}/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader"
+         FILE "$ENV{DESTDIR}/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader"
          RPATH "$ORIGIN/lib")
   endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader")
+   "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle" TYPE EXECUTABLE FILES "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/intermediates_do_not_run/loader")
-  if(EXISTS "$ENV{DESTDIR}/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader")
+file(INSTALL DESTINATION "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle" TYPE EXECUTABLE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/intermediates_do_not_run/loader")
+  if(EXISTS "$ENV{DESTDIR}/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader")
     file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader"
-         OLD_RPATH "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/file_chooser:/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/window_size:/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/linux/flutter/ephemeral:"
+         FILE "$ENV{DESTDIR}/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader"
+         OLD_RPATH "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/file_chooser:/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/window_size:/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/linux/flutter/ephemeral:"
          NEW_RPATH "$ORIGIN/lib")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/snap/flutter/current/usr/bin/strip" "$ENV{DESTDIR}/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader")
+      execute_process(COMMAND "/snap/flutter/current/usr/bin/strip" "$ENV{DESTDIR}/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/loader")
     endif()
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data/icudtl.dat")
+   "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data/icudtl.dat")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/linux/flutter/ephemeral/icudtl.dat")
+file(INSTALL DESTINATION "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/linux/flutter/ephemeral/icudtl.dat")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib/libflutter_linux_gtk.so")
+   "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib/libflutter_linux_gtk.so")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/linux/flutter/ephemeral/libflutter_linux_gtk.so")
+file(INSTALL DESTINATION "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/linux/flutter/ephemeral/libflutter_linux_gtk.so")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib/libfile_chooser_plugin.so;/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib/libwindow_size_plugin.so")
+   "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib/libfile_chooser_plugin.so;/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib/libwindow_size_plugin.so")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib" TYPE FILE FILES
-    "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/file_chooser/libfile_chooser_plugin.so"
-    "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/window_size/libwindow_size_plugin.so"
+file(INSTALL DESTINATION "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib" TYPE FILE FILES
+    "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/file_chooser/libfile_chooser_plugin.so"
+    "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/window_size/libwindow_size_plugin.so"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
   
-  file(REMOVE_RECURSE "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data/flutter_assets")
+  file(REMOVE_RECURSE "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data/flutter_assets")
   
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data/flutter_assets")
+   "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data/flutter_assets")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data" TYPE DIRECTORY FILES "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build//flutter_assets")
+file(INSTALL DESTINATION "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/data" TYPE DIRECTORY FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build//flutter_assets")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib/libapp.so")
+   "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib/libapp.so")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib" TYPE FILE FILES "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/lib/libapp.so")
+file(INSTALL DESTINATION "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/bundle/lib" TYPE FILE FILES "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/lib/libapp.so")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/flutter/cmake_install.cmake")
-  include("/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/file_chooser/cmake_install.cmake")
-  include("/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/window_size/cmake_install.cmake")
+  include("/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/flutter/cmake_install.cmake")
+  include("/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/file_chooser/cmake_install.cmake")
+  include("/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/plugins/window_size/cmake_install.cmake")
 
 endif()
 
@@ -156,5 +156,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/user/Desktop/AIS_voter_Yaroslavl/AIS_voting/src/clients/loader/build/linux/x64/release/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/loader/build/linux/x64/release/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
