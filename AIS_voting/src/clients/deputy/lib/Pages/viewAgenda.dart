@@ -3,14 +3,12 @@ import 'package:ais_model/ais_model.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:deputy/Utils/table_utils.dart';
 import 'package:global_configuration/global_configuration.dart';
-import '../State/VideoSignal.dart';
 import '../Utils/utils.dart';
 import '../Widgets/voting_utils.dart';
 import '/State/WebSocketConnection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ais_utils/ais_utils.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../State/AppState.dart';
 
 class ViewAgendaPage extends StatefulWidget {

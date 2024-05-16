@@ -4,7 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_window
-  flutter_webrtc
   jacarta_token
   screen_retriever
   window_manager

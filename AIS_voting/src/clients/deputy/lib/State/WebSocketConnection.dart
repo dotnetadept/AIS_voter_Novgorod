@@ -86,10 +86,6 @@ class WebSocketConnection with ChangeNotifier {
     AppState().setAgendaDocument(null);
     AppState().setAgendaScrollPosition(0.0);
 
-    if (AppState().getCurrentPage() != '/viewVideo') {
-      AppState().setCurrentPage('');
-    }
-
     // check if terminal is guest
     var guest = AppState().getCurrentGuest();
 
@@ -693,8 +689,7 @@ class WebSocketConnection with ChangeNotifier {
   reconnect() {
     print('Reconnect to server ...');
 
-    if (!(AppState().getCurrentPage() == '/viewStream' ||
-        AppState().getCurrentPage() == '/viewVideo')) {
+    if (!(AppState().getCurrentPage() == '/viewStream')) {
       setOffline();
     } else {
       AppState().setCurrentUser(null);
@@ -806,10 +801,6 @@ class WebSocketConnection with ChangeNotifier {
           if (AppState().getCurrentPage() != '/viewStream') {
             navigateToPage('/viewStream');
           }
-        } else {
-          if (AppState().getCurrentPage() != '/viewVideo') {
-            navigateToPage('/viewVideo');
-          }
         }
       }
 
@@ -829,7 +820,6 @@ class WebSocketConnection with ChangeNotifier {
     // process further navigation on systemStateChange
     if (_previousSystemState == AppState().getServerState().systemState &&
         _previousRegistredState == AppState().getIsRegistred() &&
-        AppState().getCurrentPage() != '/viewVideo' &&
         AppState().getCurrentPage() != '/viewStream') {
       return;
     } else {

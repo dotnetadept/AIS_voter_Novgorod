@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:deputy/Utils/utils.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +19,6 @@ import 'Pages/voting.dart';
 import 'Pages/viewAgenda.dart';
 import 'Pages/viewDocument.dart';
 import 'Pages/viewGroup.dart';
-import 'Pages/viewVideo.dart';
 import 'Pages/reconnect.dart';
 import 'Pages/loading.dart';
 import 'Pages/insertCard.dart';
@@ -153,14 +151,8 @@ class _MyAppState extends State<MyApp> with WindowListener {
     if (settings.name == '/viewDocument') {
       return _buildRoute(settings, new ViewDocumentPage());
     }
-    if (settings.name == '/viewVideo') {
-      return _buildRoute(settings, new ViewVideoPage());
-    }
     if (settings.name == '/viewStream') {
       return _buildRoute(settings, new ViewStreamPage());
-    }
-    if (settings.name == '/viewVideo') {
-      return _buildRoute(settings, new ViewVideoPage());
     }
     if (settings.name == '/viewGroup') {
       return _buildRoute(settings, new ViewGroupPage());
