@@ -2447,6 +2447,15 @@ class WebSocketServer {
       await sendVissonicMessage('setAllState',
           isEnabled: getIsMicsEnabledState());
 
+      // backup DB
+      await Process.run('bash', [BACKUP_DB_FOLDER + 'backup_db.sh'],
+              runInShell: true)
+          .then((ProcessResult rs) {
+        if (rs.stderr.toString().isNotEmpty) {
+          print('bash ${BACKUP_DB_FOLDER}backup_db.sh:\r\n' + rs.stderr);
+        }
+      });
+
       return;
     }
   }

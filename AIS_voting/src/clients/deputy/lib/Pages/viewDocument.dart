@@ -19,6 +19,8 @@ class ViewDocumentPage extends StatefulWidget {
 class _ViewDocumentPageState extends State<ViewDocumentPage> {
   QuestionFile _currentDocument;
   String _documentPageCount = '0';
+  String _errorMessage = '';
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +41,11 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
   }
 
   void openDocument(String documentPath) {
+    if (!File(documentPath.replaceFirst('file:/', '')).existsSync()) {
+      _errorMessage = 'Не найден документ: $documentPath';
+      return;
+    }
+
     // load new evince window on top of main
     try {
       var stats = Process.runSync('pdfinfo', <String>[documentPath]);
@@ -54,10 +61,12 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
           break;
         }
       }
-      print('Путь документа:$documentPath\n');
+      print('Путь документа: $documentPath\n');
       Process.run('evince', <String>[documentPath]);
     } catch (exc) {
       print('Ошибка evice: $exc\n');
+      _errorMessage =
+          'В ходе открытия документа $documentPath возникла ошибка: $exc';
     }
   }
 
@@ -107,26 +116,31 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
           Expanded(
             child: Container(),
           ),
-          Row(children: [
-            Expanded(
-              child: Container(),
-            ),
-            Container(
-              height: 30,
-              width: 30,
-              child: CircularProgressIndicator(),
-            ),
-            Container(
-              width: 15,
-            ),
-            Text(
-              'Загрузка ...',
-              style: TextStyle(fontSize: 20),
-            ),
-            Expanded(
-              child: Container(),
-            ),
-          ]),
+          _errorMessage.isEmpty
+              ? Row(children: [
+                  Expanded(
+                    child: Container(),
+                  ),
+                  Container(
+                    height: 30,
+                    width: 30,
+                    child: CircularProgressIndicator(),
+                  ),
+                  Container(
+                    width: 15,
+                  ),
+                  Text(
+                    'Загрузка ...',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Expanded(
+                    child: Container(),
+                  ),
+                ])
+              : Text(
+                  _errorMessage,
+                  style: TextStyle(color: Colors.red),
+                ),
           Expanded(
             child: Container(),
           ),

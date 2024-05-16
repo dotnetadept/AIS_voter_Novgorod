@@ -571,7 +571,7 @@ class _MeetingsPageState extends State<MeetingsPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Tooltip(
-                message: 'Протокол заседания',
+                message: 'Протокол заседания Президиума',
                 child: TextButton(
                   style: ButtonStyle(
                     backgroundColor:
@@ -583,7 +583,29 @@ class _MeetingsPageState extends State<MeetingsPage> {
                   ),
                   child: Icon(Icons.list_alt, color: Colors.blue),
                   onPressed: () async {
-                    await ReportHelper().getMeetingReport(
+                    await ReportHelper().getMeetingDetailedReport(
+                        context,
+                        _filteredMeetings[index],
+                        widget.settings,
+                        widget.timeOffset,
+                        _votingModes);
+                  },
+                ),
+              ),
+              Tooltip(
+                message: 'Протокол общего заседания',
+                child: TextButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.transparent),
+                    overlayColor: MaterialStateProperty.all(Colors.black12),
+                    shape: MaterialStateProperty.all(
+                      CircleBorder(side: BorderSide(color: Colors.transparent)),
+                    ),
+                  ),
+                  child: Icon(Icons.list_alt, color: Colors.blueGrey),
+                  onPressed: () async {
+                    await ReportHelper().getMeetingCommonReport(
                         context,
                         _filteredMeetings[index],
                         widget.settings,

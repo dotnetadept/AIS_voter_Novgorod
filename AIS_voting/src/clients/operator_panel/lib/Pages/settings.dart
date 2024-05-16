@@ -5878,6 +5878,10 @@ class _SettingsPageState extends State<SettingsPage>
         .versions;
     var rowNumber = 0;
 
+    if (versions.isEmpty) {
+      return Container();
+    }
+
     return Scrollbar(
       thumbVisibility: true,
       controller: _versionsScrollController,
