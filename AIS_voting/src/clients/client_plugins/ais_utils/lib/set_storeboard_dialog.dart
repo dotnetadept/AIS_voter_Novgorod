@@ -22,7 +22,7 @@ class SetStoreboardDialog {
   final bool _isOperatorView;
   final List<ais.Interval> _intervals;
 
-  ais.Interval _selectedInterval;
+  ais.Interval? _selectedInterval;
   bool _autoEnd;
 
   String _terminalId;

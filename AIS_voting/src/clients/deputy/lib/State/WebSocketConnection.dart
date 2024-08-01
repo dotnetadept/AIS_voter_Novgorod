@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:deputy/Utils/utils.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/scheduler.dart';
@@ -18,29 +19,28 @@ import 'package:global_configuration/global_configuration.dart';
 import '../Utils/stream_utils.dart';
 import '../main.dart';
 import 'AppState.dart';
-import 'CardState.dart';
 
 class WebSocketConnection with ChangeNotifier {
   GlobalKey<NavigatorState> navigatorKey;
-  static WebSocket _webSocket;
-  static int _websocketState;
-  WebSocketChannel _channel;
+  static WebSocket? _webSocket;
+  static int? _websocketState;
+  late WebSocketChannel _channel;
   String _clientType = '';
-  SystemState _previousSystemState;
-  bool _previousRegistredState;
+  SystemState? _previousSystemState;
+  late bool _previousRegistredState;
 
   bool _isOnline = false;
   bool _isManualLogin = false;
   static bool _isConnectStarted = false;
   bool _isDataLoadStarted = false;
 
-  static Timer _votingResultNavigationTimer;
+  static Timer? _votingResultNavigationTimer;
 
-  static void Function() onConnect;
-  static void Function(String) onFail;
-  static void Function() updateAgenda;
+  static void Function()? onConnect;
+  static void Function(String)? onFail;
+  static void Function()? updateAgenda;
 
-  static WebSocketConnection _singleton;
+  static late WebSocketConnection _singleton;
 
   static WebSocketConnection getInstance() {
     return _singleton;
@@ -58,8 +58,6 @@ class WebSocketConnection with ChangeNotifier {
     _previousSystemState = previousSystemState;
     notifyListeners();
   }
-
-  SystemState get getPrevSystemState => _previousSystemState;
 
   static void init(GlobalKey<NavigatorState> navigatorKey) {
     _singleton = WebSocketConnection(navigatorKey: navigatorKey);
@@ -105,6 +103,9 @@ class WebSocketConnection with ChangeNotifier {
   }
 
   void setState(String responce) async {
+    var stopwatch = Stopwatch();
+    stopwatch.start();
+
     var registredMessage = json
         .encode(<String, String>{'registration': 'ЗАРЕГИСТРИРОВАН'}).toString();
     var unregistredMessage = json.encode(
@@ -179,7 +180,7 @@ class WebSocketConnection with ChangeNotifier {
         AppState().setAgendaDocument(null);
         AppState().setCurrentDocument(null);
         AppState().setCurrentQuestion(
-            AppState().getCurrentMeeting().agenda.questions.first);
+            AppState().getCurrentMeeting()!.agenda.questions.first);
         AppState().setAgendaScrollPosition(0.0);
 
         if (AppState().getCurrentPage() == '/viewAgenda') {
@@ -211,15 +212,15 @@ class WebSocketConnection with ChangeNotifier {
         // so previous files should be cleared
 
         if (await Directory('documents/').exists() &&
-            !(await Directory(
-                    'documents/' + AppState().getCurrentMeeting().agenda.folder)
+            !(await Directory('documents/' +
+                    AppState().getCurrentMeeting()!.agenda.folder)
                 .exists())) {
           await Directory('documents/').delete(recursive: true);
         }
 
         // load file versions data
         var versionFilePath = 'documents/' +
-            AppState().getCurrentMeeting().agenda.folder +
+            AppState().getCurrentMeeting()!.agenda.folder +
             '/version.txt';
         var versionsFile = File(versionFilePath);
         Map<String, dynamic> filesVersions = Map<String, dynamic>();
@@ -228,7 +229,7 @@ class WebSocketConnection with ChangeNotifier {
         }
 
         for (Question question
-            in AppState().getCurrentMeeting().agenda.questions) {
+            in AppState().getCurrentMeeting()!.agenda.questions) {
           for (QuestionFile file in question.files) {
             var fileUrl = ServerConnection.getFileServerDownloadUrl(
                     AppState().getSettings()) +
@@ -266,7 +267,8 @@ class WebSocketConnection with ChangeNotifier {
     } else if (json.decode(responce)['update_agenda'] != null) {
       var decodedAgenda =
           Agenda.fromJson(json.decode(json.decode(responce)['update_agenda']));
-      AppState().getCurrentMeeting().agenda.questions = decodedAgenda.questions;
+      AppState().getCurrentMeeting()?.agenda.questions =
+          decodedAgenda.questions;
 
       AppState().setIsDocumentsChecked(false);
       AppState().setAgendaDocument(new QuestionFile());
@@ -277,7 +279,7 @@ class WebSocketConnection with ChangeNotifier {
       if (_clientType != 'manager') {
         navigateToPage('/viewAgenda');
         if (updateAgenda != null) {
-          updateAgenda();
+          updateAgenda!();
         }
       }
     } else if (json.decode(responce)['setUser'] != null) {
@@ -301,20 +303,20 @@ class WebSocketConnection with ChangeNotifier {
           AppState().isCurrentUserManager() == false) {
         updateClientType(
             AppState().isCurrentUserManager() ? 'manager' : 'deputy',
-            AppState().getCurrentUser().id);
+            AppState().getCurrentUser()!.id);
       } else {
         if (AppState().getCurrentUser() != null &&
             _clientType == 'deputy' &&
             AppState().isCurrentUserManager() == true) {
           updateClientType(
               AppState().isCurrentUserManager() ? 'manager' : 'deputy',
-              AppState().getCurrentUser().id);
+              AppState().getCurrentUser()!.id);
         }
       }
 
       // update Meeting
       var meetingId =
-          json.decode(AppState().getServerState()?.params)['selectedMeeting'];
+          json.decode(AppState().getServerState().params)['selectedMeeting'];
 
       if (AppState().getCurrentMeeting()?.id != meetingId) {
         if (meetingId != null && !_isDataLoadStarted) {
@@ -324,40 +326,33 @@ class WebSocketConnection with ChangeNotifier {
           await AppState().loadData(meetingId).then((value) async {
             _isDataLoadStarted = false;
 
-            // Default user authentication
-            if (GlobalConfiguration().getValue('use_auth_card') == 'true') {
-              CardState.setRefresh(true);
+            // auto set user
+            var defaultUser = AppState()
+                .getCurrentMeeting()!
+                .group
+                .getVoters()
+                .firstWhereOrNull((element) =>
+                    // AppState()
+                    //     .getCurrentMeeting()
+                    //     .group
+                    //     .workplaces
+                    //     .getTerminalIdByUserId(element.user.id) ==
+                    // GlobalConfiguration().getValue('terminal_id'),
+                    element.user.id ==
+                    AppState().getServerState().usersTerminals[
+                        GlobalConfiguration().getValue('terminal_id')])
+                ?.user;
+            if (defaultUser != null) {
+              AppState().setCurrentUser(defaultUser);
+              updateClientType(
+                  AppState().isCurrentUserManager() ? 'manager' : 'deputy',
+                  defaultUser.id);
             } else {
-              // auto set user
-              User defaultUser = AppState()
-                  .getCurrentMeeting()
-                  .group
-                  .getVoters()
-                  .firstWhere(
-                      (element) =>
-                          // AppState()
-                          //     .getCurrentMeeting()
-                          //     .group
-                          //     .workplaces
-                          //     .getTerminalIdByUserId(element.user.id) ==
-                          // GlobalConfiguration().getValue('terminal_id'),
-                          element.user.id ==
-                          AppState().getServerState().usersTerminals[
-                              GlobalConfiguration().getValue('terminal_id')],
-                      orElse: () => null)
-                  ?.user;
-              if (defaultUser != null) {
-                AppState().setCurrentUser(defaultUser);
-                updateClientType(
-                    AppState().isCurrentUserManager() ? 'manager' : 'deputy',
-                    defaultUser.id);
-              } else {
-                // auto set guest
-                var guest = AppState().getCurrentGuest();
+              // auto set guest
+              var guest = AppState().getCurrentGuest();
 
-                if (guest != null && guest.isNotEmpty) {
-                  updateClientType('guest', null, isManualLogin: true);
-                }
+              if (guest.isNotEmpty) {
+                updateClientType('guest', null, isManualLogin: true);
               }
             }
           });
@@ -376,20 +371,21 @@ class WebSocketConnection with ChangeNotifier {
           responce != votingIndifferentMessage &&
           responce != votingUndoMessage) {
         AppState().setDecision(AppState()
-            .getServerState()
-            .usersDecisions[AppState().getCurrentUser().id.toString()]);
+                .getServerState()
+                .usersDecisions[AppState().getCurrentUser()?.id.toString()] ??
+            '');
       }
       if (responce != registredMessage && responce != unregistredMessage) {
         AppState().setIsRegistred(AppState()
             .getServerState()
             .usersRegistered
-            .contains(AppState().getCurrentUser().id));
+            .contains(AppState().getCurrentUser()?.id));
       }
       if (responce != askWordYesMessage && responce != askWordNoMessage) {
         AppState().setAskWordStatus(AppState()
             .getServerState()
             .usersAskSpeech
-            .contains(AppState().getCurrentUser().id));
+            .contains(AppState().getCurrentUser()?.id));
       }
     }
 
@@ -404,11 +400,15 @@ class WebSocketConnection with ChangeNotifier {
     processNavigation();
     checkMeetingDocumentsStatus();
     notifyListeners();
+
+    stopwatch.stop();
+    print(
+        '${DateTime.now().toString()} setState time: ${stopwatch.elapsedMilliseconds}');
   }
 
   Future<void> updateFilesVersions(String data) async {
     var versionFilePath = 'documents/' +
-        AppState().getCurrentMeeting().agenda.folder +
+        AppState().getCurrentMeeting()!.agenda.folder +
         '/version.txt';
 
     var versionsFile = File(versionFilePath);
@@ -420,13 +420,13 @@ class WebSocketConnection with ChangeNotifier {
     await versionsFile.writeAsString(data);
   }
 
-  WebSocketConnection({this.navigatorKey});
+  WebSocketConnection({required this.navigatorKey});
 
   void sendMessage(String message) {
     if (_isOnline && _channel != null) {
       if (AppState().getCurrentUser() != null) {
         var connectionMessage = <String, dynamic>{
-          'deputyId': AppState().getCurrentUser().id,
+          'deputyId': AppState().getCurrentUser()?.id,
           'value': message,
         };
         _channel.sink.add(json.encode(connectionMessage));
@@ -449,7 +449,7 @@ class WebSocketConnection with ChangeNotifier {
     }
   }
 
-  void updateClientType(String clientType, int deputyId,
+  void updateClientType(String clientType, int? deputyId,
       {bool isManualLogin = false, bool isUseAuthCard = false}) {
     _isManualLogin = isManualLogin;
 
@@ -475,7 +475,7 @@ class WebSocketConnection with ChangeNotifier {
   }
 
   void setCurrentSpeaker(
-      SpeakerSession speakerSession, Signal startSignal, Signal endSignal) {
+      SpeakerSession speakerSession, Signal? startSignal, Signal? endSignal) {
     _channel.sink.add(json.encode({
       'speakerSession': json.encode(speakerSession.toJson()),
       'startSignal': json.encode(startSignal?.toJson()),
@@ -562,7 +562,7 @@ class WebSocketConnection with ChangeNotifier {
   }
 
   void setStoreboardStatus(
-      StoreboardState storeboardState, String storeboardParams) {
+      StoreboardState storeboardState, String? storeboardParams) {
     _channel.sink.add(json.encode({
       'storeboardState': EnumToString.convertToString(storeboardState),
       'storeboardParams': storeboardParams,
@@ -589,7 +589,7 @@ class WebSocketConnection with ChangeNotifier {
     _clientType = clientType;
 
     if (_webSocket != null && _websocketState != WebSocket.closed) {
-      await _webSocket.close();
+      await _webSocket?.close();
     }
 
     _websocketState = WebSocket.connecting;
@@ -597,12 +597,16 @@ class WebSocketConnection with ChangeNotifier {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
     await WebSocket.connect(
-        ServerConnection.getWebSocketServerUrl(GlobalConfiguration()),
-        headers: {
+            ServerConnection.getWebSocketServerUrl(GlobalConfiguration()),
+            headers: {
           'type': _clientType,
           'version': packageInfo.version,
           'terminalId': GlobalConfiguration().getValue('terminal_id')
-        }).then((value) {
+        })
+        .timeout(Duration(
+            milliseconds: int.parse(
+                GlobalConfiguration().getValue('connection_timeout'))))
+        .then((value) {
       print('on init complete');
       _isConnectStarted = false;
       if (value == null) {
@@ -616,7 +620,7 @@ class WebSocketConnection with ChangeNotifier {
                 int.parse(GlobalConfiguration().getValue('ping_interval')),
           );
 
-          _channel = IOWebSocketChannel(_webSocket);
+          _channel = IOWebSocketChannel(value);
 
           _channel.stream.listen((data) {
             processMessage(data);
@@ -646,7 +650,7 @@ class WebSocketConnection with ChangeNotifier {
       reconnect();
     } else {
       if (onFail != null) {
-        onFail(error);
+        onFail!(error);
       } else {
         setOffline();
       }
@@ -737,7 +741,7 @@ class WebSocketConnection with ChangeNotifier {
     }
 
     if (onConnect != null) {
-      onConnect();
+      onConnect!();
     }
 
     setState(data.toString());
@@ -751,13 +755,15 @@ class WebSocketConnection with ChangeNotifier {
       rootScaffoldMessengerKey.currentState?.clearSnackBars();
     }
 
-    // executes navigation after buildif
-
+    // executes navigation after build
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      if (AppState().getCurrentPage() != page) {
+      var previousPage = AppState().getCurrentPage();
+      // updateCurrentPage
+      AppState().setCurrentPage(page);
+
+      if (previousPage != page) {
         // exits browser and restores app window after viewStream page
-        if (AppState().getCurrentPage() == '/viewStream' &&
-            page != '/viewStream') {
+        if (previousPage == '/viewStream' && page != '/viewStream') {
           await StreamUtils().closeBrowser();
           await windowManager.setFullScreen(true);
         }
@@ -769,9 +775,6 @@ class WebSocketConnection with ChangeNotifier {
           WindowToFrontPlugin.focus();
         }
 
-        // updateCurrentPage
-        AppState().setCurrentPage(page);
-
         //close evince instances on navigation event
         try {
           Process.runSync('killall', <String>['evince']);
@@ -780,7 +783,7 @@ class WebSocketConnection with ChangeNotifier {
         }
 
         await navigatorKey.currentState
-            .pushNamedAndRemoveUntil(page, (Route<dynamic> route) => false);
+            ?.pushNamedAndRemoveUntil(page, (Route<dynamic> route) => false);
       }
     });
   }
@@ -809,9 +812,7 @@ class WebSocketConnection with ChangeNotifier {
 
     // Set stub view if no current meeting
     if (AppState().getCurrentMeeting() == null) {
-      if (AppState().getCurrentUser() != null) {
-        onUserExit();
-      }
+      onUserExit();
 
       navigateToPage('/waiting');
       return;
@@ -819,8 +820,7 @@ class WebSocketConnection with ChangeNotifier {
 
     // process further navigation on systemStateChange
     if (_previousSystemState == AppState().getServerState().systemState &&
-        _previousRegistredState == AppState().getIsRegistred() &&
-        AppState().getCurrentPage() != '/viewStream') {
+        _previousRegistredState == AppState().getIsRegistred()) {
       return;
     } else {
       _previousSystemState = AppState().getServerState().systemState;
@@ -847,25 +847,12 @@ class WebSocketConnection with ChangeNotifier {
       if (AppState().getServerState().systemState == SystemState.Registration) {
         navigateToPage('/login');
       } else if (SystemStateHelper.isStarted(
-              AppState().getServerState().systemState)
-          //     ||
-          // SystemStateHelper.isPreparation(
-          //     AppState().getServerState().systemState)
-          ) {
-        if (GlobalConfiguration().getValue('use_auth_card') == 'true') {
-          if (GlobalConfiguration().getValue('use_manual_login') == 'true') {
-            navigateToPage('/insertCard');
-          } else {
-            // login as quest
-            updateClientType('guest', null, isManualLogin: true);
-          }
+          AppState().getServerState().systemState)) {
+        if (GlobalConfiguration().getValue('use_manual_login') == 'true') {
+          navigateToPage('/login');
         } else {
-          if (GlobalConfiguration().getValue('use_manual_login') == 'true') {
-            navigateToPage('/login');
-          } else {
-            // login as quest
-            updateClientType('guest', null, isManualLogin: true);
-          }
+          // login as quest
+          updateClientType('guest', null, isManualLogin: true);
         }
       } else {
         navigateToPage('/viewAgenda');
@@ -888,7 +875,8 @@ class WebSocketConnection with ChangeNotifier {
     if (_clientType == 'manager') {
       // manager's autoregistration
       if (AppState().getServerState().systemState == SystemState.Registration) {
-        if (AppState().getCurrentMeeting().group.isManagerAutoRegistration) {
+        if (AppState().getCurrentMeeting()?.group.isManagerAutoRegistration ==
+            true) {
           sendMessage('ЗАРЕГИСТРИРОВАТЬСЯ');
         }
       }
@@ -913,7 +901,8 @@ class WebSocketConnection with ChangeNotifier {
       navigateToPage('/waitingMeeting');
     } else if (AppState().getServerState().systemState ==
         SystemState.Registration) {
-      if (AppState().getCurrentMeeting().group.isDeputyAutoRegistration) {
+      if (AppState().getCurrentMeeting()?.group.isManagerAutoRegistration ==
+          true) {
         sendMessage('ЗАРЕГИСТРИРОВАТЬСЯ');
 
         if (AppState().getCurrentDocument() != null) {
@@ -1002,6 +991,8 @@ class WebSocketConnection with ChangeNotifier {
     if (currentMeeting != null && AppState().getIsDocumentsChecked() == false) {
       AppState().setIsDocumentsChecked(true);
 
+      print(DateTime.now().toString() + ' checkMeetingDocumentsStatus');
+
       var versionsFile =
           new File('documents/${currentMeeting.agenda.folder}/version.txt');
 
@@ -1046,7 +1037,7 @@ class WebSocketConnection with ChangeNotifier {
 
   @override
   void dispose() {
-    _webSocket.close();
+    _webSocket?.close();
     _websocketState = WebSocket.closed;
 
     super.dispose();

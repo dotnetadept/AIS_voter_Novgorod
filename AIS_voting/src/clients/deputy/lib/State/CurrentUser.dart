@@ -5,11 +5,11 @@ import 'AppState.dart';
 class CurrentUser with ChangeNotifier {
   var _currentUser;
 
-  CurrentUser(User currentUser) {
+  CurrentUser(User? currentUser) {
     setCurrentUser(currentUser);
   }
 
-  void setCurrentUser(User user) {
+  void setCurrentUser(User? user) {
     _currentUser = user;
     AppState().setCurrentUser(_currentUser);
     notifyListeners();

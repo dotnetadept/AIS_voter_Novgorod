@@ -1,23 +1,24 @@
 class AskWordQueueSession {
-  int id;
-  int meetingSessionId;
-  int questionId;
-  int votingModeId;
-  String decision;
-  int interval;
-  DateTime startDate;
-  DateTime endDate;
-  List<int> users;
+  late int id;
+  late int meetingSessionId;
+  late int questionId;
+  late int votingModeId;
+  late String decision;
+  late int interval;
+  late DateTime startDate;
+  late DateTime? endDate;
+  late List<int> users;
 
-  AskWordQueueSession(
-      {this.id,
-      this.meetingSessionId,
-      this.questionId,
-      this.votingModeId,
-      this.decision,
-      this.interval,
-      this.startDate,
-      this.endDate});
+  AskWordQueueSession({
+    required this.id,
+    required this.meetingSessionId,
+    required this.questionId,
+    required this.votingModeId,
+    required this.decision,
+    required this.interval,
+    required this.startDate,
+    required this.endDate,
+  });
 
   Map toJson() => {
         'id': id,

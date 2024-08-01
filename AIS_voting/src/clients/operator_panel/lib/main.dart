@@ -417,49 +417,6 @@ class _OperatorPageState extends State<OperatorPage> {
 
     _connection.setServerState(serverState);
 
-    // // print reports on registration end
-    // if (serverState != null &&
-    //     serverState.systemState == SystemState.RegistrationComplete &&
-    //     _prevSystemState != serverState.systemState &&
-    //     AppState().isLoadingComplete) {
-    //   ReportHelper().getRegistrationReport(
-    //       _selectedMeeting, _settings, _users, _connection, _timeOffset);
-    // }
-
-    // print reports on voting end
-    if (serverState != null &&
-        serverState.systemState == SystemState.QuestionVotingComplete &&
-        _prevSystemState != serverState.systemState &&
-        AppState().isLoadingComplete) {
-      var votingMode = _votingModes.firstWhere(
-          (element) =>
-              element.id ==
-              _connection.getServerState.questionSession?.votingModeId,
-          orElse: () => null);
-
-      ReportHelper().getVotingNamedReport(
-          _selectedMeeting,
-          _settings,
-          votingMode,
-          _users,
-          _connection.getServerState.usersRegistered,
-          _lockedQuestion,
-          null,
-          null,
-          _timeOffset);
-
-      // ReportHelper().getVotingCommonReport(
-      //     _selectedMeeting,
-      //     _settings,
-      //     votingMode,
-      //     _users,
-      //     _connection.getServerState.usersRegistered,
-      //     _lockedQuestion,
-      //     null,
-      //     null,
-      //     _timeOffset);
-    }
-
     _prevSystemState = serverState.systemState;
 
     setState(() {});
@@ -835,8 +792,7 @@ class _OperatorPageState extends State<OperatorPage> {
   }
 
   void navigateHistoryPage() {
-    HistoryDialog(context, _settings, _users, _votingModes, _timeOffset)
-        .openDialog();
+    HistoryDialog(context, _timeOffset).openDialog();
   }
 
   void navigateAgendasPage() {

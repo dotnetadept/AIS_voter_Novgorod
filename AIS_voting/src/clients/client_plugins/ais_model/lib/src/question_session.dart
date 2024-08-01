@@ -4,40 +4,41 @@ import 'package:intl/intl.dart';
 import 'result.dart';
 
 class QuestionSession {
-  int id;
-  int meetingSessionId;
-  int questionId;
-  int votingModeId;
-  String votingRegim;
-  String decision;
-  int interval;
-  int usersCountRegistred;
-  int usersCountForSuccess;
-  int usersCountForSuccessDisplay;
+  late int id;
+  late int meetingSessionId;
+  late int questionId;
+  late int votingModeId;
+  late String votingRegim;
+  late String decision;
+  late int interval;
+  late int usersCountRegistred;
+  late int usersCountForSuccess;
+  late int usersCountForSuccessDisplay;
 
-  int usersCountVoted;
-  int usersCountVotedYes;
-  int usersCountVotedNo;
-  int usersCountVotedIndiffirent;
-  DateTime startDate;
-  DateTime endDate;
-  List<Result> results;
-  int managerId;
+  late int usersCountVoted;
+  late int usersCountVotedYes;
+  late int usersCountVotedNo;
+  late int usersCountVotedIndiffirent;
+  late DateTime startDate;
+  late DateTime endDate;
+  late List<Result> results;
+  late int managerId;
 
-  QuestionSession(
-      {this.id,
-      this.meetingSessionId,
-      this.questionId,
-      this.votingModeId,
-      this.votingRegim,
-      this.decision,
-      this.interval,
-      this.usersCountRegistred,
-      this.usersCountForSuccess,
-      this.usersCountForSuccessDisplay,
-      this.startDate,
-      this.endDate,
-      this.managerId});
+  QuestionSession({
+    required this.id,
+    required this.meetingSessionId,
+    required this.questionId,
+    required this.votingModeId,
+    required this.votingRegim,
+    required this.decision,
+    required this.interval,
+    required this.usersCountRegistred,
+    required this.usersCountForSuccess,
+    required this.usersCountForSuccessDisplay,
+    required this.startDate,
+    required this.endDate,
+    required this.managerId,
+  });
 
   Map toJson() => {
         'id': id,

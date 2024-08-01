@@ -1,18 +1,18 @@
 class Workplaces {
-  bool hasManagement;
-  int managementPlacesCount;
-  bool showEmptyManagement;
-  bool hasTribune;
-  int tribunePlacesCount;
-  int rowsCount;
-  List<int> rows;
-  List<bool> isDisplayEmptyCell;
-  List<int> schemeManagement;
-  List<String> managementTerminalIds;
-  List<String> tribuneTerminalIds;
-  List<String> tribuneNames;
-  List<List<int>> schemeWorkplaces;
-  List<List<String>> workplacesTerminalIds;
+  late bool hasManagement;
+  late int managementPlacesCount;
+  late bool showEmptyManagement;
+  late bool hasTribune;
+  late int tribunePlacesCount;
+  late int rowsCount;
+  late List<int> rows;
+  late List<bool> isDisplayEmptyCell;
+  late List<int> schemeManagement;
+  late List<String> managementTerminalIds;
+  late List<String> tribuneTerminalIds;
+  late List<String> tribuneNames;
+  late List<List<int>> schemeWorkplaces;
+  late List<List<String>> workplacesTerminalIds;
 
   Workplaces() {
     hasManagement = false;
@@ -50,7 +50,7 @@ class Workplaces {
     return totalCount;
   }
 
-  String getTerminalIdByUserId(int userId) {
+  String? getTerminalIdByUserId(int? userId) {
     if (userId == null) {
       return '0xfff';
     }

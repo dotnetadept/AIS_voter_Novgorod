@@ -13,7 +13,7 @@ import '../Utils/utils.dart';
 import '../Widgets/voting_utils.dart';
 
 class ViewStreamPage extends StatefulWidget {
-  ViewStreamPage({Key key}) : super(key: key);
+  ViewStreamPage({Key? key}) : super(key: key);
 
   @override
   _ViewStreamPageState createState() => _ViewStreamPageState();
@@ -96,8 +96,8 @@ class _ViewStreamPageState extends State<ViewStreamPage> {
                       });
                     },
                     style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all(Size(150, 50)),
-                        padding: MaterialStateProperty.all(EdgeInsets.all(0))),
+                        fixedSize: WidgetStateProperty.all(Size(150, 50)),
+                        padding: WidgetStateProperty.all(EdgeInsets.all(0))),
                     child: Row(
                       children: [
                         Container(
@@ -136,10 +136,9 @@ class _ViewStreamPageState extends State<ViewStreamPage> {
                             backToAgenda(connection);
                           },
                           style: ButtonStyle(
-                              fixedSize:
-                                  MaterialStateProperty.all(Size(190, 50)),
+                              fixedSize: WidgetStateProperty.all(Size(190, 50)),
                               padding:
-                                  MaterialStateProperty.all(EdgeInsets.all(0))),
+                                  WidgetStateProperty.all(EdgeInsets.all(0))),
                           child: Text(
                             'Назад к повестке',
                             style: TextStyle(fontSize: 18),

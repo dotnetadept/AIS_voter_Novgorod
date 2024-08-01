@@ -1,13 +1,13 @@
 class User {
-  int id;
-  String firstName;
-  String secondName;
-  String lastName;
-  String login;
-  String password;
-  String cardId;
-  DateTime lastSession;
-  bool isVoter;
+  late int id;
+  late String firstName;
+  late String secondName;
+  late String lastName;
+  late String login;
+  late String password;
+  late String cardId;
+  late DateTime? lastSession;
+  late bool isVoter;
 
   User() {
     id = 0;

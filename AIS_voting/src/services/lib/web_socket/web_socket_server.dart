@@ -1574,7 +1574,7 @@ class WebSocketServer {
     }
 
     // auto registration
-    if (deputyId != null) {
+    if (deputyId != null && ServerState.selectedMeeting != null) {
       if (ServerState.selectedMeeting.group.isFastRegistrationUsed ||
           (connection.type == 'deputy' &&
               ServerState.selectedMeeting.group.isDeputyAutoRegistration) ||

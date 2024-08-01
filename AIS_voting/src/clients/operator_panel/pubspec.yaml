@@ -1,7 +1,7 @@
 name: operator_panel
 description: AIS Voter Operator Panel.
 publish_to: 'none'
-version: 1.04.26
+version: 1.05.17
 
 environment:
   sdk: '>=2.10.0 <3.2.0'

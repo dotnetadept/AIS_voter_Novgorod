@@ -399,56 +399,6 @@ class VotingDialog {
                                   },
                                 ),
                               ),
-                              Container(
-                                padding: EdgeInsets.fromLTRB(5, 0, 10, 10),
-                                child: TextButton(
-                                  child: Text(
-                                    'Протокол',
-                                    style: TextStyle(fontSize: 24),
-                                  ),
-                                  onPressed: () async {
-                                    await ReportHelper().getVotingNamedReport(
-                                        _selectedMeeting,
-                                        _settings,
-                                        _selectedVotingMode,
-                                        _users,
-                                        _connection
-                                            .getServerState.usersRegistered,
-                                        _lockedQuestion,
-                                        null,
-                                        null,
-                                        _timeOffset);
-
-                                    // if (_connection
-                                    //     .getServerState.isDetailsStoreboard) {
-                                    //   await ReportHelper().getVotingNamedReport(
-                                    //       _selectedMeeting,
-                                    //       _settings,
-                                    //       _selectedVotingMode,
-                                    //       _users,
-                                    //       _connection
-                                    //           .getServerState.usersRegistered,
-                                    //       _lockedQuestion,
-                                    //       null,
-                                    //       null,
-                                    //       _timeOffset);
-                                    // } else {
-                                    //   await ReportHelper()
-                                    //       .getVotingCommonReport(
-                                    //           _selectedMeeting,
-                                    //           _settings,
-                                    //           _selectedVotingMode,
-                                    //           _users,
-                                    //           _connection.getServerState
-                                    //               .usersRegistered,
-                                    //           _lockedQuestion,
-                                    //           null,
-                                    //           null,
-                                    //           _timeOffset);
-                                    // }
-                                  },
-                                ),
-                              ),
                               _settings.deputySettings.useTempAskWordQueue
                                   ? !_isAskQueueStarted
                                       ? Padding(

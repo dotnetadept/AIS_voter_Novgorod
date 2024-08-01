@@ -1,10 +1,10 @@
 name: deputy
 description: AIS deputy client application.
 publish_to: 'none'
-version: 1.04.26
+version: 1.05.21
 
 environment:
-  sdk: '>=2.10.0 <3.2.0'
+  sdk: '>=2.12.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -13,10 +13,10 @@ dependencies:
   http: any
   ntp: ^2.0.0
   provider: any
-  global_configuration:
-    path: '../client_plugins/global_configuration-1.6.0'
+  global_configuration: any
+    #path: '../client_plugins/global_configuration-1.6.0'
   synchronized: ^3.0.0
-  enum_to_string: 1.0.14
+  enum_to_string: any
   uuid: any
   intl: any
   ais_model:
@@ -25,9 +25,7 @@ dependencies:
     path: '../client_plugins/ais_utils'
   window_to_front:
     path: '../client_plugins/window_to_front'
-  jacarta_token:
-    path: '../client_plugins/jacarta_token'
-  virtual_keyboard_multi_language: ^0.2.4
+  virtual_keyboard_multi_language: any
   window_size:
     path: '../client_plugins/window_size'
   desktop_window:
@@ -40,6 +38,8 @@ dependencies:
   package_info_plus: ^4.2.0
   sdp_transform: ^0.3.2
   statsfl: ^2.3.0
+  pdfrx: ^1.0.72
+  collection: ^1.18.0
 
 flutter:
   uses-material-design: true

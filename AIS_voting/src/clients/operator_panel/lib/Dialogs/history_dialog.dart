@@ -7,18 +7,13 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ais_utils/ais_utils.dart';
 import '../Providers/WebSocketConnection.dart';
-import '../Utility/report_helper.dart';
 
 class HistoryDialog {
   BuildContext _context;
-  Settings _settings;
-  List<User> _users;
-  List<VotingMode> _votingModes;
 
   List<Meeting> _meetings;
   List<MeetingSession> _meetingSessions;
   List<QuestionSession> _questionSessions;
-  WebSocketConnection _connection;
 
   MeetingSession _selectedMeetingSession;
   int _timeOffset;
@@ -68,14 +63,10 @@ class HistoryDialog {
 
   HistoryDialog(
     this._context,
-    this._settings,
-    this._users,
-    this._votingModes,
     this._timeOffset,
   ) {
     _historyMeetingTableScrollController = ScrollController();
     _historySessionTableScrollController = ScrollController();
-    _connection = Provider.of<WebSocketConnection>(_context, listen: false);
   }
 
   void loadData(Function setStateForDialog) {
@@ -589,50 +580,6 @@ class HistoryDialog {
         decisions);
     Provider.of<WebSocketConnection>(_context, listen: false)
         .setHistory(votingHistory);
-
-    ReportHelper().getVotingNamedReport(
-        meeting,
-        _settings,
-        _votingModes.firstWhere(
-          (element) => element.id == questionSession.votingModeId,
-          orElse: () => null,
-        ),
-        _users,
-        registrationSession.registrations.map((e) => e.userId).toList(),
-        question,
-        questionSession,
-        meetingSession,
-        _timeOffset);
-
-    // if (isDetailed) {
-    //   ReportHelper().getVotingNamedReport(
-    //       meeting,
-    //       _settings,
-    //       _votingModes.firstWhere(
-    //         (element) => element.id == questionSession.votingModeId,
-    //         orElse: () => null,
-    //       ),
-    //       _users,
-    //       registrationSession.registrations.map((e) => e.userId).toList(),
-    //       question,
-    //       questionSession,
-    //       meetingSession,
-    //       _timeOffset);
-    // } else {
-    //   ReportHelper().getVotingCommonReport(
-    //       meeting,
-    //       _settings,
-    //       _votingModes.firstWhere(
-    //         (element) => element.id == questionSession.votingModeId,
-    //         orElse: () => null,
-    //       ),
-    //       _users,
-    //       registrationSession.registrations.map((e) => e.userId).toList(),
-    //       question,
-    //       questionSession,
-    //       meetingSession,
-    //       _timeOffset);
-    // }
   }
 
   String getMeetingSessionText(MeetingSession session) {

@@ -46,9 +46,9 @@ class ServerState {
   static bool showAskWordButton = false;
 
   // vissonic settings
-  static bool isVissonicModuleOnline = true;
-  static bool isVissonicServerOnline = true;
-  static bool isVissonicModuleInit = true;
+  static bool isVissonicModuleOnline = false;
+  static bool isVissonicServerOnline = false;
+  static bool isVissonicModuleInit = false;
   static bool isVissonicLoading = false;
   static bool micsEnabled;
 

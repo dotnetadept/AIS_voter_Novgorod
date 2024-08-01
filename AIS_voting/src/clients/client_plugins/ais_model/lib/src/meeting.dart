@@ -2,30 +2,31 @@ import 'agenda.dart';
 import 'group.dart';
 
 class Meeting {
-  int id;
-  String name;
-  String description;
-  String status;
-  DateTime lastUpdated;
-  Agenda agenda;
-  Group group;
+  late int id;
+  late String name;
+  late String description;
+  late String status;
+  late DateTime lastUpdated;
+  late Agenda? agenda;
+  late Group? group;
 
-  Meeting(
-      {this.id,
-      this.name,
-      this.description,
-      this.status,
-      this.agenda,
-      this.group,
-      this.lastUpdated});
+  Meeting({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.status,
+    required this.agenda,
+    required this.group,
+    required this.lastUpdated,
+  });
 
   Map toJson() => {
         'id': id,
         'name': name,
         'description': description,
         'status': status,
-        'agenda': agenda == null ? null : agenda.toJson(),
-        'group': group == null ? null : group.toJson(),
+        'agenda': agenda == null ? null : agenda?.toJson(),
+        'group': group == null ? null : group?.toJson(),
         'lastUpdated': lastUpdated.toIso8601String(),
       };
 

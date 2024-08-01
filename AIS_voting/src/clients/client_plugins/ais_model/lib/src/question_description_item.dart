@@ -4,8 +4,12 @@ class QuestionDescriptionItem {
   bool showOnStoreboard;
   bool showInReports;
 
-  QuestionDescriptionItem(
-      {this.caption, this.text, this.showOnStoreboard, this.showInReports});
+  QuestionDescriptionItem({
+    required this.caption,
+    required this.text,
+    required this.showOnStoreboard,
+    required this.showInReports,
+  });
 
   Map toJson() => {
         'caption': caption,

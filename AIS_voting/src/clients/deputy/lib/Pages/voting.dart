@@ -9,19 +9,19 @@ import 'package:ais_utils/ais_utils.dart';
 import '../State/AppState.dart';
 
 class VotingPage extends StatefulWidget {
-  VotingPage({Key key}) : super(key: key);
+  VotingPage({Key? key}) : super(key: key);
 
   @override
   _VotingPageState createState() => _VotingPageState();
 }
 
 class _VotingPageState extends State<VotingPage> {
-  Question _question;
+  late Question _question;
   var _autoSizeGroup = AutoSizeGroup();
 
   bool _isBigButtons = false;
-  int _defaultButtonsHeight;
-  int _defaultButtonsWidth;
+  late int _defaultButtonsHeight;
+  late int _defaultButtonsWidth;
 
   @override
   void initState() {
@@ -37,9 +37,11 @@ class _VotingPageState extends State<VotingPage> {
 
     var selectedQuestionId =
         json.decode(AppState().getServerState().params)['selectedQuestion'];
-    _question = AppState().getCurrentMeeting().agenda.questions.firstWhere(
-        (element) => element.id == selectedQuestionId,
-        orElse: () => null);
+    _question = AppState()
+        .getCurrentMeeting()!
+        .agenda
+        .questions
+        .firstWhere((element) => element.id == selectedQuestionId);
   }
 
   @override
@@ -118,7 +120,7 @@ class _VotingPageState extends State<VotingPage> {
                                   child: FittedBox(
                                     fit: BoxFit.contain,
                                     child: Text(
-                                      AppState().getCurrentUser().secondName,
+                                      AppState().getCurrentUser()!.secondName,
                                       maxLines: 1,
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
@@ -131,9 +133,9 @@ class _VotingPageState extends State<VotingPage> {
                                   child: FittedBox(
                                     fit: BoxFit.contain,
                                     child: Text(
-                                      AppState().getCurrentUser().firstName +
+                                      AppState().getCurrentUser()!.firstName +
                                           ' ' +
-                                          AppState().getCurrentUser().lastName,
+                                          AppState().getCurrentUser()!.lastName,
                                       maxLines: 1,
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
@@ -162,7 +164,7 @@ class _VotingPageState extends State<VotingPage> {
                 scale: scaleFactor,
                 child: StoreboardWidget(
                   serverState: AppState().getServerState(),
-                  meeting: AppState().getCurrentMeeting(),
+                  meeting: AppState().getCurrentMeeting()!,
                   question: _question,
                   settings: AppState().getSettings(),
                   timeOffset: AppState().getTimeOffset(),
@@ -312,7 +314,7 @@ class _VotingPageState extends State<VotingPage> {
                     ),
                     StoreboardWidget(
                       serverState: AppState().getServerState(),
-                      meeting: AppState().getCurrentMeeting(),
+                      meeting: AppState().getCurrentMeeting()!,
                       question: _question,
                       settings: AppState().getSettings(),
                       timeOffset: AppState().getTimeOffset(),

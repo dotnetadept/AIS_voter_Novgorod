@@ -1,16 +1,21 @@
 class MeetingSession {
-  int id;
-  int meetingId;
-  DateTime startDate;
-  DateTime endDate;
+  late int id;
+  late int meetingId;
+  late DateTime? startDate;
+  late DateTime? endDate;
 
-  MeetingSession({this.id, this.meetingId, this.startDate, this.endDate});
+  MeetingSession({
+    required this.id,
+    required this.meetingId,
+    required this.startDate,
+    required this.endDate,
+  });
 
   Map toJson() => {
         'id': id,
         'meetingId': meetingId,
-        'startDate': startDate == null ? null : startDate.toIso8601String(),
-        'endDate': endDate == null ? null : endDate.toIso8601String(),
+        'startDate': startDate == null ? null : startDate?.toIso8601String(),
+        'endDate': endDate == null ? null : endDate?.toIso8601String(),
       };
 
   MeetingSession.fromJson(Map<String, dynamic> json)

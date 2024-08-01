@@ -2,7 +2,7 @@ import 'package:deputy/State/AppState.dart';
 import 'package:flutter/material.dart';
 
 class WaitingMeetingPage extends StatefulWidget {
-  WaitingMeetingPage({Key key}) : super(key: key);
+  WaitingMeetingPage({Key? key}) : super(key: key);
 
   @override
   _WaitingMeetingPageState createState() => _WaitingMeetingPageState();

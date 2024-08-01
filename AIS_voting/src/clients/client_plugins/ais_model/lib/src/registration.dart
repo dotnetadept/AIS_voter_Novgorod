@@ -1,8 +1,8 @@
 class Registration {
-  int id;
-  int userId;
-  int proxyId;
-  int registrationSessionId;
+  late int id;
+  late int userId;
+  late int proxyId;
+  late int registrationSessionId;
 
   Registration({this.id, this.userId, this.registrationSessionId});
 

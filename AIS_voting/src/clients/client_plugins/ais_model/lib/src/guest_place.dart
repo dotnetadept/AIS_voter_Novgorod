@@ -1,8 +1,11 @@
 class GuestPlace {
-  String name = '';
-  String terminalId = '';
+  late String name = '';
+  late String terminalId = '';
 
-  GuestPlace({this.name, this.terminalId});
+  GuestPlace({
+    required this.name,
+    required this.terminalId,
+  });
 
   Map toJson() => {'name': name, 'terminalId': terminalId};
 

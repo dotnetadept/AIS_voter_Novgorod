@@ -10,9 +10,10 @@ import 'package:ais_model/ais_model.dart';
 import 'package:ais_utils/ais_utils.dart';
 import 'package:provider/provider.dart';
 import '../State/AppState.dart';
+import 'package:collection/collection.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key}) : super(key: key);
+  LoginPage({Key? key}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -21,7 +22,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   var _tecPassword = TextEditingController();
   final _globalKey = GlobalKey<ScaffoldState>();
-  User _confirmUser = null;
+  User? _confirmUser = null;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       var settings = (json.decode(response.body) as List)
           .map((data) => Settings.fromJson(data))
           .toList()
-          .firstWhere((element) => element.isSelected, orElse: () => null);
+          .firstWhere((element) => element.isSelected);
       AppState().setSettings(settings);
     });
 
@@ -51,15 +52,13 @@ class _LoginPageState extends State<LoginPage> {
       AppState().setUsers(users);
     });
 
-    var user = users.firstWhere(
-        (element) =>
-            AppState()
-                .getCurrentMeeting()
-                .group
-                .getVoters()
-                .any((gu) => gu.user.id == element.id) &&
-            element.password == _tecPassword.text,
-        orElse: () => null);
+    var user = users.firstWhereOrNull((element) =>
+        AppState()
+            .getCurrentMeeting()!
+            .group
+            .getVoters()
+            .any((gu) => gu.user.id == element.id) &&
+        element.password == _tecPassword.text);
 
     if (user != null) {
       setState(() {
@@ -93,7 +92,8 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       key: _globalKey,
-      body: _confirmUser == null ? loginView() : loginConfirmView(_confirmUser),
+      body:
+          _confirmUser == null ? loginView() : loginConfirmView(_confirmUser!),
       backgroundColor: Colors.blue[100],
     );
   }
@@ -135,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
               Expanded(child: Container()),
               TextButton(
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(Size(300, 100)),
+                  minimumSize: WidgetStateProperty.all(Size(300, 100)),
                 ),
                 onPressed: () {
                   setState(() {
@@ -152,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
               Expanded(child: Container()),
               TextButton(
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(Size(300, 100)),
+                  minimumSize: WidgetStateProperty.all(Size(300, 100)),
                 ),
                 onPressed: () {
                   final currentUser =
@@ -199,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       TextButton(
         style: ButtonStyle(
-          minimumSize: MaterialStateProperty.all(Size(300, 100)),
+          minimumSize: WidgetStateProperty.all(Size(300, 100)),
         ),
         onPressed: onLogin,
         child: Text(
@@ -215,7 +215,7 @@ class _LoginPageState extends State<LoginPage> {
       padding: EdgeInsets.all(10),
       child: TextButton(
         style: ButtonStyle(
-          minimumSize: MaterialStateProperty.all(Size(300, 100)),
+          minimumSize: WidgetStateProperty.all(Size(300, 100)),
         ),
         onPressed: onLoginAsGuest,
         child: Text(

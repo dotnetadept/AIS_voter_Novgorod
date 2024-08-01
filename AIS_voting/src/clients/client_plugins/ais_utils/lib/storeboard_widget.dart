@@ -22,7 +22,7 @@ class StoreboardWidget extends StatefulWidget {
 
   final ServerState serverState;
   final Meeting meeting;
-  final Question question;
+  final Question? question;
   final Settings settings;
   final bool isStoreBoardClient;
   final int timeOffset;
@@ -30,7 +30,7 @@ class StoreboardWidget extends StatefulWidget {
   final List<VotingMode> votingModes;
   final List<User> users;
 
-  static bool Function(Signal signal) onIntervalEndingSignal;
+  static late bool Function(Signal signal) onIntervalEndingSignal;
 
   @override
   _StoreboardStateWidgetState createState() => _StoreboardStateWidgetState();
@@ -266,7 +266,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     }
 
     if (widget.serverState.systemState == SystemState.RegistrationComplete) {
-      return getMeetingCompletedStoreboard();
+      return getMeetingStartStoreboard();
       //return getRegistrationResultStoreBoard();
     }
     if (widget.serverState.systemState == SystemState.QuestionVotingComplete) {
@@ -995,7 +995,8 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                           .defaultGroupName
                   ? Container()
                   : Expanded(
-                      child: Padding(
+                      child: Container(
+                        alignment: Alignment.topLeft,
                         padding: EdgeInsets.fromLTRB(
                             0, getScaledSize(5), 0, getScaledSize(1)),
                         child: AgendaUtil.getQuestionDescriptionText(
@@ -1233,35 +1234,23 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           ],
         ),
         Expanded(child: Container()),
-        votingHistory.isQuorumSuccess
-            ? Text(
-                votingHistory.isVotingSuccess
-                    ? 'РЕШЕНИЕ ПРИНЯТО'
-                    : 'РЕШЕНИЕ НЕ ПРИНЯТО',
-                style: TextStyle(
-                  fontSize: widget
-                      .settings.storeboardSettings.resultTotalFontSize
-                      .toDouble(),
-                  fontWeight: FontWeight.w500,
-                  color: votingHistory.isManagerDecides
-                      ? Colors.white
-                      : votingHistory.isVotingSuccess
-                          ? Color(widget.settings.storeboardSettings
-                              .decisionAcceptedColor)
-                          : Color(widget.settings.storeboardSettings
-                              .decisionDeclinedColor),
-                ),
-              )
-            : Text(
-                'КВОРУМА НЕТ',
-                style: TextStyle(
-                  fontSize: widget
-                      .settings.storeboardSettings.resultTotalFontSize
-                      .toDouble(),
-                  fontWeight: FontWeight.w500,
-                  color: Colors.red,
-                ),
-              )
+        Text(
+          votingHistory.isVotingSuccess
+              ? 'РЕШЕНИЕ ПРИНЯТО'
+              : 'РЕШЕНИЕ НЕ ПРИНЯТО',
+          style: TextStyle(
+            fontSize: widget.settings.storeboardSettings.resultTotalFontSize
+                .toDouble(),
+            fontWeight: FontWeight.w500,
+            color: votingHistory.isManagerDecides
+                ? Colors.white
+                : votingHistory.isVotingSuccess
+                    ? Color(widget
+                        .settings.storeboardSettings.decisionAcceptedColor)
+                    : Color(widget
+                        .settings.storeboardSettings.decisionDeclinedColor),
+          ),
+        )
       ],
     );
   }
@@ -1387,7 +1376,8 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                           .defaultGroupName
                   ? Container()
                   : Expanded(
-                      child: Padding(
+                      child: Container(
+                        alignment: Alignment.topLeft,
                         padding: EdgeInsets.fromLTRB(
                             0, getScaledSize(5), 0, getScaledSize(1)),
                         child: AgendaUtil.getQuestionDescriptionText(
@@ -1628,7 +1618,24 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           padding:
               EdgeInsets.fromLTRB(getScaledSize(20), 0, getScaledSize(20), 0),
           child: AutoSizeText(
-            '${widget.meeting.name.toUpperCase() + ' ОТКРЫТО'}',
+            '${widget.meeting.name.toUpperCase()}',
+            textAlign: TextAlign.center,
+            stepGranularity: 0.1,
+            minFontSize: 1,
+            softWrap: true,
+            maxLines: 3,
+            style: TextStyle(
+              fontSize: 100,
+              fontWeight: FontWeight.w500,
+              color: Color(widget.settings.storeboardSettings.textColor),
+            ),
+          ),
+        ),
+        Padding(
+          padding:
+              EdgeInsets.fromLTRB(getScaledSize(100), 0, getScaledSize(100), 0),
+          child: AutoSizeText(
+            '${'ОТКРЫТО'}',
             textAlign: TextAlign.center,
             stepGranularity: 0.1,
             minFontSize: 1,
@@ -1655,7 +1662,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           padding:
               EdgeInsets.fromLTRB(getScaledSize(45), 0, getScaledSize(45), 0),
           child: AutoSizeText(
-            'ПРИСУТСТВУЕТ  ${widget.serverState.usersRegistered.length}',
+            'ПРИСУТСТВУЕТ ${widget.serverState.usersRegistered.length}',
             stepGranularity: 0.1,
             minFontSize: 1,
             softWrap: true,

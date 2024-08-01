@@ -1,11 +1,14 @@
 import 'user.dart';
 
 class ProxyUser {
-  int id;
-  int proxyId;
-  User user;
+  late int id;
+  late int proxyId;
+  late User user;
 
-  ProxyUser({this.proxyId, this.user});
+  ProxyUser({
+    required this.proxyId,
+    required this.user,
+  });
 
   Map toJson() => {
         'id': id,

@@ -10,14 +10,14 @@ import 'package:provider/provider.dart';
 import '../State/AppState.dart';
 
 class ViewDocumentPage extends StatefulWidget {
-  ViewDocumentPage({Key key}) : super(key: key);
+  ViewDocumentPage({Key? key}) : super(key: key);
 
   @override
   _ViewDocumentPageState createState() => _ViewDocumentPageState();
 }
 
 class _ViewDocumentPageState extends State<ViewDocumentPage> {
-  QuestionFile _currentDocument;
+  QuestionFile? _currentDocument;
   String _documentPageCount = '0';
   String _errorMessage = '';
 
@@ -33,9 +33,9 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
 
     String documentPath =
         'file:/${GlobalConfiguration().getValue('folder_path')}/documents/' +
-            _currentDocument.relativePath +
+            _currentDocument!.relativePath +
             '/' +
-            _currentDocument.fileName;
+            _currentDocument!.fileName;
 
     openDocument(documentPath);
   }
@@ -99,7 +99,7 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
               child: Container(
                 padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
                 child: Text(
-                  _currentDocument.description,
+                  _currentDocument!.description,
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -174,8 +174,8 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
                       backToAgenda(connection);
                     },
                     style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all(Size(190, 50)),
-                        padding: MaterialStateProperty.all(EdgeInsets.all(0))),
+                        fixedSize: WidgetStateProperty.all(Size(190, 50)),
+                        padding: WidgetStateProperty.all(EdgeInsets.all(0))),
                     child: Text(
                       'Назад к повестке',
                       style: TextStyle(fontSize: 18),

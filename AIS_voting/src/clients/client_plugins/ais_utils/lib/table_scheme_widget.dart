@@ -152,7 +152,8 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                           getTable(
                             'Не голосовали',
                             'Не голосовали',
-                            getNotVotedList(),
+                            UsersFilterUtil.getNotVotedUserList(
+                                widget.users, widget.group, widget.serverState),
                             Container(),
                           ),
                         ],
@@ -230,13 +231,6 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
         ),
       ],
     );
-  }
-
-  List<User> getNotVotedList() {
-    return widget.users
-        .where((element) => !widget.serverState.usersDecisions.keys
-            .contains(element.id.toString()))
-        .toList();
   }
 
   List<User> getAskwordUserList() {

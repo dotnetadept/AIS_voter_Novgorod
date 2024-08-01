@@ -1,14 +1,14 @@
 class SystemLog {
-  int id;
-  String type;
-  String message;
-  DateTime time;
+  late int id;
+  late String type;
+  late String message;
+  late DateTime time;
 
   SystemLog({
-    this.id,
-    this.type,
-    this.message,
-    this.time,
+    required this.id,
+    required this.type,
+    required this.message,
+    required this.time,
   });
 
   Map toJson() => {

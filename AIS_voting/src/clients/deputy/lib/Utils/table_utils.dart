@@ -1,13 +1,17 @@
 import 'package:ais_model/ais_model.dart';
 import 'package:ais_utils/ais_utils.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import '../State/AppState.dart';
 
 class TableUtils {
   Widget getUnregistredTable(ScrollController controller, {int flex = 1}) {
-    List<User> users = getUnregisterUserList();
+    List<User> users = UsersFilterUtil.getUnregisterUserList(
+        AppState().getUsers(),
+        AppState().getCurrentMeeting()!.group,
+        AppState().getServerState());
 
     return Expanded(
       flex: flex,
@@ -22,7 +26,7 @@ class TableUtils {
                 Container(width: 5),
                 Expanded(
                   child: Text(
-                    'ОТСУТСТВУЮТ ${TableUtils().getUnregisterUserList().length}',
+                    'ОТСУТСТВУЮТ ${users.length}',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 14,
@@ -47,7 +51,8 @@ class TableUtils {
                           color: Colors.grey.withOpacity(0.5),
                           width: 1,
                         ),
-                        color: Colors.white.withOpacity(0.5),
+                        color:
+                            Color.fromRGBO(255, 255, 255, 1).withOpacity(0.5),
                       ),
                       child: Scrollbar(
                         thumbVisibility: true,
@@ -120,14 +125,13 @@ class TableUtils {
                       itemCount: mics.length,
                       itemBuilder: (BuildContext context, int index) {
                         var startDate = DateTime.parse(AppState()
-                            .getServerState()
-                            .activeMics
-                            .entries
-                            .firstWhere(
-                                (element) =>
-                                    element.key == mics.keys.elementAt(index),
-                                orElse: () => null)
-                            ?.value);
+                                .getServerState()
+                                .activeMics
+                                .entries
+                                .firstWhereOrNull((element) =>
+                                    element.key == mics.keys.elementAt(index))
+                                ?.value ??
+                            '');
 
                         var activeTime =
                             TimeUtil.getDateTimeNow(AppState().getTimeOffset())
@@ -188,14 +192,15 @@ class TableUtils {
 
       var userId = AppState().getServerState().usersTerminals[currentMic.key];
       var tribuneIndex = AppState()
-          .getCurrentMeeting()
+          .getCurrentMeeting()!
           .group
           .workplaces
           .tribuneTerminalIds
           .indexOf(currentMic.key);
-      var guestPlace = AppState().getServerState().guestsPlaces.firstWhere(
-          (element) => element.terminalId == currentMic.key,
-          orElse: () => null);
+      var guestPlace = AppState()
+          .getServerState()
+          .guestsPlaces
+          .firstWhereOrNull((element) => element.terminalId == currentMic.key);
 
       if (userId != null) {
         usersMicEnabled.putIfAbsent(
@@ -209,7 +214,7 @@ class TableUtils {
         usersMicEnabled.putIfAbsent(
           currentMic.key,
           () => AppState()
-              .getCurrentMeeting()
+              .getCurrentMeeting()!
               .group
               .workplaces
               .tribuneNames[tribuneIndex],
@@ -228,46 +233,5 @@ class TableUtils {
     }
 
     return usersMicEnabled;
-  }
-
-  List<User> getUnregisterUserList() {
-    List<User> usersNotRegistered = <User>[];
-
-    for (int i = 0; i < AppState().getUsers().length; i++) {
-      var user = AppState().getUsers()[i];
-
-      var isUserInGroup = AppState()
-          .getCurrentMeeting()
-          .group
-          .groupUsers
-          .any((element) => element.user.id == user.id);
-
-      var foundUserTerminal = AppState()
-          .getServerState()
-          .usersTerminals
-          .entries
-          .firstWhere((element) => element.value == user.id,
-              orElse: () => null);
-
-      var isOnline = AppState()
-          .getServerState()
-          .terminalsOnline
-          .contains(foundUserTerminal?.key);
-
-      if (isUserInGroup && (!(foundUserTerminal != null) || !isOnline)) {
-        usersNotRegistered.add(user);
-      }
-    }
-
-    return usersNotRegistered;
-  }
-
-  String getTerminalByUserId(User user) {
-    return AppState()
-        .getServerState()
-        .usersTerminals
-        .entries
-        .firstWhere((element) => element.value == user.id, orElse: () => null)
-        ?.key;
   }
 }

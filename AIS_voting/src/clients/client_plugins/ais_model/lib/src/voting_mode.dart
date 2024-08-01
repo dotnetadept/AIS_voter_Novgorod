@@ -1,16 +1,17 @@
 class VotingMode {
-  int id;
-  String name;
-  String defaultDecision;
-  int orderNum;
-  String includedDecisions;
+  late int id;
+  late String name;
+  late String defaultDecision;
+  late int orderNum;
+  late String includedDecisions;
 
-  VotingMode(
-      {this.id,
-      this.name,
-      this.defaultDecision,
-      this.orderNum,
-      this.includedDecisions});
+  VotingMode({
+    required this.id,
+    required this.name,
+    required this.defaultDecision,
+    required this.orderNum,
+    required this.includedDecisions,
+  });
 
   Map toJson() => {
         'id': id,

@@ -582,8 +582,8 @@ class _MeetingsPageState extends State<MeetingsPage> {
                     ),
                   ),
                   child: Icon(Icons.list_alt, color: Colors.blue),
-                  onPressed: () async {
-                    await ReportHelper().getMeetingDetailedReport(
+                  onPressed: () {
+                    ReportHelper().getMeetingDetailedReport(
                         context,
                         _filteredMeetings[index],
                         widget.settings,
@@ -604,8 +604,8 @@ class _MeetingsPageState extends State<MeetingsPage> {
                     ),
                   ),
                   child: Icon(Icons.list_alt, color: Colors.blueGrey),
-                  onPressed: () async {
-                    await ReportHelper().getMeetingCommonReport(
+                  onPressed: () {
+                    ReportHelper().getMeetingCommonReport(
                         context,
                         _filteredMeetings[index],
                         widget.settings,

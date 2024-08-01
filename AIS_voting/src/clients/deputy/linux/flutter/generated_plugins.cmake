@@ -4,14 +4,15 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_window
-  jacarta_token
   screen_retriever
+  url_launcher_linux
   window_manager
   window_size
   window_to_front
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  pdfrx
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

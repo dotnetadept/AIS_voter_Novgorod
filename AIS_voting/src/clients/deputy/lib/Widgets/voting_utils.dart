@@ -44,14 +44,14 @@ class VotingUtils {
           },
           child: TextButton(
             style: ButtonStyle(
-                padding: MaterialStateProperty.all(EdgeInsets.zero),
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                padding: WidgetStateProperty.all(EdgeInsets.zero),
+                shape: WidgetStateProperty.all(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0))),
-                backgroundColor: MaterialStateProperty.all(
+                backgroundColor: WidgetStateProperty.all(
                   Color(color),
                 ),
                 overlayColor:
-                    MaterialStateProperty.all(Colors.white.withAlpha(30))),
+                    WidgetStateProperty.all(Colors.white.withAlpha(30))),
             onPressed: () => null,
             child: Container(
               width: isBigButtonsView ? null : defaultButtonsWidth.toDouble(),
@@ -120,7 +120,7 @@ class VotingUtils {
     int indexOfCurrentUser = AppState()
         .getServerState()
         .usersAskSpeech
-        .indexOf(AppState().getCurrentUser()?.id);
+        .indexOf(AppState().getCurrentUser()?.id ?? -1);
 
     var queueOrder = (indexOfCurrentUser == -1 ? 0 : indexOfCurrentUser) + 1;
 
@@ -181,11 +181,11 @@ class VotingUtils {
                             },
                       child: TextButton(
                         style: ButtonStyle(
-                            padding: MaterialStateProperty.all(EdgeInsets.zero),
-                            shape: MaterialStateProperty.all(
+                            padding: WidgetStateProperty.all(EdgeInsets.zero),
+                            shape: WidgetStateProperty.all(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(0))),
-                            backgroundColor: MaterialStateProperty.all(
+                            backgroundColor: WidgetStateProperty.all(
                               AppState().getAskWordStatus()
                                   ? Color(AppState()
                                       .getSettings()
@@ -193,7 +193,7 @@ class VotingUtils {
                                       .askWordColor)
                                   : Colors.blue,
                             ),
-                            overlayColor: MaterialStateProperty.all(
+                            overlayColor: WidgetStateProperty.all(
                                 Colors.white.withAlpha(30))),
                         onPressed: () => null,
                         child: Container(
@@ -269,11 +269,11 @@ class VotingUtils {
                             },
                       child: TextButton(
                         style: ButtonStyle(
-                            padding: MaterialStateProperty.all(EdgeInsets.zero),
-                            shape: MaterialStateProperty.all(
+                            padding: WidgetStateProperty.all(EdgeInsets.zero),
+                            shape: WidgetStateProperty.all(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(0))),
-                            backgroundColor: MaterialStateProperty.all(
+                            backgroundColor: WidgetStateProperty.all(
                               AppState().getAskWordStatus()
                                   ? Color(AppState()
                                       .getSettings()
@@ -281,7 +281,7 @@ class VotingUtils {
                                       .askWordColor)
                                   : Colors.blue,
                             ),
-                            overlayColor: MaterialStateProperty.all(
+                            overlayColor: WidgetStateProperty.all(
                                 Colors.white.withAlpha(30))),
                         onPressed: () => null,
                         child: Container(
@@ -358,10 +358,10 @@ class VotingUtils {
                         },
                   child: TextButton(
                     style: ButtonStyle(
-                        padding: MaterialStateProperty.all(EdgeInsets.zero),
-                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        padding: WidgetStateProperty.all(EdgeInsets.zero),
+                        shape: WidgetStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(0))),
-                        backgroundColor: MaterialStateProperty.all(
+                        backgroundColor: WidgetStateProperty.all(
                           AppState().getAskWordStatus()
                               ? Color(AppState()
                                   .getSettings()
@@ -369,7 +369,7 @@ class VotingUtils {
                                   .askWordColor)
                               : Colors.blue,
                         ),
-                        overlayColor: MaterialStateProperty.all(
+                        overlayColor: WidgetStateProperty.all(
                             Colors.white.withAlpha(30))),
                     onPressed: () => null,
                     child: Container(
@@ -442,11 +442,10 @@ class VotingUtils {
                           },
                     child: TextButton(
                       style: ButtonStyle(
-                          padding: MaterialStateProperty.all(EdgeInsets.zero),
-                          shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0))),
-                          backgroundColor: MaterialStateProperty.all(
+                          padding: WidgetStateProperty.all(EdgeInsets.zero),
+                          shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0))),
+                          backgroundColor: WidgetStateProperty.all(
                             AppState().getAskWordStatus()
                                 ? Color(AppState()
                                     .getSettings()
@@ -454,7 +453,7 @@ class VotingUtils {
                                     .askWordColor)
                                 : Colors.blue,
                           ),
-                          overlayColor: MaterialStateProperty.all(
+                          overlayColor: WidgetStateProperty.all(
                               Colors.white.withAlpha(30))),
                       onPressed: () => null,
                       child: Container(
@@ -506,14 +505,14 @@ class VotingUtils {
           },
           child: TextButton(
             style: ButtonStyle(
-                padding: MaterialStateProperty.all(EdgeInsets.zero),
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                padding: WidgetStateProperty.all(EdgeInsets.zero),
+                shape: WidgetStateProperty.all(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0))),
-                backgroundColor: MaterialStateProperty.all(
+                backgroundColor: WidgetStateProperty.all(
                   Colors.blue,
                 ),
                 overlayColor:
-                    MaterialStateProperty.all(Colors.white.withAlpha(30))),
+                    WidgetStateProperty.all(Colors.white.withAlpha(30))),
             onPressed: () => null,
             child: Container(
               height: defaultButtonsHeight.toDouble(),

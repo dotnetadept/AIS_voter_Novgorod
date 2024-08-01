@@ -1,6 +1,7 @@
 import 'dart:convert' show json;
 import 'package:ais_model/ais_model.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:collection/collection.dart';
 import 'package:deputy/Utils/table_utils.dart';
 import 'package:global_configuration/global_configuration.dart';
 import '../Utils/utils.dart';
@@ -12,37 +13,37 @@ import 'package:ais_utils/ais_utils.dart';
 import '../State/AppState.dart';
 
 class ViewAgendaPage extends StatefulWidget {
-  ViewAgendaPage({Key key}) : super(key: key);
+  ViewAgendaPage({Key? key}) : super(key: key);
 
   @override
   _ViewAgendaPageState createState() => _ViewAgendaPageState();
 }
 
 class _ViewAgendaPageState extends State<ViewAgendaPage> {
-  ScrollController _questionsTableScrollController;
-  ScrollController _questionDescriptionScrollController;
-  ScrollController _questionFilesTableScrollController;
-  ScrollController _unregistredTableScrollController;
+  late ScrollController _questionsTableScrollController;
+  late ScrollController _questionDescriptionScrollController;
+  late ScrollController _questionFilesTableScrollController;
+  late ScrollController _unregistredTableScrollController;
 
-  List<Question> _questions;
-  Question _firstQuestion;
-  Question _highlightedQuestion;
-  Question _selectedQuestion;
-  QuestionFile _selectedQuestionFile;
+  late List<Question> _questions;
+  late Question _firstQuestion;
+  late Question? _highlightedQuestion;
+  late Question? _selectedQuestion;
+  late QuestionFile? _selectedQuestionFile;
 
-  bool _showRightPanel;
-  bool _isFirstQuestionPage;
-  bool _isSelectedQuestionPage;
-  bool _useNavigation;
-  bool _showTopPanel;
-  bool _showTopPanelOnFirstPage;
-  bool _showExitButtonTop;
-  bool _showExitButtonRight;
-  bool _showDebugInfo;
+  late bool _showRightPanel;
+  late bool _isFirstQuestionPage;
+  late bool _isSelectedQuestionPage;
+  late bool _useNavigation;
+  late bool _showTopPanel;
+  late bool _showTopPanelOnFirstPage;
+  late bool _showExitButtonTop;
+  late bool _showExitButtonRight;
+  late bool _showDebugInfo;
 
-  bool _showUnregistred;
-  int _defaultButtonsHeight;
-  int _defaultButtonsWidth;
+  late bool _showUnregistred;
+  late int _defaultButtonsHeight;
+  late int _defaultButtonsWidth;
   AutoSizeGroup autoSizeGroup = AutoSizeGroup();
 
   @override
@@ -83,7 +84,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
         int.parse(GlobalConfiguration().getValue('default_buttons_width'));
 
     if (AppState().getCurrentMeeting() != null) {
-      _questions = AppState().getCurrentMeeting().agenda.questions.toList();
+      _questions = AppState().getCurrentMeeting()!.agenda.questions.toList();
       _firstQuestion = _questions.first;
       if (_isFirstQuestionPage) {
         _questions = _questions.sublist(1);
@@ -123,7 +124,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
 
   void updateAgenda() {
     setState(() {
-      _questions = AppState().getCurrentMeeting().agenda.questions.toList();
+      _questions = AppState().getCurrentMeeting()!.agenda.questions.toList();
       _firstQuestion = _questions.first;
       if (_isFirstQuestionPage) {
         _questions = _questions.sublist(1);
@@ -140,7 +141,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
         _questionsTableScrollController.position.pixels);
   }
 
-  void setSelectedQuestion(Question question) {
+  void setSelectedQuestion(Question? question) {
     if (question != null) {
       if (_questions.contains(question)) {
         _highlightedQuestion = question;
@@ -299,7 +300,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
               Container(
                 height: 15,
               ),
-              getHeader('Файлы вопроса (${_selectedQuestion.files.length})',
+              getHeader('Файлы вопроса (${_selectedQuestion!.files.length})',
                   EdgeInsets.fromLTRB(10, 30, 10, 30)),
               Expanded(
                 child: getQuestionFilesList(),
@@ -570,7 +571,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
         Container(
           height: 15,
         ),
-        getHeader('Документы (${_selectedQuestion.files.length})',
+        getHeader('Документы (${_selectedQuestion!.files.length})',
             EdgeInsets.fromLTRB(10, 15, 10, 15)),
         Expanded(
           child: getQuestionFilesList(),
@@ -772,9 +773,9 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
       controller: _questionFilesTableScrollController,
       child: ListView.builder(
           controller: _questionFilesTableScrollController,
-          itemCount: _selectedQuestion.files.length,
+          itemCount: _selectedQuestion!.files.length,
           itemBuilder: (BuildContext context, int index) {
-            var element = _selectedQuestion.files[index];
+            var element = _selectedQuestion!.files[index];
             return InkWell(
               onTap: () {
                 viewFile(element);
@@ -945,13 +946,15 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
         ),
         StoreboardWidget(
           serverState: AppState().getServerState(),
-          meeting: AppState().getCurrentMeeting(),
-          question: AppState().getCurrentMeeting().agenda.questions.firstWhere(
-              (element) =>
+          meeting: AppState().getCurrentMeeting()!,
+          question: AppState()
+              .getCurrentMeeting()!
+              .agenda
+              .questions
+              .firstWhereOrNull((element) =>
                   element.id ==
                   json.decode(
-                      AppState().getServerState().params)['selectedQuestion'],
-              orElse: () => null),
+                      AppState().getServerState().params)['selectedQuestion']),
           settings: AppState().getSettings(),
           timeOffset: AppState().getTimeOffset(),
           votingModes: AppState().getVotingModes(),

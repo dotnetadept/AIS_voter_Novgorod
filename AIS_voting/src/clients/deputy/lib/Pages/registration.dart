@@ -10,7 +10,7 @@ import '../State/AppState.dart';
 
 class RegistrationPage extends StatefulWidget {
   final startInterval;
-  RegistrationPage({Key key, this.startInterval}) : super(key: key);
+  RegistrationPage({Key? key, this.startInterval}) : super(key: key);
 
   @override
   _RegistrationPageState createState() => _RegistrationPageState();
@@ -18,10 +18,10 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   var _interval = 0;
-  DateTime _startDate;
+  late DateTime _startDate;
   var _secondRemain = 0;
   var _indicatorValue = 0.0;
-  Timer _registrationTimer;
+  late Timer _registrationTimer;
   bool _isBigButtons = false;
 
   @override
@@ -220,8 +220,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
           child: TextButton(
             autofocus: true,
             style: ButtonStyle(
-              minimumSize: MaterialStateProperty.all(Size(350, 100)),
-              padding: MaterialStateProperty.all(EdgeInsets.zero),
+              minimumSize: WidgetStateProperty.all(Size(350, 100)),
+              padding: WidgetStateProperty.all(EdgeInsets.zero),
             ),
             onPressed: () => null,
             child: Container(

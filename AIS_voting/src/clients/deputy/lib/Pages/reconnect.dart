@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ReconnectPage extends StatefulWidget {
-  ReconnectPage({Key key}) : super(key: key);
+  ReconnectPage({Key? key}) : super(key: key);
 
   @override
   _ReconnectPageState createState() => _ReconnectPageState();
@@ -58,8 +58,8 @@ class _ReconnectPageState extends State<ReconnectPage> {
                   )
                 : TextButton(
                     style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all(Size(75, 75)),
-                      shape: MaterialStateProperty.all(
+                      minimumSize: WidgetStateProperty.all(Size(75, 75)),
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),

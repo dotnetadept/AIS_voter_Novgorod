@@ -1,20 +1,21 @@
 class QuestionFile {
-  int id;
-  String relativePath;
-  String realPath;
-  String fileName;
-  String version;
-  String description;
-  int questionId;
+  late int id;
+  late String relativePath;
+  late String realPath;
+  late String fileName;
+  late String version;
+  late String description;
+  late int questionId;
 
-  QuestionFile(
-      {this.id,
-      this.relativePath,
-      this.realPath,
-      this.fileName,
-      this.version,
-      this.description,
-      this.questionId});
+  QuestionFile({
+    required this.id,
+    required this.relativePath,
+    required this.realPath,
+    required this.fileName,
+    required this.version,
+    required this.description,
+    required this.questionId,
+  });
 
   Map toJson() => {
         'id': id,

@@ -107,15 +107,15 @@ class _MyAppState extends State<MyApp> with WindowListener {
                   ),
                 ),
                 scrollbarTheme: ScrollbarThemeData(
-                  thumbVisibility: MaterialStateProperty.all(true),
-                  thickness: MaterialStateProperty.all(20),
+                  thumbVisibility: WidgetStateProperty.all(true),
+                  thickness: WidgetStateProperty.all(20),
                 ),
                 textButtonTheme: TextButtonThemeData(
                     style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  foregroundColor: MaterialStateProperty.all(Colors.white),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(20)),
-                  overlayColor: MaterialStateProperty.all(Colors.blueAccent),
+                  backgroundColor: WidgetStateProperty.all(Colors.blue),
+                  foregroundColor: WidgetStateProperty.all(Colors.white),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(20)),
+                  overlayColor: WidgetStateProperty.all(Colors.blueAccent),
                 )),
               ),
               home: LoadingPage(),
@@ -164,7 +164,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
       return _buildRoute(settings, new InsertCardPage());
     }
 
-    return null;
+    return _buildRoute(settings, new LoadingPage());
   }
 
   CustomPageRoute _buildRoute(RouteSettings settings, Widget builder) {
@@ -192,14 +192,16 @@ class _MyAppState extends State<MyApp> with WindowListener {
         if (!_isWindowPositionSet) {
           _isWindowPositionSet = true;
           await getCurrentScreen().then((screen) async {
-            await windowManager.getPosition().then((position) async {
-              if (position.dx !=
-                  screen.visibleFrame.height - windowHeight / 2) {
-                await windowManager.setAlignment(Alignment.topCenter);
-                await windowManager.setPosition(
-                    Offset(0, screen.visibleFrame.height - windowHeight / 2));
-              }
-            });
+            if (screen != null) {
+              await windowManager.getPosition().then((position) async {
+                if (position.dx !=
+                    screen.visibleFrame.height - windowHeight / 2) {
+                  await windowManager.setAlignment(Alignment.topCenter);
+                  await windowManager.setPosition(
+                      Offset(0, screen.visibleFrame.height - windowHeight / 2));
+                }
+              });
+            }
           });
         }
       }
@@ -219,8 +221,10 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
     var windowHeight = Utils().showBottomPanel() ? 60.0 : 1.0;
     await getCurrentScreen().then((screen) async {
-      await windowManager.setSize(Size(
-          windowHeight == 1 ? 1 : screen.visibleFrame.width, windowHeight));
+      if (screen != null) {
+        await windowManager.setSize(Size(
+            windowHeight == 1 ? 1 : screen.visibleFrame.width, windowHeight));
+      }
     });
   }
 

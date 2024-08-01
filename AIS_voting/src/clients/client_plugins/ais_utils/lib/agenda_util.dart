@@ -6,7 +6,7 @@ import 'package:ais_model/ais_model.dart';
 
 class AgendaUtil {
   static Widget getQuestionDescriptionText(
-    Question question,
+    Question? question,
     double size, {
     bool isAutoSize = false,
     double lineHeight = 1,

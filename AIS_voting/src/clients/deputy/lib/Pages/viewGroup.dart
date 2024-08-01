@@ -3,6 +3,7 @@ import 'dart:convert' show json;
 import 'package:ais_model/ais_model.dart';
 import 'package:ais_model/ais_model.dart' as ais;
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:collection/collection.dart';
 import 'package:deputy/Widgets/voting_utils.dart';
 import 'package:global_configuration/global_configuration.dart';
 import '../Utils/table_utils.dart';
@@ -13,7 +14,7 @@ import 'package:ais_utils/ais_utils.dart';
 import '../State/AppState.dart';
 
 class ViewGroupPage extends StatefulWidget {
-  ViewGroupPage({Key key}) : super(key: key);
+  ViewGroupPage({Key? key}) : super(key: key);
 
   @override
   _ViewGroupPageState createState() => _ViewGroupPageState();
@@ -29,10 +30,10 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
   var _unregistredTableScrollController = new ScrollController();
   var _setStoreboardDialog;
 
-  int _defaultButtonsHeight;
-  int _defaultButtonsWidth;
-  WebSocketConnection _connection;
-  Timer _clockTimer;
+  late int _defaultButtonsHeight;
+  late int _defaultButtonsWidth;
+  late WebSocketConnection _connection;
+  late Timer _clockTimer;
 
   @override
   void initState() {
@@ -85,14 +86,14 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
               : SchemeLegendWidget(
                   settings: AppState().getSettings(),
                   serverState: AppState().getServerState(),
-                  group: AppState().getCurrentMeeting().group,
+                  group: AppState().getCurrentMeeting()!.group,
                   isOperatorView: false,
                   isSmallView: false),
           AppState().getSettings().managerSchemeSettings.useTableView
               ? TableSchemeWidget(
                   settings: AppState().getSettings(),
                   serverState: AppState().getServerState(),
-                  group: AppState().getCurrentMeeting().group,
+                  group: AppState().getCurrentMeeting()!.group,
                   interval: AppState().getSelectedInterval(),
                   users: AppState().getUsers(),
                   timeOffset: AppState().getTimeOffset(),
@@ -137,7 +138,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                               child: WorkplacesSchemeWidget(
                                 settings: AppState().getSettings(),
                                 serverState: AppState().getServerState(),
-                                group: AppState().getCurrentMeeting().group,
+                                group: AppState().getCurrentMeeting()!.group,
                                 interval: AppState().getSelectedInterval(),
                                 setRegistration: (var v) {},
                                 undoRegistration: (var v) {},
@@ -172,7 +173,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
               : StatePanelWidget(
                   settings: AppState().getSettings(),
                   serverState: AppState().getServerState(),
-                  meeting: AppState().getCurrentMeeting(),
+                  meeting: AppState().getCurrentMeeting()!,
                   intervals: AppState().getIntervals(),
                   autoEnd: AppState().getAutoEnd(),
                   selectedInterval: AppState().getSelectedInterval(),
@@ -205,12 +206,11 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
   void setCurrentSpeaker(String terminalId, String name) {
     var selectedInterval = AppState().getSelectedInterval();
 
-    int speakerId = AppState().getServerState().usersTerminals[terminalId];
+    var speakerId = AppState().getServerState().usersTerminals[terminalId];
 
     var foundSpeakerGU =
-        AppState().getCurrentMeeting().group.groupUsers.firstWhere(
+        AppState().getCurrentMeeting()!.group.groupUsers.firstWhereOrNull(
               (element) => element.user.id == speakerId,
-              orElse: () => null,
             );
 
     var speakerSession = SpeakerSession();
@@ -218,7 +218,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
     speakerSession.terminalId = terminalId;
     speakerSession.type = 'Выступление:';
 
-    speakerSession.name = foundSpeakerGU?.user?.getFullName() ?? name;
+    speakerSession.name = foundSpeakerGU?.user.getFullName() ?? name;
     speakerSession.interval = selectedInterval.duration;
     speakerSession.autoEnd = selectedInterval.isAutoEnd;
     _connection.setCurrentSpeaker(speakerSession, selectedInterval?.startSignal,
@@ -229,8 +229,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
     var guestName = AppState()
             .getServerState()
             .guestsPlaces
-            .firstWhere((element) => element.terminalId == terminalId,
-                orElse: () => null)
+            .firstWhereOrNull((element) => element.terminalId == terminalId)
             ?.name ??
         'Гость[$terminalId]';
 
@@ -254,8 +253,8 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
       AppState().getServerState(),
       AppState().getTimeOffset(),
       AppState().getSettings(),
-      AppState().getCurrentMeeting(),
-      AppState().getCurrentMeeting().group,
+      AppState().getCurrentMeeting()!,
+      AppState().getCurrentMeeting()!.group,
       AppState().getIntervals().where((element) => element.isActive).toList(),
       null,
       false,
@@ -288,13 +287,15 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
         getRightPanelTop(),
         StoreboardWidget(
           serverState: AppState().getServerState(),
-          meeting: AppState().getCurrentMeeting(),
-          question: AppState().getCurrentMeeting().agenda.questions.firstWhere(
-              (element) =>
+          meeting: AppState().getCurrentMeeting()!,
+          question: AppState()
+              .getCurrentMeeting()!
+              .agenda
+              .questions
+              .firstWhereOrNull((element) =>
                   element.id ==
                   json.decode(
-                      AppState().getServerState().params)['selectedQuestion'],
-              orElse: () => null),
+                      AppState().getServerState().params)['selectedQuestion']),
           settings: AppState().getSettings(),
           timeOffset: AppState().getTimeOffset(),
           votingModes: AppState().getVotingModes(),
@@ -337,8 +338,8 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                 child: TextButton(
                   autofocus: true,
                   style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(Size(350, 60)),
-                    padding: MaterialStateProperty.all(EdgeInsets.zero),
+                    minimumSize: WidgetStateProperty.all(Size(350, 60)),
+                    padding: WidgetStateProperty.all(EdgeInsets.zero),
                   ),
                   onPressed: () => null,
                   child: Container(
@@ -480,11 +481,11 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                                   {removeAskWordAll()},
                               child: TextButton(
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
+                                  backgroundColor: WidgetStateProperty.all(
                                       Colors.indigoAccent),
-                                  padding: MaterialStateProperty.all(
+                                  padding: WidgetStateProperty.all(
                                       EdgeInsets.fromLTRB(0, 15, 0, 15)),
-                                  shape: MaterialStateProperty.all(CircleBorder(
+                                  shape: WidgetStateProperty.all(CircleBorder(
                                       side: BorderSide(
                                           color: Colors.transparent))),
                                 ),
@@ -548,11 +549,11 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                                   {removeAskWordAll()},
                               child: TextButton(
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
+                                  backgroundColor: WidgetStateProperty.all(
                                       Colors.indigoAccent),
-                                  padding: MaterialStateProperty.all(
+                                  padding: WidgetStateProperty.all(
                                       EdgeInsets.fromLTRB(0, 15, 0, 15)),
-                                  shape: MaterialStateProperty.all(
+                                  shape: WidgetStateProperty.all(
                                     CircleBorder(
                                       side:
                                           BorderSide(color: Colors.transparent),
@@ -639,10 +640,8 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
     for (int i = 0;
         i < AppState().getServerState().usersAskSpeech.length;
         i++) {
-      var foundUser = AppState().getUsers().firstWhere(
-          (element) =>
-              element.id == AppState().getServerState().usersAskSpeech[i],
-          orElse: () => null);
+      var foundUser = AppState().getUsers().firstWhereOrNull((element) =>
+          element.id == AppState().getServerState().usersAskSpeech[i]);
       if (foundUser != null) {
         usersAskingWord.add(foundUser);
       }
@@ -664,7 +663,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
               .getServerState()
               .usersTerminals
               .entries
-              .firstWhere((ut) => ut.value == element.id, orElse: () => null)
+              .firstWhereOrNull((ut) => ut.value == element.id)
               ?.key;
           return Card(
             child: Container(
@@ -743,11 +742,9 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
           var guestName = AppState()
                   .getServerState()
                   .guestsPlaces
-                  .firstWhere(
-                      (element) =>
-                          element.terminalId ==
-                          AppState().getServerState().guestsAskSpeech[index],
-                      orElse: () => null)
+                  .firstWhereOrNull((element) =>
+                      element.terminalId ==
+                      AppState().getServerState().guestsAskSpeech[index])
                   ?.name ??
               'Гость[${AppState().getServerState().guestsAskSpeech[index]}]';
 
@@ -822,7 +819,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
         .activeMics
         .entries
         .contains((element) => element.key == terminalId);
-    int speakerId = AppState().getServerState().usersTerminals[terminalId];
+    var speakerId = AppState().getServerState().usersTerminals[terminalId];
 
     if (!(AppState().getServerState().speakerSession?.terminalId != null &&
             AppState().getServerState().speakerSession?.terminalId ==
@@ -839,7 +836,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
   void enableTerminal(String terminalId, int speakerId) {
     // Set storeboard with current speaker
     User speaker = AppState()
-        .getCurrentMeeting()
+        .getCurrentMeeting()!
         .group
         .getVoters()
         .firstWhere((element) => element.user.id == speakerId)

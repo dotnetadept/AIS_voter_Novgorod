@@ -4,30 +4,31 @@ import 'user.dart';
 import 'proxy_user.dart';
 
 class Proxy {
-  int id;
-  User proxy;
-  List<ProxyUser> subjects;
-  bool isActive;
-  DateTime createdDate;
-  DateTime lastUpdated;
+  late int id;
+  late User? proxy;
+  late List<ProxyUser> subjects;
+  late bool isActive;
+  late DateTime? createdDate;
+  late DateTime? lastUpdated;
 
-  Proxy(
-      {this.id,
-      this.proxy,
-      this.subjects,
-      this.isActive,
-      this.createdDate,
-      this.lastUpdated});
+  Proxy({
+    required this.id,
+    required this.proxy,
+    required this.subjects,
+    required this.isActive,
+    required this.createdDate,
+    required this.lastUpdated,
+  });
 
   Map toJson() => {
         'id': id,
-        'proxy': proxy == null ? null : proxy.toJson(),
+        'proxy': proxy == null ? null : proxy?.toJson(),
         'subjects': subjects,
         'isActive': isActive,
         'createdDate':
-            lastUpdated == null ? null : createdDate.toIso8601String(),
+            lastUpdated == null ? null : createdDate?.toIso8601String(),
         'lastUpdated':
-            lastUpdated == null ? null : lastUpdated.toIso8601String(),
+            lastUpdated == null ? null : lastUpdated?.toIso8601String(),
       };
 
   Proxy.fromJson(Map<String, dynamic> json)

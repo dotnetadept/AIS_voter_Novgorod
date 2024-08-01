@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class WaitingPage extends StatefulWidget {
-  WaitingPage({Key key}) : super(key: key);
+  WaitingPage({Key? key}) : super(key: key);
 
   @override
   _WaitingPageState createState() => _WaitingPageState();

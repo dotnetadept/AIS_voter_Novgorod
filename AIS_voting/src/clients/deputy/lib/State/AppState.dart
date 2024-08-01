@@ -11,41 +11,40 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:synchronized/synchronized.dart';
 import '../Utils/stream_utils.dart';
-import 'CardState.dart';
 import 'WebSocketConnection.dart';
+import 'package:collection/collection.dart';
 
 class AppState with ChangeNotifier {
-  static WebSocketChannel _channel;
-  static ServerState _serverState;
+  static late WebSocketChannel _channel;
+  static late ServerState _serverState;
 
-  static List<User> _users;
-  static List<VotingMode> _votingModes;
-  static User _currentUser;
-  static Meeting _currentMeeting;
-  static Settings _settings;
-  static int _timeOffset;
+  static late List<User> _users;
+  static late List<VotingMode> _votingModes;
+  static late User? _currentUser;
+  static late Meeting? _currentMeeting;
+  static late Settings _settings;
+  static late int _timeOffset;
   static bool _isLoadingComplete = false;
 
   static bool _isRegistred = false;
   static bool _isDocumentsChecked = false;
   static bool _isDocumentsDownloaded = false;
   static bool _isLoadingInProgress = false;
-  static String _decision;
+  static String _decision = '';
   static bool _askWordStatus = false;
   static String _currentPage = '';
 
   static AppState _singleton = AppState._internal();
 
   // selected agenda items
-  static Question _currentQuestion;
-  static QuestionFile _currentDocument;
-  static QuestionFile _agendaDocument;
-  static int _agendaTabNavigation;
-  static double _agendaScrollPosition;
+  static Question? _currentQuestion;
+  static QuestionFile? _currentDocument;
+  static QuestionFile? _agendaDocument;
+  static double _agendaScrollPosition = 0.0;
 
   // intervals
-  List<ais.Interval> _intervals;
-  ais.Interval _selectedInterval;
+  late List<ais.Interval> _intervals;
+  late ais.Interval _selectedInterval;
   bool _autoEnd = false;
 
   // prev card values
@@ -53,87 +52,13 @@ class AppState with ChangeNotifier {
 
   // stream
   static bool _exitStream = false;
-  static Future<void> Function() refreshStream;
-
-  // guest name
-  String _guestName;
-
-  Lock _lock = Lock();
+  static late Future<void> Function() refreshStream;
 
   factory AppState() {
     return _singleton;
   }
 
   AppState._internal() {
-    CardState.init();
-
-    // check card timer
-    Timer.periodic(Duration(seconds: 1), (v) async {
-      _lock.synchronized(() async {
-        // do not read card until loading not completed or meeting is not loaded
-        if (!getIsLoadingComplete() || _currentMeeting == null) {
-          return;
-        }
-
-        var isCardOn = await CardState.isCardOn();
-        if (isCardOn != _prevIsCardOn || CardState.getRefresh) {
-          _prevIsCardOn = isCardOn;
-          CardState.setRefresh(false);
-          if (!isCardOn) {
-            WebSocketConnection.getInstance().onUserExit();
-          } else {
-            User currentUser = await CardState.updateCardUser();
-
-            bool isCurrentUserNotInGroup =
-                AppState().getCurrentMeeting() == null ||
-                    !AppState()
-                        .getCurrentMeeting()
-                        .group
-                        .groupUsers
-                        .any((element) => element.user.id == currentUser.id);
-
-            // set guest if user not in group
-            if (currentUser != null && isCurrentUserNotInGroup) {
-              _guestName = currentUser.getShortName();
-
-              WebSocketConnection.getInstance().setGuest(
-                  _guestName, GlobalConfiguration().getValue('terminal_id'));
-              currentUser = null;
-            } else {
-              if (_guestName != null) {
-                WebSocketConnection.getInstance().removeGuest(_guestName);
-              }
-
-              _guestName = null;
-            }
-
-            if (currentUser == null) {
-              WebSocketConnection.getInstance().onUserExit();
-            } else {
-              setCurrentUser(currentUser);
-              setIsRegistred(AppState()
-                  .getServerState()
-                  .usersRegistered
-                  .contains(AppState().getCurrentUser().id));
-
-              // update serverState internally
-              AppState().getServerState().usersTerminals.putIfAbsent(
-                  GlobalConfiguration().getValue('terminal_id'),
-                  () => AppState().getCurrentUser().id);
-
-              var clientType =
-                  AppState().isCurrentUserManager() ? 'manager' : 'deputy';
-              WebSocketConnection.getInstance().updateClientType(
-                  clientType, getCurrentUser().id,
-                  isUseAuthCard: true);
-
-              WebSocketConnection.getInstance().processNavigation();
-            }
-          }
-        }
-      });
-    });
-
     Timer.periodic(
         Duration(
             milliseconds: int.parse(
@@ -150,7 +75,7 @@ class AppState with ChangeNotifier {
     });
   }
 
-  Future<void> loadData(int meetingId) async {
+  Future<void> loadData(int? meetingId) async {
     var intervalsData = await http.get(Uri.http(
         ServerConnection.getHttpServerUrl(GlobalConfiguration()),
         "/intervals"));
@@ -170,34 +95,39 @@ class AppState with ChangeNotifier {
     var settings = (json.decode(settingsData.body) as List)
         .map((data) => Settings.fromJson(data))
         .toList()
-        .firstWhere((element) => element.isSelected, orElse: () => null);
+        .firstWhere((element) => element.isSelected);
     AppState().setSettings(settings);
 
     var selectedInterval = AppState().getIntervals().firstWhere(
           (element) =>
               element.id ==
               _settings.intervalsSettings.defaultSpeakerIntervalId,
-          orElse: () => null,
         );
     AppState().setSelectedInterval(selectedInterval);
 
-    var ntpOffset = await NTP
-        .getNtpOffset(
-      localTime: DateTime.now(),
-      lookUpAddress: GlobalConfiguration().getValue('ntp_server'),
-      timeout: Duration(
-          milliseconds:
-              int.parse(GlobalConfiguration().getValue('ntp_timeout'))),
-    )
-        .onError((error, stackTrace) {
-      print(
-          'Отсутствует синхронизация с сервером времени. ${error.toString()} ${stackTrace.toString()}');
-      return null;
-    });
-    // Set ntpOffset = 0 to use local time if no ntp sync avaliable
-    if (ntpOffset == null) {
-      ntpOffset = 0;
-    }
+    // try {
+    //   await NTP
+    //       .getNtpOffset(
+    //     localTime: DateTime.now(),
+    //     lookUpAddress: GlobalConfiguration().getValue('ntp_server'),
+    //     timeout: Duration(
+    //         milliseconds:
+    //             int.parse(GlobalConfiguration().getValue('ntp_timeout'))),
+    //   )
+    //       .onError((error, stackTrace) {
+    //     print(
+    //         'Отсутствует синхронизация с сервером времени. ${error.toString()} ${stackTrace.toString()}');
+    //     return null;
+    //   });
+    // } catch (exc) {
+    //   print('Отсутствует синхронизация с сервером времени. ${exc.toString()}}');
+    // }
+    // // Set ntpOffset = 0 to use local time if no ntp sync avaliable
+    // if (ntpOffset == null) {
+    //   ntpOffset = 0;
+    // }
+
+    var ntpOffset = 0;
     AppState().setTimeOffset(ntpOffset);
 
     var usersData = await http.get(Uri.http(
@@ -273,23 +203,21 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  User getCurrentUser() {
+  User? getCurrentUser() {
     return _currentUser;
   }
 
   String getCurrentGuest() {
     return getServerState()
             .guestsPlaces
-            .firstWhere(
-                (element) =>
-                    element.terminalId ==
-                    GlobalConfiguration().getValue('terminal_id').toString(),
-                orElse: () => null)
+            .firstWhereOrNull((element) =>
+                element.terminalId ==
+                GlobalConfiguration().getValue('terminal_id').toString())
             ?.name ??
         '';
   }
 
-  void setCurrentUser(User user) {
+  void setCurrentUser(User? user) {
     _currentUser = user;
 
     notifyListeners();
@@ -319,8 +247,8 @@ class AppState with ChangeNotifier {
       return result;
     }
 
-    if (AppState().getCurrentUser().id ==
-        GroupUtil().getManagerId(AppState().getCurrentMeeting().group,
+    if (AppState().getCurrentUser()!.id ==
+        GroupUtil().getManagerId(AppState().getCurrentMeeting()!.group,
             _serverState.usersTerminals)) {
       result = true;
     }
@@ -328,27 +256,19 @@ class AppState with ChangeNotifier {
     return result;
   }
 
-  Meeting getCurrentMeeting() {
+  Meeting? getCurrentMeeting() {
     return _currentMeeting;
   }
 
-  void setCurrentMeeting(Meeting meeting) {
+  void setCurrentMeeting(Meeting? meeting) {
     _currentMeeting = meeting;
     if (_currentMeeting != null &&
-        _currentMeeting.agenda.questions.length > 0) {
-      _currentMeeting.agenda.questions
+        _currentMeeting!.agenda.questions.length > 0) {
+      _currentMeeting!.agenda.questions
           .sort((a, b) => a.orderNum.compareTo(b.orderNum));
     }
 
     notifyListeners();
-  }
-
-  void setAgendaTab(int tabIndex) {
-    _agendaTabNavigation = tabIndex;
-  }
-
-  int getAgendaTab() {
-    return _agendaTabNavigation;
   }
 
   void setAgendaScrollPosition(double agendaScrollPosition) {
@@ -359,27 +279,27 @@ class AppState with ChangeNotifier {
     return _agendaScrollPosition;
   }
 
-  void setCurrentDocument(QuestionFile document) {
+  void setCurrentDocument(QuestionFile? document) {
     _currentDocument = document;
   }
 
-  QuestionFile getCurrentDocument() {
+  QuestionFile? getCurrentDocument() {
     return _currentDocument;
   }
 
-  QuestionFile getAgendaDocument() {
+  QuestionFile? getAgendaDocument() {
     return _agendaDocument;
   }
 
-  void setAgendaDocument(QuestionFile document) {
+  void setAgendaDocument(QuestionFile? document) {
     _agendaDocument = document;
   }
 
-  void setCurrentQuestion(Question question) {
+  void setCurrentQuestion(Question? question) {
     _currentQuestion = question;
   }
 
-  Question getCurrentQuestion() {
+  Question? getCurrentQuestion() {
     return _currentQuestion;
   }
 

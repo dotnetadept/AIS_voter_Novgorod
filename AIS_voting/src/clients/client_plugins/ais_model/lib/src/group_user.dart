@@ -1,12 +1,16 @@
 import 'user.dart';
 
 class GroupUser {
-  int id;
-  int groupId;
-  User user;
-  bool isManager;
+  late int id;
+  late int groupId;
+  late User user;
+  late bool isManager;
 
-  GroupUser({this.groupId, this.user, this.isManager});
+  GroupUser({
+    required this.groupId,
+    required this.user,
+    required this.isManager,
+  });
 
   Map toJson() => {
         'id': id,

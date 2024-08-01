@@ -66,23 +66,26 @@ class ReportHelper {
             (element) => element.id == chairmanGroupUser.user.id,
             orElse: () => null);
 
+        var startDate = currentMeetingSession.startDate ?? DateTime.now();
+        var endDate = currentMeetingSession.endDate ?? DateTime.now();
+
         // fill common info
         Content votingNamedContent = Content();
         votingNamedContent
           ..add(TextContent("date",
-              "${DateFormat('dd.MM.yyyy').format(currentMeetingSession.startDate.toLocal())}"))
-          ..add(TextContent("start_hours",
-              "${DateFormat('HH').format(currentMeetingSession.startDate.toLocal())}"))
+              "${DateFormat('dd.MM.yyyy').format(startDate.toLocal())}"))
+          ..add(TextContent(
+              "start_hours", "${DateFormat('HH').format(startDate.toLocal())}"))
           ..add(TextContent("start_minutes",
-              "${DateFormat('mm').format(currentMeetingSession.startDate.toLocal())}"))
+              "${DateFormat('mm').format(startDate.toLocal())}"))
           ..add(TextContent("chairman", "${chairman.getShortName()}"))
           ..add(TextContent("secretary", "$secretaryInfo"))
           ..add(TextContent("members", "$membersInfo"))
           ..add(TextContent("quests", "$guestsInfo"))
-          ..add(TextContent("close_hours",
-              "${DateFormat('HH').format(currentMeetingSession.endDate.toLocal())}"))
+          ..add(TextContent(
+              "close_hours", "${DateFormat('HH').format(endDate.toLocal())}"))
           ..add(TextContent("close_minutes",
-              "${DateFormat('mm').format(currentMeetingSession.endDate.toLocal())}"));
+              "${DateFormat('mm').format(endDate.toLocal())}"));
 
         var questionSessionsResponse = await http.get(Uri.http(
             ServerConnection.getHttpServerUrl(GlobalConfiguration()),
@@ -124,8 +127,8 @@ class ReportHelper {
                 "decision",
                 currentQuestionSession.usersCountVotedYes >=
                         currentQuestionSession.usersCountForSuccess
-                    ? "принято$unanimouslyModifier."
-                    : "не принято$unanimouslyModifier.")));
+                    ? "принято$unanimouslyModifier"
+                    : "не принято$unanimouslyModifier")));
         }
 
         votingNamedContent..add(ListContent("questions_info", questionsInfo));
@@ -247,15 +250,18 @@ class ReportHelper {
           registredCount = questionSessions.first.usersCountRegistred;
         }
 
+        var startDate = currentMeetingSession.startDate ?? DateTime.now();
+        var endDate = currentMeetingSession.endDate ?? DateTime.now();
+
         // fill common content
         Content votingNamedContent = Content();
         votingNamedContent
           ..add(TextContent("date",
-              "${DateFormat('dd.MM.yyyy').format(currentMeetingSession.startDate.toLocal())}"))
-          ..add(TextContent("start_hours",
-              "${DateFormat('HH').format(currentMeetingSession.startDate.toLocal())}"))
+              "${DateFormat('dd.MM.yyyy').format(startDate.toLocal())}"))
+          ..add(TextContent(
+              "start_hours", "${DateFormat('HH').format(startDate.toLocal())}"))
           ..add(TextContent("start_minutes",
-              "${DateFormat('mm').format(currentMeetingSession.startDate.toLocal())}"))
+              "${DateFormat('mm').format(startDate.toLocal())}"))
           ..add(TextContent("common_count", "${meeting.group.chosenCount}"))
           ..add(TextContent("registred_count", "$registredCount"))
           ..add(TextContent("quorum_status",
@@ -264,10 +270,10 @@ class ReportHelper {
           ..add(TextContent("secretary", "$secretaryInfo"))
           ..add(TextContent("members", "$membersInfo"))
           ..add(TextContent("quests", "$guestsInfo"))
-          ..add(TextContent("close_hours",
-              "${DateFormat('HH').format(currentMeetingSession.endDate.toLocal())}"))
+          ..add(TextContent(
+              "close_hours", "${DateFormat('HH').format(endDate.toLocal())}"))
           ..add(TextContent("close_minutes",
-              "${DateFormat('mm').format(currentMeetingSession.endDate.toLocal())}"));
+              "${DateFormat('mm').format(endDate.toLocal())}"));
 
         // fill agenda info
         var agendaInfo = <PlainContent>[];
@@ -317,12 +323,18 @@ class ReportHelper {
             ..add(TextContent("question_name", "${currentQuestion.name}"))
             ..add(TextContent("question_content",
                 "${currentQuestion.getReportDescription()}"))
+            ..add(TextContent("voted_yes_count",
+                "${currentQuestionSession.usersCountVotedYes}"))
+            ..add(TextContent("voted_no_count",
+                "${currentQuestionSession.usersCountVotedNo}"))
+            ..add(TextContent("voted_indifferent_count",
+                "${currentQuestionSession.usersCountVotedIndiffirent}"))
             ..add(TextContent(
                 "decision",
                 currentQuestionSession.usersCountVotedYes >=
                         currentQuestionSession.usersCountForSuccess
-                    ? "принято$unanimouslyModifier"
-                    : "не принято$unanimouslyModifier")));
+                    ? "решение принято$unanimouslyModifier"
+                    : "решение не принято$unanimouslyModifier")));
         }
 
         votingNamedContent..add(ListContent("questions_info", questionsInfo));

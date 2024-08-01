@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 import 'group_user.dart';
 import 'settings.dart';
 import 'server_state.dart';
@@ -5,31 +7,31 @@ import 'workplaces.dart';
 import 'dart:convert';
 
 class Group {
-  int id;
-  String name;
-  int lawUsersCount;
-  int quorumCount;
-  int majorityCount;
-  int oneThirdsCount;
-  int twoThirdsCount;
-  int chosenCount;
-  int majorityChosenCount;
-  int oneThirdsChosenCount;
-  int twoThirdsChosenCount;
-  String roundingRoule;
-  String managerRoule;
-  bool isActive;
-  bool isManagerCastingVote;
-  bool isUnregisterUserOnExit;
-  bool isFastRegistrationUsed;
-  bool isDeputyAutoRegistration;
-  bool isManagerAutoRegistration;
-  Workplaces workplaces;
-  List<GroupUser> groupUsers;
-  String unblockedMics;
-  String guests;
-  int MicsNotActiveFrom;
-  String managerTerminal;
+  late int id;
+  late String name;
+  late int lawUsersCount;
+  late int quorumCount;
+  late int majorityCount;
+  late int oneThirdsCount;
+  late int twoThirdsCount;
+  late int chosenCount;
+  late int majorityChosenCount;
+  late int oneThirdsChosenCount;
+  late int twoThirdsChosenCount;
+  late String roundingRoule;
+  late String managerRoule;
+  late bool isActive;
+  late bool isManagerCastingVote;
+  late bool isUnregisterUserOnExit;
+  late bool isFastRegistrationUsed;
+  late bool isDeputyAutoRegistration;
+  late bool isManagerAutoRegistration;
+  late Workplaces workplaces;
+  late List<GroupUser> groupUsers;
+  late String unblockedMics;
+  late String guests;
+  late int MicsNotActiveFrom;
+  late String managerTerminal;
 
   Group() {
     id = 0;
@@ -143,9 +145,9 @@ class GroupUtil {
             ));
   }
 
-  int getManagerId(Group group, Map<String, int> usersTerminals) {
+  int? getManagerId(Group group, Map<String, int> usersTerminals) {
     var nameManagerId = group.groupUsers
-        .firstWhere((element) => element.isManager, orElse: () => null)
+        .firstWhereOrNull((element) => element.isManager)
         ?.user
         ?.id;
 

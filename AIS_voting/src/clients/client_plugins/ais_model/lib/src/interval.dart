@@ -1,14 +1,14 @@
 import '../ais_model.dart';
 
 class Interval {
-  int id;
-  int orderNum;
-  String name = '';
-  int duration = 0;
-  Signal startSignal;
-  Signal endSignal;
-  bool isAutoEnd = false;
-  bool isActive = true;
+  late int id;
+  late int orderNum;
+  late String name = '';
+  late int duration = 0;
+  late Signal? startSignal;
+  late Signal? endSignal;
+  late bool isAutoEnd = false;
+  late bool isActive = true;
 
   Interval() {
     name = '';

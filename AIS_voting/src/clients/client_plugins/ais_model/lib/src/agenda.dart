@@ -1,20 +1,21 @@
 import 'question.dart';
 
 class Agenda {
-  int id;
-  String name;
-  String folder;
-  DateTime createdDate;
-  DateTime lastUpdated;
-  List<Question> questions;
+  late int id;
+  late String name;
+  late String folder;
+  late DateTime createdDate;
+  late DateTime lastUpdated;
+  late List<Question> questions;
 
-  Agenda(
-      {this.id,
-      this.name,
-      this.createdDate,
-      this.lastUpdated,
-      this.questions,
-      this.folder});
+  Agenda({
+    required this.id,
+    required this.name,
+    required this.createdDate,
+    required this.lastUpdated,
+    required this.questions,
+    required this.folder,
+  });
 
   Map toJson() => {
         'id': id,

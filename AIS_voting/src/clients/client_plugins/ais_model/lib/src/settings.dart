@@ -2,23 +2,23 @@ import 'dart:convert';
 import 'package:enum_to_string/enum_to_string.dart';
 
 class Settings {
-  int id;
-  String name;
-  bool isSelected;
-  DateTime createdDate;
-  SettingsPallete palletteSettings;
-  OperatorSchemeSettings operatorSchemeSettings;
-  ManagerSchemeSettings managerSchemeSettings;
-  TableViewSettings tableViewSettings;
-  DeputySettings deputySettings;
-  ReportSettings reportSettings;
-  VotingSettings votingSettings;
-  StoreboardSettings storeboardSettings;
-  QuestionListSettings questionListSettings;
-  FileSettings fileSettings;
-  SignalsSettings signalsSettings;
-  IntervalsSettings intervalsSettings;
-  LicenseSettings licenseSettings;
+  late int id;
+  late String name;
+  late bool isSelected;
+  late DateTime createdDate;
+  late SettingsPallete palletteSettings;
+  late OperatorSchemeSettings operatorSchemeSettings;
+  late ManagerSchemeSettings managerSchemeSettings;
+  late TableViewSettings tableViewSettings;
+  late DeputySettings deputySettings;
+  late ReportSettings reportSettings;
+  late VotingSettings votingSettings;
+  late StoreboardSettings storeboardSettings;
+  late QuestionListSettings questionListSettings;
+  late FileSettings fileSettings;
+  late SignalsSettings signalsSettings;
+  late IntervalsSettings intervalsSettings;
+  late LicenseSettings licenseSettings;
 
   Settings() {
     name = 'Настройки';
@@ -115,32 +115,32 @@ class Settings {
 }
 
 class SettingsPallete {
-  int backgroundColor;
-  int schemeBackgroundColor;
-  int cellColor;
-  int alternateCellColor;
-  String alternateRowNumbers;
-  int alternateRowPadding;
-  String paddingRowNumbers;
+  late int backgroundColor;
+  late int schemeBackgroundColor;
+  late int cellColor;
+  late int alternateCellColor;
+  late String alternateRowNumbers;
+  late int alternateRowPadding;
+  late String paddingRowNumbers;
 
-  int cellTextColor;
-  int cellBorderColor;
+  late int cellTextColor;
+  late int cellBorderColor;
 
-  int unRegistredColor;
-  int registredColor;
-  int voteYesColor;
-  int voteNoColor;
-  int voteIndifferentColor;
-  int voteResetColor;
-  int askWordColor;
-  int onSpeechColor;
+  late int unRegistredColor;
+  late int registredColor;
+  late int voteYesColor;
+  late int voteNoColor;
+  late int voteIndifferentColor;
+  late int voteResetColor;
+  late int askWordColor;
+  late int onSpeechColor;
 
-  int buttonTextColor;
+  late int buttonTextColor;
 
-  int iconOnlineColor;
-  int iconOfflineColor;
-  int iconDocumentsDownloadedColor;
-  int iconDocumentsNotDownloadedColor;
+  late int iconOnlineColor;
+  late int iconOfflineColor;
+  late int iconDocumentsDownloadedColor;
+  late int iconDocumentsNotDownloadedColor;
 
   SettingsPallete() {
     backgroundColor = 0xff9e9e9e;
@@ -222,30 +222,30 @@ class SettingsPallete {
 }
 
 class OperatorSchemeSettings {
-  bool inverseScheme;
-  bool controlSound;
+  late bool inverseScheme;
+  late bool controlSound;
   //bool controlSoundServer;
-  bool showLegend;
-  bool showTribune;
-  bool showStatePanel;
-  bool useTableView;
+  late bool showLegend;
+  late bool showTribune;
+  late bool showStatePanel;
+  late bool useTableView;
 
-  int cellWidth;
-  int cellManagementWidth;
-  int cellTribuneWidth;
-  int cellBorder;
-  int cellInnerPadding;
-  int cellOuterPaddingVertical;
-  int cellOuterPaddingHorisontal;
+  late int cellWidth;
+  late int cellManagementWidth;
+  late int cellTribuneWidth;
+  late int cellBorder;
+  late int cellInnerPadding;
+  late int cellOuterPaddingVertical;
+  late int cellOuterPaddingHorisontal;
 
-  bool isShortNamesUsed;
-  int cellTextSize;
+  late bool isShortNamesUsed;
+  late int cellTextSize;
 
-  String overflowOption;
-  int textMaxLines;
-  bool showOverflow;
+  late String overflowOption;
+  late int textMaxLines;
+  late bool showOverflow;
 
-  int iconSize;
+  late int iconSize;
 
   OperatorSchemeSettings() {
     inverseScheme = false;
@@ -318,35 +318,35 @@ class OperatorSchemeSettings {
 }
 
 class ManagerSchemeSettings {
-  bool inverseScheme;
-  bool controlSound;
+  late bool inverseScheme;
+  late bool controlSound;
   //bool controlSoundServer;
-  bool showLegend;
-  bool showTribune;
-  bool showStatePanel;
-  bool useTableView;
+  late bool showLegend;
+  late bool showTribune;
+  late bool showStatePanel;
+  late bool useTableView;
 
-  int cellWidth;
-  int cellManagementWidth;
-  int cellTribuneWidth;
-  int cellBorder;
-  int cellInnerPadding;
-  int cellOuterPaddingVertical;
-  int cellOuterPaddingHorisontal;
+  late int cellWidth;
+  late int cellManagementWidth;
+  late int cellTribuneWidth;
+  late int cellBorder;
+  late int cellInnerPadding;
+  late int cellOuterPaddingVertical;
+  late int cellOuterPaddingHorisontal;
 
-  bool isShortNamesUsed;
-  int cellTextSize;
-  String cellTextAlign;
-  String overflowOption;
-  int textMaxLines;
-  bool showOverflow;
+  late bool isShortNamesUsed;
+  late int cellTextSize;
+  late String cellTextAlign;
+  late String overflowOption;
+  late int textMaxLines;
+  late bool showOverflow;
 
-  int deputyFontSize;
-  int deputyNumberFontSize;
-  int deputyCaptionFontSize;
-  int deputyFilesListHeight;
+  late int deputyFontSize;
+  late int deputyNumberFontSize;
+  late int deputyCaptionFontSize;
+  late int deputyFilesListHeight;
 
-  int iconSize;
+  late int iconSize;
 
   ManagerSchemeSettings() {
     inverseScheme = false;
@@ -433,12 +433,12 @@ class ManagerSchemeSettings {
 }
 
 class TableViewSettings {
-  int columnsCount;
-  String cellTextAlign;
-  bool showLegend;
+  late int columnsCount;
+  late String cellTextAlign;
+  late bool showLegend;
 
-  List<HeaderItem> headerItems;
-  List<IconItem> iconItems;
+  late List<HeaderItem> headerItems;
+  late List<IconItem> iconItems;
 
   TableViewSettings() {
     columnsCount = 4;
@@ -469,13 +469,17 @@ class TableViewSettings {
 }
 
 class HeaderItem {
-  String name;
-  HeaderItemValue value;
-  int orderNum;
-  bool isVisible;
+  late String name;
+  late HeaderItemValue value;
+  late int orderNum;
+  late bool isVisible;
 
-  HeaderItem(
-      {String name, HeaderItemValue value, int orderNum, bool isVisible}) {
+  HeaderItem({
+    required String name,
+    required HeaderItemValue value,
+    required int orderNum,
+    required bool isVisible,
+  }) {
     this.name = name;
     this.value = value;
     this.orderNum = orderNum;
@@ -511,8 +515,8 @@ enum HeaderItemValue {
 }
 
 class IconItem {
-  IconType type;
-  IconDisplayPosition position;
+  late IconType type;
+  late IconDisplayPosition position;
 
   IconItem() {
     type = IconType.OnlineStatus;
@@ -545,9 +549,9 @@ enum IconDisplayPosition {
 }
 
 class DeputySettings {
-  bool showQuestionsOnPreparation;
-  bool showQuestionsForRegistred;
-  bool useTempAskWordQueue;
+  late bool showQuestionsOnPreparation;
+  late bool showQuestionsForRegistred;
+  late bool useTempAskWordQueue;
 
   DeputySettings() {
     showQuestionsOnPreparation = true;
@@ -568,8 +572,8 @@ class DeputySettings {
 }
 
 class ReportSettings {
-  bool isLastResultsOnly;
-  String reportFooter;
+  late bool isLastResultsOnly;
+  late String reportFooter;
 
   ReportSettings() {
     isLastResultsOnly = false;
@@ -587,11 +591,11 @@ class ReportSettings {
 }
 
 class VotingSettings {
-  bool isVotingFixed;
-  bool isCountNotVotingAsIndifferent;
-  int defaultShowResultInterval;
-  int defaultVotingModeId;
-  String votingRegim;
+  late bool isVotingFixed;
+  late bool isCountNotVotingAsIndifferent;
+  late int defaultShowResultInterval;
+  late int? defaultVotingModeId;
+  late String votingRegim;
 
   VotingSettings() {
     isVotingFixed = true;
@@ -618,45 +622,45 @@ class VotingSettings {
 }
 
 class StoreboardSettings {
-  int backgroundColor;
-  int textColor;
-  int decisionAcceptedColor;
-  int decisionDeclinedColor;
+  late int backgroundColor;
+  late int textColor;
+  late int decisionAcceptedColor;
+  late int decisionDeclinedColor;
 
-  int height;
-  int width;
+  late int height;
+  late int width;
 
-  int paddingLeft;
-  int paddingTop;
-  int paddingRight;
-  int paddingBottom;
+  late int paddingLeft;
+  late int paddingTop;
+  late int paddingRight;
+  late int paddingBottom;
 
-  String meetingDescriptionTemplate;
-  String noDataText;
-  int speakerInterval;
-  int breakInterval;
+  late String meetingDescriptionTemplate;
+  late String noDataText;
+  late int speakerInterval;
+  late int breakInterval;
 
-  int meetingDescriptionFontSize;
-  int meetingFontSize;
-  int groupFontSize;
+  late int meetingDescriptionFontSize;
+  late int meetingFontSize;
+  late int groupFontSize;
 
-  int customCaptionFontSize;
-  int customTextFontSize;
+  late int customCaptionFontSize;
+  late int customTextFontSize;
 
-  int resultItemsFontSize;
-  int resultTotalFontSize;
-  int timersFontSize;
+  late int resultItemsFontSize;
+  late int resultTotalFontSize;
+  late int timersFontSize;
 
-  int questionNameFontSize;
-  int questionDescriptionFontSize;
-  bool justifyQuestionDescription;
+  late int questionNameFontSize;
+  late int questionDescriptionFontSize;
+  late bool justifyQuestionDescription;
 
-  int clockFontSize;
-  bool clockFontBold;
+  late int clockFontSize;
+  late bool clockFontBold;
 
-  int detailsAnimationDuration;
-  int detailsRowsCount;
-  int detailsFontSize;
+  late int detailsAnimationDuration;
+  late int detailsRowsCount;
+  late int detailsFontSize;
 
   StoreboardSettings() {
     backgroundColor = 0xff010066;
@@ -771,13 +775,13 @@ class StoreboardSettings {
 }
 
 class QuestionListSettings {
-  String reportsFolderPath;
-  String agendaFileExtension;
-  String fileNameTrimmer;
+  late String reportsFolderPath;
+  late String agendaFileExtension;
+  late String fileNameTrimmer;
 
-  QuestionGroupSettings firstQuestion;
-  QuestionGroupSettings mainQuestion;
-  QuestionGroupSettings additionalQiestion;
+  late QuestionGroupSettings firstQuestion;
+  late QuestionGroupSettings mainQuestion;
+  late QuestionGroupSettings additionalQiestion;
 
   QuestionListSettings() {
     reportsFolderPath = '';
@@ -816,25 +820,25 @@ class QuestionListSettings {
 }
 
 class QuestionGroupSettings {
-  String defaultGroupName;
+  late String defaultGroupName;
 
-  bool isUseNumber;
-  bool showNumberBeforeName;
+  late bool isUseNumber;
+  late bool showNumberBeforeName;
 
-  String descriptionCaption1;
-  bool showCaption1InReports;
-  bool showCaption1OnStoreboard;
-  String descriptionCaption2;
-  bool showCaption2InReports;
-  bool showCaption2OnStoreboard;
-  String descriptionCaption3;
-  bool showCaption3InReports;
-  bool showCaption3OnStoreboard;
-  String descriptionCaption4;
-  bool showCaption4InReports;
-  bool showCaption4OnStoreboard;
+  late String descriptionCaption1;
+  late bool showCaption1InReports;
+  late bool showCaption1OnStoreboard;
+  late String descriptionCaption2;
+  late bool showCaption2InReports;
+  late bool showCaption2OnStoreboard;
+  late String descriptionCaption3;
+  late bool showCaption3InReports;
+  late bool showCaption3OnStoreboard;
+  late String descriptionCaption4;
+  late bool showCaption4InReports;
+  late bool showCaption4OnStoreboard;
 
-  String storeboardStub;
+  late String storeboardStub;
 
   QuestionGroupSettings() {
     defaultGroupName = '';
@@ -897,13 +901,13 @@ class QuestionGroupSettings {
 }
 
 class FileSettings {
-  String ip;
-  int port;
-  String downloadPath;
-  String uploadPath;
+  late String ip;
+  late int port;
+  late String downloadPath;
+  late String uploadPath;
 
-  int queueSize;
-  int queueInterval;
+  late int queueSize;
+  late int queueInterval;
 
   FileSettings() {
     ip = '127.0.0.1';
@@ -933,8 +937,8 @@ class FileSettings {
 }
 
 class LicenseSettings {
-  String licenseKey;
-  RegExp licenseKeyRegex;
+  late String licenseKey;
+  late RegExp licenseKeyRegex;
 
   LicenseSettings() {
     licenseKey = 'xxxxx-xxxxx-xxxxx-xxxxx-xxxxx';
@@ -951,11 +955,11 @@ class LicenseSettings {
 }
 
 class SignalsSettings {
-  bool isOperatorPlaySound;
-  bool isStoreboardPlaySound;
-  String hymnStart;
-  String hymnEnd;
-  double systemVolume;
+  late bool isOperatorPlaySound;
+  late bool isStoreboardPlaySound;
+  late String hymnStart;
+  late String hymnEnd;
+  late double systemVolume;
 
   SignalsSettings() {
     isOperatorPlaySound = false;
@@ -982,10 +986,10 @@ class SignalsSettings {
 }
 
 class IntervalsSettings {
-  int defaultRegistrationIntervalId;
-  int defaultVotingIntervalId;
-  int defaultSpeakerIntervalId;
-  int defaultAskWordQueueIntervalId;
+  late int defaultRegistrationIntervalId;
+  late int defaultVotingIntervalId;
+  late int defaultSpeakerIntervalId;
+  late int defaultAskWordQueueIntervalId;
 
   IntervalsSettings() {
     defaultRegistrationIntervalId = 0;

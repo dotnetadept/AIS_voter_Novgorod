@@ -28,7 +28,7 @@ dependencies:
   uuid: any
   package_info_plus: ^4.2.0
   flutter_webrtc: #^0.9.48+hotfix.1
-    path: '../client_plugins/flutter-webrtc-main/'
+    path: '../../../../../AIS_voter_Novgorod/AIS_voting/src/clients/client_plugins/flutter-webrtc-main'
   statsfl: ^2.3.0
   
 dev_dependencies:
