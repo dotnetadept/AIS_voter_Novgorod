@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'package:collection/collection.dart';
+
 import 'model_widgets.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:http/http.dart' as http;
@@ -23,14 +25,14 @@ class SetStoreboardDialog {
   final List<ais.Interval> _intervals;
 
   ais.Interval? _selectedInterval;
-  bool _autoEnd;
+  bool? _autoEnd;
 
   String _terminalId;
   String _name;
-  List<StoreboardTemplate> _storeboardTemplates;
-  StoreboardTemplate _selectedStoreboardTemplate;
-  StoreboardTemplate _editStoreboardTemplate;
-  StoreboardTemplate _setStoreboardTemplate;
+  late List<StoreboardTemplate> _storeboardTemplates;
+  StoreboardTemplate? _selectedStoreboardTemplate;
+  StoreboardTemplate? _editStoreboardTemplate;
+  StoreboardTemplate? _setStoreboardTemplate;
 
   GlobalKey<FormState> _formKeySetCustomText = GlobalKey<FormState>();
   GlobalKey<FormState> _formKeySetSpeaker = GlobalKey<FormState>();
@@ -39,27 +41,27 @@ class SetStoreboardDialog {
   GlobalKey<FormState> _formKeySetTemplate = GlobalKey<FormState>();
 
   TextEditingController _tecSetStoreboardCaption = TextEditingController();
-  String _captionWidthLabel;
-  bool _captionWidthCorrect;
+  late String _captionWidthLabel;
+  late bool _captionWidthCorrect;
   TextEditingController _tecSetStoreboardText = TextEditingController();
-  String _textWidthLabel;
-  bool _textWidthCorrect;
+  late String _textWidthLabel;
+  late bool _textWidthCorrect;
 
-  String _speakerPlace;
-  List<String> _placesForSpeaker;
+  String? _speakerPlace;
+  late List<String> _placesForSpeaker;
   String _speakerType = 'Выступление:';
   TextEditingController _tecSpeakerTime = TextEditingController();
 
   TextEditingController _tecBreak = TextEditingController();
-  DateTime _break;
+  late DateTime _break;
 
-  SelectDataController _selectDataController;
-  List<SingleCategoryModel> _exampleData;
+  late SelectDataController _selectDataController;
+  late List<SingleCategoryModel> _exampleData;
 
   int _currentTabIndex = 0;
   bool _wasError = false;
 
-  Function _setStateForDialog;
+  late Function _setStateForDialog;
 
   final Function(
           SpeakerSession speakerSession, Signal startSignal, Signal endSignal)
@@ -68,8 +70,8 @@ class SetStoreboardDialog {
   final Function(String terminalID, bool isOn) _setSpeaker;
   final Function() _setFlushNavigation;
   final Function() _setFlushStoreboard;
-  final Function(ais.Interval selectedInterval) _setSelectedInterval;
-  final Function(bool autoEnd) _setAutoEnd;
+  final Function(ais.Interval? selectedInterval) _setSelectedInterval;
+  final Function(bool? autoEnd) _setAutoEnd;
   final Function(String) _addGuestAskWord;
   final Function(String) _removeGuestAskWord;
   final Function(int) _addUserAskWord;
@@ -114,9 +116,9 @@ class SetStoreboardDialog {
       this._removeUserAskWord) {
     if (_serverState.storeboardParams != null) {
       _tecSetStoreboardCaption.text =
-          json.decode(_serverState.storeboardParams)['caption'];
+          json.decode(_serverState.storeboardParams!)['caption'];
       _tecSetStoreboardText.text =
-          json.decode(_serverState.storeboardParams)['text'];
+          json.decode(_serverState.storeboardParams!)['text'];
     }
 
     checkCaptionWidth(_tecSetStoreboardCaption.text);
@@ -125,10 +127,9 @@ class SetStoreboardDialog {
     _placesForSpeaker = List.from(_group.workplaces.tribuneNames);
 
     if (_terminalId != null) {
-      int speakerId = _serverState.usersTerminals[_terminalId];
-      GuestPlace guest = _serverState.guestsPlaces.firstWhere(
-          (element) => element.terminalId == _terminalId,
-          orElse: () => null);
+      int? speakerId = _serverState.usersTerminals[_terminalId];
+      GuestPlace? guest = _serverState.guestsPlaces
+          .firstWhereOrNull((element) => element.terminalId == _terminalId);
 
       if (speakerId != null) {
         _placesForSpeaker.insert(0, 'С места');
@@ -167,8 +168,9 @@ class SetStoreboardDialog {
       }
     });
 
-    _tecSpeakerTime.text =
-        _selectedInterval == null ? '0' : _selectedInterval.duration.toString();
+    _tecSpeakerTime.text = _selectedInterval == null
+        ? '0'
+        : _selectedInterval!.duration.toString();
 
     _break = roundMinutes(
         TimeUtil.getDateTimeNow(_timeOffset)
@@ -178,7 +180,7 @@ class SetStoreboardDialog {
 
     if (_serverState.storeboardState == StoreboardState.Break) {
       _break =
-          DateTime.parse(json.decode(_serverState.storeboardParams)['break']);
+          DateTime.parse(json.decode(_serverState.storeboardParams!)['break']);
       _currentTabIndex = 2;
     }
 
@@ -189,7 +191,7 @@ class SetStoreboardDialog {
 
   void generateSpeakersList() {
     var selected = null;
-    var guestList = List<SingleItemCategoryModel>();
+    var guestList = <SingleItemCategoryModel>[];
     var guests = (_group.guests ?? '').split(',').toList();
     guests.sort((a, b) => a.compareTo(b));
     for (int i = 0; i < guests.length; i++) {
@@ -208,7 +210,7 @@ class SetStoreboardDialog {
       }
     }
 
-    var deputyList = List<SingleItemCategoryModel>();
+    var deputyList = <SingleItemCategoryModel>[];
     for (int i = 0; i < _group.groupUsers.length; i++) {
       deputyList.add(
         SingleItemCategoryModel(
@@ -244,7 +246,7 @@ class SetStoreboardDialog {
     );
   }
 
-  String getTerminalIdByTribyneName(String tribuneName) {
+  String? getTerminalIdByTribyneName(String tribuneName) {
     for (var i = 0; i < _group.workplaces.tribuneNames.length; i++) {
       if (_group.workplaces.tribuneNames[i] == tribuneName) {
         return _group.workplaces.tribuneTerminalIds[i];
@@ -254,7 +256,7 @@ class SetStoreboardDialog {
     return null;
   }
 
-  String getTribuneNameByTerminalId(String terminalId) {
+  String? getTribuneNameByTerminalId(String terminalId) {
     for (var i = 0; i < _group.workplaces.tribuneTerminalIds.length; i++) {
       if (_group.workplaces.tribuneTerminalIds[i] == terminalId) {
         return _group.workplaces.tribuneNames[i];
@@ -270,10 +272,11 @@ class SetStoreboardDialog {
   }
 
   void updateMics(Map<String, String> activeMics, List<int> waitingMics) {
-    var terminalId = _terminalId;
+    String? terminalId = _terminalId;
 
-    if (_group.workplaces.tribuneNames.contains(_speakerPlace)) {
-      terminalId = getTerminalIdByTribyneName(_speakerPlace);
+    if (_speakerPlace != null &&
+        _group.workplaces.tribuneNames.contains(_speakerPlace)) {
+      terminalId = getTerminalIdByTribyneName(_speakerPlace!);
     }
 
     _isMicActive =
@@ -475,8 +478,8 @@ class SetStoreboardDialog {
                                 child: TextButton(
                                   style: ButtonStyle(
                                     backgroundColor:
-                                        MaterialStateProperty.resolveWith<
-                                            Color>((Set<MaterialState> states) {
+                                        WidgetStateProperty.resolveWith<Color>(
+                                            (Set<MaterialState> states) {
                                       return _editStoreboardTemplate != null
                                           ? Colors.black12
                                           : Colors.blue;
@@ -585,7 +588,7 @@ class SetStoreboardDialog {
 
   Future<void> setStoreboard(BuildContext context) async {
     if (_currentTabIndex == 0) {
-      if (!_formKeySetCustomText.currentState.validate()) {
+      if (_formKeySetCustomText.currentState?.validate() == false) {
         return;
       }
 
@@ -600,16 +603,17 @@ class SetStoreboardDialog {
       _setStateForDialog(() {
         _wasError = _selectDataController.selectedList.length == 0;
       });
-      if (!_formKeySetSpeaker.currentState.validate() || _wasError) {
+      if (_formKeySetSpeaker.currentState?.validate() == false || _wasError) {
         return;
       }
       var seconds = 0;
       if (int.tryParse(_tecSpeakerTime.text) != null) {
-        seconds = int.tryParse(_tecSpeakerTime.text);
+        seconds = int.tryParse(_tecSpeakerTime.text)!;
       }
 
-      if (_group.workplaces.tribuneNames.contains(_speakerPlace)) {
-        _terminalId = getTerminalIdByTribyneName(_speakerPlace);
+      if (_speakerPlace != null &&
+          _group.workplaces.tribuneNames.contains(_speakerPlace)) {
+        _terminalId = getTerminalIdByTribyneName(_speakerPlace!)!;
       }
 
       var speakerSession = SpeakerSession();
@@ -619,13 +623,13 @@ class SetStoreboardDialog {
       speakerSession.name =
           _selectDataController.selectedList.first.nameSingleItem;
       speakerSession.interval = seconds;
-      speakerSession.autoEnd = _autoEnd;
-      _setCurrentSpeaker(speakerSession, _selectedInterval?.startSignal,
-          _selectedInterval?.endSignal);
+      speakerSession.autoEnd = _autoEnd == true;
+      _setCurrentSpeaker(speakerSession, _selectedInterval!.startSignal!,
+          _selectedInterval!.endSignal!);
     }
 
     if (_currentTabIndex == 2) {
-      if (!_formKeySetBreak.currentState.validate()) {
+      if (_formKeySetBreak.currentState!.validate() == false) {
         return;
       }
 
@@ -645,7 +649,7 @@ class SetStoreboardDialog {
         _setStoreboardState(
             StoreboardState.Template,
             json.encode(
-              _setStoreboardTemplate.toJson(),
+              _setStoreboardTemplate!.toJson(),
             ));
       } else {
         if (_selectedStoreboardTemplate == null) {
@@ -662,7 +666,7 @@ class SetStoreboardDialog {
         _setStoreboardState(
           StoreboardState.Template,
           json.encode(
-            _selectedStoreboardTemplate.toJson(),
+            _selectedStoreboardTemplate?.toJson(),
           ),
         );
       }
@@ -707,7 +711,8 @@ class SetStoreboardDialog {
                   labelText: 'Заголовок',
                 ),
                 validator: (value) {
-                  if (value.isEmpty && _tecSetStoreboardText.text.isEmpty) {
+                  if (value?.isEmpty == true &&
+                      _tecSetStoreboardText.text.isEmpty) {
                     return 'Введите текст или заголовок';
                   }
                   if (!_captionWidthCorrect) {
@@ -753,7 +758,8 @@ class SetStoreboardDialog {
                   labelText: 'Текст',
                 ),
                 validator: (value) {
-                  if (value.isEmpty && _tecSetStoreboardCaption.text.isEmpty) {
+                  if (value?.isEmpty == true &&
+                      _tecSetStoreboardCaption.text.isEmpty) {
                     return 'Введите текст или заголовок';
                   }
                   if (!_textWidthCorrect) {
@@ -811,8 +817,9 @@ class SetStoreboardDialog {
   Widget setSpeaker(BuildContext context, Function setStateForDialog) {
     var terminalId = _terminalId;
 
-    if (_group.workplaces.tribuneNames.contains(_speakerPlace)) {
-      terminalId = getTerminalIdByTribyneName(_speakerPlace);
+    if (_speakerPlace != null &&
+        _group.workplaces.tribuneNames.contains(_speakerPlace)) {
+      terminalId = getTerminalIdByTribyneName(_speakerPlace!)!;
     }
 
     var micButtonText =
@@ -1028,7 +1035,7 @@ class SetStoreboardDialog {
                           message: 'Сбросить время на выступление',
                           child: TextButton(
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 CircleBorder(
                                     side:
                                         BorderSide(color: Colors.transparent)),
@@ -1091,12 +1098,12 @@ class SetStoreboardDialog {
 
                 _tecSpeakerTime.text = _selectedInterval == null
                     ? '0'
-                    : _selectedInterval.duration.toString();
+                    : _selectedInterval!.duration.toString();
 
                 _setSelectedInterval(_selectedInterval);
 
                 if (_selectedInterval != null) {
-                  _autoEnd = _selectedInterval.isAutoEnd;
+                  _autoEnd = _selectedInterval!.isAutoEnd;
                 }
               });
             },
@@ -1122,7 +1129,7 @@ class SetStoreboardDialog {
             value: _autoEnd,
             onChanged: isAutoEndWidgetDisabled()
                 ? null
-                : (bool value) {
+                : (bool? value) {
                     _setStateForDialog(() {
                       _autoEnd = value;
                       _setAutoEnd(_autoEnd);
@@ -1164,7 +1171,7 @@ class SetStoreboardDialog {
         height: 2,
         color: Colors.deepPurpleAccent,
       ),
-      onChanged: (String newValue) {
+      onChanged: (String? newValue) {
         setStateForDialog(() {
           _speakerPlace = newValue;
         });
@@ -1189,9 +1196,9 @@ class SetStoreboardDialog {
         height: 2,
         color: Colors.deepPurpleAccent,
       ),
-      onChanged: (String newValue) {
+      onChanged: (String? newValue) {
         setStateForDialog(() {
-          _speakerType = newValue;
+          _speakerType = newValue ?? 'Выступление:';
         });
       },
       items: <String>['Выступление:', 'Докладчик:', 'Содокладчик:', 'ФИО:']
@@ -1236,7 +1243,7 @@ class SetStoreboardDialog {
                     labelText: 'До',
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty == true) {
                       return 'Введите окончание перерыва';
                     }
                     return null;
@@ -1250,7 +1257,7 @@ class SetStoreboardDialog {
                 message: 'Изменить окончание перерыва',
                 child: TextButton(
                   style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),
@@ -1296,7 +1303,7 @@ class SetStoreboardDialog {
                   message: 'Сброс навигации всех клиентов на экран повестки',
                   child: TextButton(
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.all(
+                      padding: WidgetStateProperty.all(
                           EdgeInsets.fromLTRB(10, 0, 10, 0)),
                     ),
                     onPressed: () async {
@@ -1370,19 +1377,19 @@ class SetStoreboardDialog {
     TextEditingController controllerTemplateName;
     if (!_templateNameControllers.containsKey(_editStoreboardTemplate)) {
       controllerTemplateName =
-          TextEditingController(text: _editStoreboardTemplate.name);
+          TextEditingController(text: _editStoreboardTemplate!.name);
       _templateNameControllers.putIfAbsent(
-          _editStoreboardTemplate, () => controllerTemplateName);
+          _editStoreboardTemplate!, () => controllerTemplateName);
     } else {
       controllerTemplateName =
-          _templateNameControllers[_editStoreboardTemplate];
+          _templateNameControllers[_editStoreboardTemplate]!;
     }
 
     List<Widget> templateItems = <Widget>[];
 
-    for (int i = 0; i < _editStoreboardTemplate.items.length; i++) {
-      templateItems.add(
-          getTemplateItem(_editStoreboardTemplate.items[i], setStateForDialog));
+    for (int i = 0; i < _editStoreboardTemplate!.items.length; i++) {
+      templateItems.add(getTemplateItem(
+          _editStoreboardTemplate!.items[i], setStateForDialog));
       templateItems.add(
         Container(
           height: 20,
@@ -1405,7 +1412,7 @@ class SetStoreboardDialog {
                   message: 'Назад',
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -1425,10 +1432,10 @@ class SetStoreboardDialog {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      _editStoreboardTemplate.id == null
+                      _editStoreboardTemplate?.id == null
                           ? 'Создание нового шаблона'
                           : 'Редактирование шаблона: ' +
-                              _editStoreboardTemplate.name,
+                              _editStoreboardTemplate!.name,
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -1443,7 +1450,7 @@ class SetStoreboardDialog {
                   message: 'Сохранить шаблон',
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -1467,14 +1474,15 @@ class SetStoreboardDialog {
                 labelText: 'Наименование шаблона',
               ),
               validator: (value) {
-                if (value.isEmpty && controllerTemplateName.text.isEmpty) {
+                if (value?.isEmpty == true &&
+                    controllerTemplateName.text.isEmpty) {
                   return 'Введите наименование шаблона';
                 }
                 return null;
               },
               onChanged: (value) {
                 setStateForDialog(() {
-                  _editStoreboardTemplate.name = value;
+                  _editStoreboardTemplate!.name = value;
                 });
               },
             ),
@@ -1497,7 +1505,7 @@ class SetStoreboardDialog {
                 width: 224,
                 child: TextButton(
                   onPressed: () {
-                    addTemplateItem(_editStoreboardTemplate);
+                    addTemplateItem(_editStoreboardTemplate!);
                     setStateForDialog(() {});
                   },
                   child: Row(
@@ -1550,11 +1558,11 @@ class SetStoreboardDialog {
   }
 
   void saveTemplate(Function setStateForDialog) {
-    if (!_formKeyEditTemplate.currentState.validate()) {
+    if (_formKeyEditTemplate.currentState?.validate() == null) {
       return;
     }
 
-    if (_editStoreboardTemplate.id == null) {
+    if (_editStoreboardTemplate?.id == null) {
       http
           .post(
               Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
@@ -1562,7 +1570,7 @@ class SetStoreboardDialog {
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },
-              body: jsonEncode(_editStoreboardTemplate.toJson()))
+              body: jsonEncode(_editStoreboardTemplate?.toJson()))
           .then((value) {
         setStateForDialog(() {
           loadData();
@@ -1570,7 +1578,7 @@ class SetStoreboardDialog {
         });
       });
     } else {
-      var id = _editStoreboardTemplate.id;
+      var id = _editStoreboardTemplate?.id;
       http
           .put(
               Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
@@ -1578,7 +1586,7 @@ class SetStoreboardDialog {
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },
-              body: jsonEncode(_editStoreboardTemplate.toJson()))
+              body: jsonEncode(_editStoreboardTemplate?.toJson()))
           .then((value) {
         setStateForDialog(() {
           loadData();
@@ -1595,7 +1603,7 @@ class SetStoreboardDialog {
       controllerDefaultText = TextEditingController(text: item.text);
       _defaultTextControllers.putIfAbsent(item, () => controllerDefaultText);
     } else {
-      controllerDefaultText = _defaultTextControllers[item];
+      controllerDefaultText = _defaultTextControllers[item]!;
     }
     TextEditingController controllerFontSize;
     if (!_fontSizeControllers.containsKey(item)) {
@@ -1603,7 +1611,7 @@ class SetStoreboardDialog {
           TextEditingController(text: item.fontSize.toString());
       _fontSizeControllers.putIfAbsent(item, () => controllerFontSize);
     } else {
-      controllerFontSize = _fontSizeControllers[item];
+      controllerFontSize = _fontSizeControllers[item]!;
     }
 
     return Container(
@@ -1641,7 +1649,7 @@ class SetStoreboardDialog {
             ),
             onChanged: (value) {
               setStateForDialog(() {
-                item.fontSize = int.tryParse(value);
+                item.fontSize = int.tryParse(value) ?? 14;
               });
             },
           ),
@@ -1659,9 +1667,9 @@ class SetStoreboardDialog {
               icon: Icon(Icons.arrow_downward),
               elevation: 16,
               style: TextStyle(color: Colors.deepPurple),
-              onChanged: (String value) {
+              onChanged: (String? value) {
                 setStateForDialog(() {
-                  item.align = value;
+                  item.align = value ?? 'По левому краю';
                 });
               },
               items: <String>['По левому краю', 'По центру', 'По правому краю']
@@ -1685,9 +1693,9 @@ class SetStoreboardDialog {
               icon: Icon(Icons.arrow_downward),
               elevation: 16,
               style: TextStyle(color: Colors.deepPurple),
-              onChanged: (String value) {
+              onChanged: (String? value) {
                 setStateForDialog(() {
-                  item.weight = value;
+                  item.weight = value ?? 'Обычный';
                 });
               },
               items: <String>['Обычный', 'Жирный']
@@ -1712,7 +1720,7 @@ class SetStoreboardDialog {
       controller = TextEditingController(text: item.text);
       _previewControllers.putIfAbsent(item, () => controller);
     } else {
-      controller = _previewControllers[item];
+      controller = _previewControllers[item]!;
     }
 
     return TextField(
@@ -1732,9 +1740,9 @@ class SetStoreboardDialog {
   Widget setTemplate(BuildContext context, Function setStateForDialog) {
     List<Widget> templateItems = <Widget>[];
 
-    for (int i = 0; i < _setStoreboardTemplate.items.length; i++) {
+    for (int i = 0; i < _setStoreboardTemplate!.items.length; i++) {
       templateItems.add(getTemplateSetItem(
-          _setStoreboardTemplate.items[i], setStateForDialog));
+          _setStoreboardTemplate!.items[i], setStateForDialog));
       templateItems.add(
         Container(
           height: 20,
@@ -1745,7 +1753,7 @@ class SetStoreboardDialog {
     var prewievServerState = ServerState();
     prewievServerState.storeboardState = StoreboardState.Template;
     prewievServerState.storeboardParams =
-        jsonEncode(_setStoreboardTemplate.toJson());
+        jsonEncode(_setStoreboardTemplate?.toJson());
 
     return Form(
       key: _formKeySetTemplate,
@@ -1764,7 +1772,7 @@ class SetStoreboardDialog {
                         message: 'Назад',
                         child: TextButton(
                           style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -1781,7 +1789,7 @@ class SetStoreboardDialog {
                         width: 20,
                       ),
                       Text(
-                        'Предпросмотр шаблона: ' + _setStoreboardTemplate.name,
+                        'Предпросмотр шаблона: ' + _setStoreboardTemplate!.name,
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -1804,6 +1812,8 @@ class SetStoreboardDialog {
             settings: _settings,
             timeOffset: _timeOffset,
             meeting: _meeting,
+            votingModes: [],
+            users: [],
           ),
         ],
       ),
@@ -1816,11 +1826,13 @@ class SetStoreboardDialog {
       child: DataTable(
         dataRowHeight: 80,
         showCheckboxColumn: false,
-        headingRowColor: MaterialStateProperty.all(Colors.lightBlueAccent),
-        dataRowColor: MaterialStateProperty.resolveWith<Color>(
-            (Set<MaterialState> states) {
-          if (states.contains(MaterialState.selected))
+        headingRowColor: WidgetStateProperty.all(Colors.lightBlueAccent),
+        dataRowColor:
+            WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
             return Theme.of(context).colorScheme.primary.withOpacity(0.3);
+          }
+
           return null;
         }),
         columns: [
@@ -1842,7 +1854,7 @@ class SetStoreboardDialog {
                   message: 'Добавить шаблон',
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -1878,7 +1890,7 @@ class SetStoreboardDialog {
                         message: 'Предпросмотр',
                         child: TextButton(
                           style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -1895,7 +1907,7 @@ class SetStoreboardDialog {
                         message: 'Изменить шаблон',
                         child: TextButton(
                           style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -1913,12 +1925,12 @@ class SetStoreboardDialog {
                         child: TextButton(
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                             foregroundColor:
-                                MaterialStateProperty.all(Colors.black),
+                                WidgetStateProperty.all(Colors.black),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.black12),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.black12),
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),

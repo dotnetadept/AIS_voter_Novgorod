@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 import 'meeting.dart';
 import 'package:intl/intl.dart';
 
@@ -20,7 +22,7 @@ class QuestionSession {
   late int usersCountVotedNo;
   late int usersCountVotedIndiffirent;
   late DateTime startDate;
-  late DateTime endDate;
+  late DateTime? endDate;
   late List<Result> results;
   late int managerId;
 
@@ -84,11 +86,11 @@ class QuestionSession {
         managerId = json['managerId'];
 
   List<String> toCsv(Meeting meeting) {
-    var question = meeting.agenda.questions
-        .firstWhere((element) => element.id == questionId, orElse: () => null);
+    var question = meeting.agenda?.questions
+        .firstWhereOrNull((element) => element.id == questionId);
     return [
       question?.name ?? '',
-      DateFormat('HH:mm').format(endDate.toLocal() ?? startDate.toLocal()),
+      DateFormat('HH:mm').format(endDate?.toLocal() ?? startDate.toLocal()),
       (usersCountVotedYes ?? 0).toString(),
       (usersCountVotedNo ?? 0).toString(),
       (usersCountVotedIndiffirent ?? 0).toString(),

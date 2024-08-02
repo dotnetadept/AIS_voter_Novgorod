@@ -9,14 +9,14 @@ class SchemeLegendWidget extends StatefulWidget {
   final bool isOperatorView;
   final bool isSmallView;
 
-  SchemeLegendWidget(
-      {Key key,
-      this.settings,
-      this.serverState,
-      this.group,
-      this.isOperatorView,
-      this.isSmallView})
-      : super(key: key);
+  SchemeLegendWidget({
+    Key? key,
+    required this.settings,
+    required this.serverState,
+    required this.group,
+    required this.isOperatorView,
+    required this.isSmallView,
+  }) : super(key: key);
 
   @override
   _SchemeLegendWidgetState createState() => _SchemeLegendWidgetState();

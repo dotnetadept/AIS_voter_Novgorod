@@ -14,35 +14,35 @@ class StatePanelWidget extends StatefulWidget {
   final ServerState serverState;
   final Meeting meeting;
   final List<ais.Interval> intervals;
-  final ais.Interval selectedInterval;
+  final ais.Interval? selectedInterval;
   final bool autoEnd;
   final double volume;
   final bool isOperatorView;
 
-  final void Function(StoreboardState storeboardState, String storeboardParams)
+  final void Function(StoreboardState storeboardState, String? storeboardParams)
       setStoreboardStatus;
-  final void Function(ais.Interval interval) setInterval;
+  final void Function(ais.Interval? interval) setInterval;
   final void Function(bool autoEnd) setAutoEnd;
-  final void Function(double value) setVolume;
+  final void Function(double value)? setVolume;
   final void Function() navigateLicenseTab;
   final void Function() changeView;
 
   StatePanelWidget({
-    Key key,
-    this.settings,
-    this.serverState,
-    this.meeting,
-    this.intervals,
-    this.selectedInterval,
-    this.autoEnd,
-    this.volume,
-    this.setStoreboardStatus,
-    this.setAutoEnd,
-    this.setInterval,
+    Key? key,
+    required this.settings,
+    required this.serverState,
+    required this.meeting,
+    required this.intervals,
+    required this.selectedInterval,
+    required this.autoEnd,
+    required this.volume,
+    required this.setStoreboardStatus,
+    required this.setAutoEnd,
+    required this.setInterval,
     this.setVolume,
-    this.navigateLicenseTab,
-    this.changeView,
-    this.isOperatorView,
+    required this.navigateLicenseTab,
+    required this.changeView,
+    required this.isOperatorView,
   }) : super(key: key);
 
   @override
@@ -137,7 +137,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
                   message: 'Изменить вид схемы',
                   child: TextButton(
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.all(
+                      padding: WidgetStateProperty.all(
                           EdgeInsets.fromLTRB(5, 0, 5, 0)),
                     ),
                     onPressed: () {
@@ -191,7 +191,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
                             message: 'Показать число присутсвующих',
                             child: TextButton(
                               style: ButtonStyle(
-                                padding: MaterialStateProperty.all(
+                                padding: WidgetStateProperty.all(
                                     EdgeInsets.fromLTRB(10, 0, 10, 0)),
                               ),
                               onPressed: () {
@@ -222,7 +222,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
                             message: 'Установить "ЗАСЕДАНИЕ ОТКРЫТО" на табло',
                             child: TextButton(
                               style: ButtonStyle(
-                                padding: MaterialStateProperty.all(
+                                padding: WidgetStateProperty.all(
                                     EdgeInsets.fromLTRB(5, 0, 5, 0)),
                               ),
                               onPressed: () {
@@ -272,7 +272,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
                     margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: TextButton(
                       style: ButtonStyle(
-                        padding: MaterialStateProperty.all(
+                        padding: WidgetStateProperty.all(
                           EdgeInsets.all(14),
                         ),
                       ),
@@ -294,7 +294,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
                     margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: TextButton(
                       style: ButtonStyle(
-                        padding: MaterialStateProperty.all(
+                        padding: WidgetStateProperty.all(
                           EdgeInsets.all(14),
                         ),
                       ),
@@ -316,7 +316,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
                     margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: TextButton(
                       style: ButtonStyle(
-                        padding: MaterialStateProperty.all(
+                        padding: WidgetStateProperty.all(
                           EdgeInsets.all(14),
                         ),
                       ),
@@ -338,7 +338,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
                     margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: TextButton(
                       style: ButtonStyle(
-                        padding: MaterialStateProperty.all(
+                        padding: WidgetStateProperty.all(
                           EdgeInsets.all(14),
                         ),
                       ),
@@ -361,7 +361,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
                   margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextButton(
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.all(
+                      padding: WidgetStateProperty.all(
                         EdgeInsets.all(14),
                       ),
                     ),
@@ -381,7 +381,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
                   margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
                   child: TextButton(
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.all(
+                      padding: WidgetStateProperty.all(
                         EdgeInsets.all(14),
                       ),
                     ),
@@ -459,9 +459,9 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
           value: isAutoEndWidgetDisabled() ? false : widget.autoEnd,
           onChanged: isAutoEndWidgetDisabled()
               ? null
-              : (bool value) {
+              : (bool? value) {
                   setState(() {
-                    widget.setAutoEnd(value);
+                    widget.setAutoEnd(value == true);
                   });
                 },
         ),
@@ -471,7 +471,7 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
 
   bool isAutoEndWidgetDisabled() {
     return widget.selectedInterval != null &&
-        widget.selectedInterval.duration == 0;
+        widget.selectedInterval!.duration == 0;
   }
 
   Widget getSystemVolumePanel() {
@@ -480,19 +480,21 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
       child: Row(
         children: [
           Slider(
-            value: widget.volume ?? 0,
+            value: widget.volume,
             max: 100,
             divisions: 20,
-            label: widget.volume?.round()?.toString(),
+            label: widget.volume.round().toString(),
             onChanged: (double value) {
-              widget.setVolume(value);
+              if (widget.setVolume != null) {
+                widget.setVolume!(value);
+              }
             },
           ),
           SizedBox(
             height: 15,
             width: 40,
             child: Text(
-              widget.volume?.round()?.toString() + '%',
+              widget.volume.round().toString(),
               textAlign: TextAlign.center,
             ),
           ),
@@ -504,12 +506,14 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
               message: 'Уменьшить общий уровень звука на 10%',
               child: TextButton(
                 style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                      EdgeInsets.fromLTRB(5, 0, 5, 0)),
+                  padding:
+                      WidgetStateProperty.all(EdgeInsets.fromLTRB(5, 0, 5, 0)),
                 ),
                 onPressed: () {
-                  widget.setVolume(
-                      widget.volume - 10 <= 0 ? 0 : widget.volume - 10);
+                  if (widget.setVolume != null) {
+                    widget.setVolume!(
+                        widget.volume - 10 <= 0 ? 0 : widget.volume - 10);
+                  }
                 },
                 child: Row(
                   children: [
@@ -528,12 +532,14 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
               message: 'Увеличить общий уровень звука на 10%',
               child: TextButton(
                 style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                      EdgeInsets.fromLTRB(5, 0, 5, 0)),
+                  padding:
+                      WidgetStateProperty.all(EdgeInsets.fromLTRB(5, 0, 5, 0)),
                 ),
                 onPressed: () {
-                  widget.setVolume(
-                      widget.volume + 10 >= 100 ? 100 : widget.volume + 10);
+                  if (widget.setVolume != null) {
+                    widget.setVolume!(
+                        widget.volume + 10 >= 100 ? 100 : widget.volume + 10);
+                  }
                 },
                 child: Row(
                   children: [

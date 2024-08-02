@@ -84,7 +84,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
         int.parse(GlobalConfiguration().getValue('default_buttons_width'));
 
     if (AppState().getCurrentMeeting() != null) {
-      _questions = AppState().getCurrentMeeting()!.agenda.questions.toList();
+      _questions = AppState().getCurrentMeeting()!.agenda!.questions.toList();
       _firstQuestion = _questions.first;
       if (_isFirstQuestionPage) {
         _questions = _questions.sublist(1);
@@ -124,7 +124,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
 
   void updateAgenda() {
     setState(() {
-      _questions = AppState().getCurrentMeeting()!.agenda.questions.toList();
+      _questions = AppState().getCurrentMeeting()!.agenda!.questions.toList();
       _firstQuestion = _questions.first;
       if (_isFirstQuestionPage) {
         _questions = _questions.sublist(1);
@@ -949,7 +949,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
           meeting: AppState().getCurrentMeeting()!,
           question: AppState()
               .getCurrentMeeting()!
-              .agenda
+              .agenda!
               .questions
               .firstWhereOrNull((element) =>
                   element.id ==

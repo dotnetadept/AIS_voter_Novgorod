@@ -1,20 +1,21 @@
 class Signal {
-  int id;
-  int orderNum;
-  String name = '';
-  int duration = 10;
-  String soundPath = '';
-  double volume = 100;
-  int color = 0x00000000;
+  late int id;
+  late int orderNum;
+  late String name = '';
+  late int duration = 10;
+  late String soundPath = '';
+  late double volume = 100;
+  late int color = 0x00000000;
 
-  Signal(
-      {this.id,
-      this.orderNum,
-      this.name,
-      this.duration,
-      this.soundPath,
-      this.volume,
-      this.color});
+  Signal({
+    required this.id,
+    required this.orderNum,
+    required this.name,
+    required this.duration,
+    required this.soundPath,
+    required this.volume,
+    required this.color,
+  });
 
   Map toJson() => {
         'id': id,
@@ -31,7 +32,7 @@ class Signal {
         name = json['name'],
         orderNum = json['orderNum'],
         duration = json['duration'],
-        soundPath = json['soundPath'],
-        volume = json['volume'],
+        soundPath = json['soundPath'] ?? '',
+        volume = json['volume'] ?? 0,
         color = json['color'];
 }

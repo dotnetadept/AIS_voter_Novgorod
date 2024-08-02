@@ -1,14 +1,14 @@
 class SpeakerSession {
-  int id;
-  int meetingId;
-  int userId;
-  String terminalId;
-  String name;
-  String type;
-  int interval;
-  bool autoEnd;
-  DateTime startDate;
-  DateTime endDate;
+  late int id;
+  late int meetingId;
+  late int userId;
+  late String terminalId;
+  late String name;
+  late String type;
+  late int interval;
+  late bool autoEnd;
+  late DateTime? startDate;
+  late DateTime? endDate;
 
   SpeakerSession();
 

@@ -25,7 +25,7 @@ enum StoreboardState {
 }
 
 class SystemStateHelper {
-  static bool isStarted(SystemState systemState) {
+  static bool isStarted(SystemState? systemState) {
     if (systemState != null &&
         systemState != SystemState.None &&
         systemState != SystemState.MeetingPreparation &&

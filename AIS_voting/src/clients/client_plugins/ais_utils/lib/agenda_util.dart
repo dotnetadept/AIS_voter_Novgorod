@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:ais_model/ais_model.dart';
@@ -15,14 +13,14 @@ class AgendaUtil {
     double numberFontSize = 22,
     bool withQuestionNumber = false,
     bool showHiddenSections = false,
-    List<QuestionGroupSettings> listSettings = null,
+    List<QuestionGroupSettings>? listSettings = null,
   }) {
     if (question == null || question.descriptions == null) {
       return Container();
     }
     var message = <TextSpan>[];
 
-    if (withQuestionNumber) {
+    if (withQuestionNumber && listSettings != null) {
       String questionNumber = question.name;
 
       for (int i = 0; i < listSettings.length; i++) {
@@ -108,14 +106,14 @@ class AgendaUtil {
     bool isAutoSize = false,
     bool withQuestionNumber = false,
     bool showHiddenSections = false,
-    List<QuestionGroupSettings> listSettings = null,
+    List<QuestionGroupSettings>? listSettings = null,
   }) {
     String result = '';
     if (question == null || question.descriptions == null) {
       return result;
     }
 
-    if (withQuestionNumber) {
+    if (withQuestionNumber && listSettings != null) {
       String questionNumber = question.name;
 
       for (int i = 0; i < listSettings.length; i++) {

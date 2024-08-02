@@ -20,8 +20,8 @@ class AppState with ChangeNotifier {
 
   static late List<User> _users;
   static late List<VotingMode> _votingModes;
-  static late User? _currentUser;
-  static late Meeting? _currentMeeting;
+  static User? _currentUser;
+  static Meeting? _currentMeeting;
   static late Settings _settings;
   static late int _timeOffset;
   static bool _isLoadingComplete = false;
@@ -44,7 +44,7 @@ class AppState with ChangeNotifier {
 
   // intervals
   late List<ais.Interval> _intervals;
-  late ais.Interval _selectedInterval;
+  late ais.Interval? _selectedInterval;
   bool _autoEnd = false;
 
   // prev card values
@@ -58,22 +58,7 @@ class AppState with ChangeNotifier {
     return _singleton;
   }
 
-  AppState._internal() {
-    Timer.periodic(
-        Duration(
-            milliseconds: int.parse(
-                GlobalConfiguration().getValue('terminal_timer_delay'))),
-        (timer) async {
-      //close evince if current page is not viewDocument
-      if (AppState().getCurrentPage() != '/viewDocument') {
-        try {
-          Process.runSync('killall', <String>['evince']);
-        } catch (exc) {
-          print('${DateTime.now()} Timer Evince Exception: $exc\n');
-        }
-      }
-    });
-  }
+  AppState._internal() {}
 
   Future<void> loadData(int? meetingId) async {
     var intervalsData = await http.get(Uri.http(
@@ -248,7 +233,7 @@ class AppState with ChangeNotifier {
     }
 
     if (AppState().getCurrentUser()!.id ==
-        GroupUtil().getManagerId(AppState().getCurrentMeeting()!.group,
+        GroupUtil().getManagerId(AppState().getCurrentMeeting()!.group!,
             _serverState.usersTerminals)) {
       result = true;
     }
@@ -263,8 +248,8 @@ class AppState with ChangeNotifier {
   void setCurrentMeeting(Meeting? meeting) {
     _currentMeeting = meeting;
     if (_currentMeeting != null &&
-        _currentMeeting!.agenda.questions.length > 0) {
-      _currentMeeting!.agenda.questions
+        _currentMeeting!.agenda!.questions.length > 0) {
+      _currentMeeting!.agenda!.questions
           .sort((a, b) => a.orderNum.compareTo(b.orderNum));
     }
 
@@ -393,7 +378,7 @@ class AppState with ChangeNotifier {
     return _intervals;
   }
 
-  void setSelectedInterval(ais.Interval selectedInterval) {
+  void setSelectedInterval(ais.Interval? selectedInterval) {
     _selectedInterval = selectedInterval;
 
     if (selectedInterval != null) {
@@ -403,7 +388,7 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  ais.Interval getSelectedInterval() {
+  ais.Interval? getSelectedInterval() {
     return _selectedInterval;
   }
 

@@ -86,14 +86,14 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
               : SchemeLegendWidget(
                   settings: AppState().getSettings(),
                   serverState: AppState().getServerState(),
-                  group: AppState().getCurrentMeeting()!.group,
+                  group: AppState().getCurrentMeeting()!.group!,
                   isOperatorView: false,
                   isSmallView: false),
           AppState().getSettings().managerSchemeSettings.useTableView
               ? TableSchemeWidget(
                   settings: AppState().getSettings(),
                   serverState: AppState().getServerState(),
-                  group: AppState().getCurrentMeeting()!.group,
+                  group: AppState().getCurrentMeeting()!.group!,
                   interval: AppState().getSelectedInterval(),
                   users: AppState().getUsers(),
                   timeOffset: AppState().getTimeOffset(),
@@ -138,7 +138,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                               child: WorkplacesSchemeWidget(
                                 settings: AppState().getSettings(),
                                 serverState: AppState().getServerState(),
-                                group: AppState().getCurrentMeeting()!.group,
+                                group: AppState().getCurrentMeeting()!.group!,
                                 interval: AppState().getSelectedInterval(),
                                 setRegistration: (var v) {},
                                 undoRegistration: (var v) {},
@@ -194,6 +194,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                   },
                   navigateLicenseTab: () {},
                   isOperatorView: false,
+                  volume: 100,
                 ),
           Container(
             height: 5,
@@ -209,7 +210,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
     var speakerId = AppState().getServerState().usersTerminals[terminalId];
 
     var foundSpeakerGU =
-        AppState().getCurrentMeeting()!.group.groupUsers.firstWhereOrNull(
+        AppState().getCurrentMeeting()!.group!.groupUsers.firstWhereOrNull(
               (element) => element.user.id == speakerId,
             );
 
@@ -219,8 +220,8 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
     speakerSession.type = 'Выступление:';
 
     speakerSession.name = foundSpeakerGU?.user.getFullName() ?? name;
-    speakerSession.interval = selectedInterval.duration;
-    speakerSession.autoEnd = selectedInterval.isAutoEnd;
+    speakerSession.interval = selectedInterval?.duration ?? 0;
+    speakerSession.autoEnd = selectedInterval?.isAutoEnd ?? false;
     _connection.setCurrentSpeaker(speakerSession, selectedInterval?.startSignal,
         selectedInterval?.endSignal);
   }
@@ -241,8 +242,8 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
 
     speakerSession.name = guestName;
     speakerSession.terminalId = terminalId;
-    speakerSession.interval = selectedInterval.duration;
-    speakerSession.autoEnd = selectedInterval.isAutoEnd;
+    speakerSession.interval = selectedInterval?.duration ?? 0;
+    speakerSession.autoEnd = selectedInterval?.isAutoEnd ?? false;
     _connection.setCurrentSpeaker(speakerSession, selectedInterval?.startSignal,
         selectedInterval?.endSignal);
   }
@@ -254,7 +255,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
       AppState().getTimeOffset(),
       AppState().getSettings(),
       AppState().getCurrentMeeting()!,
-      AppState().getCurrentMeeting()!.group,
+      AppState().getCurrentMeeting()!.group!,
       AppState().getIntervals().where((element) => element.isActive).toList(),
       null,
       false,
@@ -266,7 +267,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
       () {},
       () {},
       (StoreboardState s, String a) {},
-      (ais.Interval i) {},
+      (ais.Interval? i) {},
       (bool) {},
       _connection.setGuestAskWord,
       removeGuestAskWord,
@@ -290,7 +291,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
           meeting: AppState().getCurrentMeeting()!,
           question: AppState()
               .getCurrentMeeting()!
-              .agenda
+              .agenda!
               .questions
               .firstWhereOrNull((element) =>
                   element.id ==
@@ -837,7 +838,7 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
     // Set storeboard with current speaker
     User speaker = AppState()
         .getCurrentMeeting()!
-        .group
+        .group!
         .getVoters()
         .firstWhere((element) => element.user.id == speakerId)
         .user;

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:ais_utils/ais_utils.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:ais_model/ais_model.dart';
 import 'dart:convert' show json;
@@ -7,18 +8,18 @@ import 'package:intl/intl.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class StoreboardWidget extends StatefulWidget {
-  StoreboardWidget(
-      {Key key,
-      this.serverState,
-      this.meeting,
-      this.question,
-      this.settings,
-      this.isStoreBoardClient = false,
-      this.screenScale = 1.0,
-      this.timeOffset,
-      this.votingModes,
-      this.users})
-      : super(key: key);
+  StoreboardWidget({
+    Key? key,
+    required this.serverState,
+    required this.meeting,
+    this.question,
+    required this.settings,
+    this.isStoreBoardClient = false,
+    this.screenScale = 1.0,
+    required this.timeOffset,
+    required this.votingModes,
+    required this.users,
+  }) : super(key: key);
 
   final ServerState serverState;
   final Meeting meeting;
@@ -38,20 +39,20 @@ class StoreboardWidget extends StatefulWidget {
 
 class _StoreboardStateWidgetState extends State<StoreboardWidget>
     with TickerProviderStateMixin {
-  Timer _clockTimer;
+  late Timer _clockTimer;
   String _clockText = '';
 
-  Timer _intervalTimer;
+  late Timer _intervalTimer;
   int _intervalIndicatorValue = 0;
   int _intervalValue = 0;
-  Timer _resultsTimer;
-  TabController _resultsTabController;
-  TabController _askWordQueueTabController;
+  late Timer _resultsTimer;
+  late TabController _resultsTabController;
+  late TabController _askWordQueueTabController;
   int _maxDetailsPagesCount = 0;
   bool _intervalEndWasPlayed = false;
 
-  SpeakerSession _prevSpeakerSession;
-  SystemState _previousState;
+  late SpeakerSession _prevSpeakerSession;
+  late SystemState _previousState;
 
   @override
   void initState() {
@@ -88,11 +89,11 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
   void initControllers() {
     if (widget.serverState.votingHistory != null) {
       _maxDetailsPagesCount =
-          (widget.serverState.votingHistory.usersDecisions.length /
+          (widget.serverState.votingHistory!.usersDecisions.length /
                   widget.settings.storeboardSettings.detailsRowsCount)
               .ceil();
     } else if (widget.meeting != null) {
-      _maxDetailsPagesCount = (widget.meeting.group.getVoters().length /
+      _maxDetailsPagesCount = (widget.meeting.group!.getVoters().length /
               widget.settings.storeboardSettings.detailsRowsCount)
           .ceil();
     }
@@ -130,15 +131,15 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     if (_previousState != widget.serverState.systemState ||
         json.encode(_prevSpeakerSession?.toJson()) !=
             json.encode(widget.serverState.speakerSession?.toJson())) {
-      _prevSpeakerSession = widget.serverState.speakerSession;
+      _prevSpeakerSession = widget.serverState.speakerSession!;
       _intervalEndWasPlayed = false;
 
       _intervalTimer?.cancel();
 
       DateTime startTime;
       if (widget.serverState.storeboardState == StoreboardState.Speaker) {
-        startTime = widget.serverState.speakerSession.startDate;
-        _intervalValue = widget.serverState.speakerSession.interval;
+        startTime = widget.serverState.speakerSession!.startDate!;
+        _intervalValue = widget.serverState.speakerSession!.interval;
 
         updateIndicatorInterval(startTime, _intervalValue);
         _intervalTimer = Timer.periodic(Duration(seconds: 1),
@@ -148,7 +149,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
       if (widget.serverState.systemState == SystemState.Registration) {
         startTime = DateTime.parse(
             json.decode(widget.serverState.params)['lastUpdated']);
-        _intervalValue = widget.serverState.registrationSession.interval;
+        _intervalValue = widget.serverState.registrationSession!.interval;
 
         updateIndicatorInterval(startTime, _intervalValue);
         _intervalTimer = Timer.periodic(Duration(seconds: 1),
@@ -158,7 +159,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
       if (widget.serverState.systemState == SystemState.QuestionVoting) {
         startTime = DateTime.parse(
             json.decode(widget.serverState.params)['lastUpdated']);
-        _intervalValue = widget.serverState.questionSession.interval;
+        _intervalValue = widget.serverState.questionSession!.interval;
 
         updateIndicatorInterval(startTime, _intervalValue);
         _intervalTimer = Timer.periodic(Duration(seconds: 1),
@@ -168,14 +169,14 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
       if (widget.serverState.systemState == SystemState.AskWordQueue) {
         startTime = DateTime.parse(
             json.decode(widget.serverState.params)['lastUpdated']);
-        _intervalValue = widget.serverState.askWordQueueSession.interval;
+        _intervalValue = widget.serverState.askWordQueueSession!.interval;
 
         updateIndicatorInterval(startTime, _intervalValue);
         _intervalTimer = Timer.periodic(Duration(seconds: 1),
             (Timer t) => updateIndicatorInterval(startTime, _intervalValue));
       }
 
-      _previousState = widget.serverState.systemState;
+      _previousState = widget.serverState.systemState!;
     }
 
     return DefaultTextStyle(
@@ -228,14 +229,14 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     }
     if (widget.serverState.storeboardState == StoreboardState.Template) {
       return getTemplateStoreboard(StoreboardTemplate.fromJson(
-          json.decode(widget.serverState.storeboardParams)));
+          json.decode(widget.serverState.storeboardParams ?? '')));
     }
     if (widget.serverState.votingHistory != null) {
-      if (widget.serverState.votingHistory.isDetailsStoreboard) {
+      if (widget.serverState.votingHistory?.isDetailsStoreboard == true) {
         return getVotingDetailsResultStoreBoard(
-            widget.serverState.votingHistory);
+            widget.serverState.votingHistory!);
       } else {
-        return getVotingResultStoreBoard(widget.serverState.votingHistory);
+        return getVotingResultStoreBoard(widget.serverState.votingHistory!);
       }
     }
     if (widget.meeting == null) {
@@ -271,31 +272,31 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     }
     if (widget.serverState.systemState == SystemState.QuestionVotingComplete) {
       bool isQuorumSuccess =
-          widget.serverState.questionSession.usersCountRegistred >=
-              widget.meeting.group.quorumCount;
+          widget.serverState.questionSession!.usersCountRegistred >=
+              widget.meeting.group!.quorumCount;
 
       bool isVotingSuccess = false;
       bool isManagerDecides = false;
 
-      if (widget.serverState.questionSession.usersCountVotedYes >=
-          widget.serverState.questionSession.usersCountForSuccess) {
+      if (widget.serverState.questionSession!.usersCountVotedYes >=
+          widget.serverState.questionSession!.usersCountForSuccess) {
         isVotingSuccess = true;
 
         // check is manager vote was casting vote
-        if (widget.meeting.group.isManagerCastingVote &&
+        if (widget.meeting.group!.isManagerCastingVote &&
             (DecisionModeHelper.getEnumValue(
-                    widget.serverState.questionSession.decision) ==
+                    widget.serverState.questionSession!.decision) ==
                 DecisionMode.MajorityOfRegistredMembers) &&
-            (widget.serverState.questionSession.usersCountVotedYes ==
-                widget.serverState.questionSession.usersCountVotedNo) &&
-            (widget.serverState.questionSession.usersCountVotedYes ==
-                widget.serverState.questionSession.usersCountForSuccess)) {
+            (widget.serverState.questionSession!.usersCountVotedYes ==
+                widget.serverState.questionSession!.usersCountVotedNo) &&
+            (widget.serverState.questionSession!.usersCountVotedYes ==
+                widget.serverState.questionSession!.usersCountForSuccess)) {
           var currentManagerId = GroupUtil().getManagerId(
-              widget.meeting.group, widget.serverState.usersTerminals);
-          var managerDecision = widget.serverState.usersDecisions.entries
-              .firstWhere(
-                  (element) => element.key == currentManagerId?.toString(),
-                  orElse: () => null);
+              widget.meeting.group!, widget.serverState.usersTerminals);
+          var managerDecision =
+              widget.serverState.usersDecisions.entries.firstWhereOrNull(
+            (element) => element.key == currentManagerId?.toString(),
+          );
 
           if (managerDecision != null && managerDecision.value == 'ПРОТИВ') {
             isVotingSuccess = false;
@@ -313,11 +314,11 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
       int noVotes = widget.serverState.votingResultNo;
       int indifferentVotes = widget.serverState.votingResultIndiffirent;
       int usersCountForSuccess =
-          widget.serverState.questionSession.usersCountForSuccess;
+          widget.serverState.questionSession!.usersCountForSuccess;
       int usersCountForSuccessDisplay =
-          widget.serverState.questionSession.usersCountForSuccessDisplay;
+          widget.serverState.questionSession!.usersCountForSuccessDisplay;
 
-      var voters = widget.meeting.group
+      var voters = widget.meeting.group!
           .getVoters()
           .map<User>((row) => row.user)
           .toList(growable: false);
@@ -354,7 +355,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     }
     if (widget.serverState.systemState == SystemState.AskWordQueueCompleted) {
       return getAskWordQueueCompletedStoreBoard(
-          widget.serverState.askWordQueueSession);
+          widget.serverState.askWordQueueSession!);
     }
     if (widget.serverState.systemState == SystemState.QuestionLocked) {
       return getQuestionDescriptionStoreBoard();
@@ -384,7 +385,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           _intervalIndicatorValue == 0 &&
           widget.serverState.storeboardState == StoreboardState.Speaker) {
         _intervalEndWasPlayed = StoreboardWidget.onIntervalEndingSignal(
-            widget.serverState.endSignal);
+            widget.serverState.endSignal!);
       }
     });
   }
@@ -441,8 +442,8 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
   }
 
   Widget getCustomStoreBoard() {
-    var caption = json.decode(widget.serverState.storeboardParams)['caption'];
-    var text = json.decode(widget.serverState.storeboardParams)['text'];
+    var caption = json.decode(widget.serverState.storeboardParams!)['caption'];
+    var text = json.decode(widget.serverState.storeboardParams!)['text'];
     return Column(
       children: [
         getTopRow(),
@@ -492,11 +493,11 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     Color indicatorColor = Colors.blue;
     if (widget.serverState.startSignal != null &&
         _intervalValue - _intervalIndicatorValue <=
-            widget.serverState.startSignal.duration) {
-      indicatorColor = Color(widget.serverState.startSignal.color);
+            widget.serverState.startSignal!.duration) {
+      indicatorColor = Color(widget.serverState.startSignal!.color);
     } else if (widget.serverState.endSignal != null &&
-        _intervalIndicatorValue <= widget.serverState.endSignal.duration) {
-      indicatorColor = Color(widget.serverState.endSignal.color);
+        _intervalIndicatorValue <= widget.serverState.endSignal!.duration) {
+      indicatorColor = Color(widget.serverState.endSignal!.color);
     }
 
     return indicatorColor;
@@ -504,8 +505,8 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
 
   Widget getSpeakerStoreBoard() {
     String speakerSurname =
-        widget.serverState.speakerSession.name.trim().split(' ').first;
-    String speakerNameAndLastName = widget.serverState.speakerSession.name
+        widget.serverState.speakerSession!.name.trim().split(' ').first;
+    String speakerNameAndLastName = widget.serverState.speakerSession!.name
         .replaceFirst(speakerSurname, '')
         .trim();
 
@@ -517,10 +518,10 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           padding: EdgeInsets.fromLTRB(0, getScaledSize(5), 0, 1),
           child: Column(
             children: [
-              widget.serverState.speakerSession.type == 'ФИО:'
+              widget.serverState.speakerSession!.type == 'ФИО:'
                   ? Container()
                   : getStoreBoardLine(
-                      widget.serverState.speakerSession.type, 24),
+                      widget.serverState.speakerSession!.type, 24),
               getStoreBoardLine(speakerSurname, 24),
               getStoreBoardLine(speakerNameAndLastName, 24),
               _intervalValue == 0
@@ -554,7 +555,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     if (widget.isStoreBoardClient) {
       var timeParts = _clockText.split(' ');
       bool totalResult = widget.serverState.usersRegistered.length >=
-          widget.meeting.group.quorumCount;
+          widget.meeting.group!.quorumCount;
 
       return Column(
         children: [
@@ -688,21 +689,21 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
   }
 
   Widget getGroupScheme() {
-    var columns = List<Widget>();
+    var columns = <Widget>[];
 
     var userCounter = 0;
 
-    var columnsCount = (widget.meeting.group.groupUsers.length /
+    var columnsCount = (widget.meeting.group!.groupUsers.length /
             widget.settings.storeboardSettings.detailsRowsCount)
         .ceil();
 
     var users = widget.users
         .where((u) =>
-            widget.meeting.group.groupUsers.any((gu) => gu.user.id == u.id))
+            widget.meeting.group!.groupUsers.any((gu) => gu.user.id == u.id))
         .toList();
 
     for (int i = 0; i < columnsCount; i++) {
-      var userWidgets = List<Widget>();
+      var userWidgets = <Widget>[];
 
       for (int j = 0;
           j < widget.settings.storeboardSettings.detailsRowsCount;
@@ -731,7 +732,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
   AutoSizeGroup _autoSizeGroup = new AutoSizeGroup();
   AutoSizeGroup _autoSizeGroupRegistred = new AutoSizeGroup();
 
-  Widget getUserRegistrationCell(User user) {
+  Widget getUserRegistrationCell(User? user) {
     var isRegistred = widget.serverState.usersRegistered.contains(user?.id);
     return Expanded(
       child: Container(
@@ -801,7 +802,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
 
   Widget getRegistrationResultStoreBoard() {
     bool totalResult = widget.serverState.registrationResult >=
-        widget.meeting.group.quorumCount;
+        widget.meeting.group!.quorumCount;
 
     return Column(
       children: [
@@ -879,7 +880,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${widget.meeting.group.lawUsersCount}',
+                  '${widget.meeting.group!.lawUsersCount}',
                   style: TextStyle(
                     fontSize: widget
                         .settings.storeboardSettings.resultItemsFontSize
@@ -905,7 +906,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   height: getScaledSize(5),
                 ),
                 Text(
-                  '${widget.meeting.group.lawUsersCount - widget.serverState.registrationResult}',
+                  '${widget.meeting.group!.lawUsersCount - widget.serverState.registrationResult}',
                   style: TextStyle(
                     fontSize: widget
                         .settings.storeboardSettings.resultItemsFontSize
@@ -918,7 +919,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   height: getScaledSize(5),
                 ),
                 Text(
-                  '${widget.meeting.group.quorumCount}',
+                  '${widget.meeting.group!.quorumCount}',
                   style: TextStyle(
                     fontSize: widget
                         .settings.storeboardSettings.resultItemsFontSize
@@ -954,9 +955,9 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     String timeLasts = (_intervalIndicatorValue ~/ 60) > 0
         ? 'осталось ${_intervalIndicatorValue ~/ 60} мин. ${_intervalIndicatorValue % 60} сек.'
         : 'осталось ${_intervalIndicatorValue % 60} сек.';
-    var votingModeId = widget.serverState.questionSession.votingModeId;
-    var selectedVotingMode = widget.votingModes
-        .firstWhere((i) => i.id == votingModeId, orElse: () => null);
+    var votingModeId = widget.serverState.questionSession!.votingModeId;
+    var selectedVotingMode =
+        widget.votingModes.firstWhere((i) => i.id == votingModeId);
     return Column(
       children: [
         getTopRow(),
@@ -990,7 +991,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   ),
                 ),
               ),
-              widget.question.name ==
+              widget.question!.name ==
                       widget.settings.questionListSettings.firstQuestion
                           .defaultGroupName
                   ? Container()
@@ -1000,7 +1001,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                         padding: EdgeInsets.fromLTRB(
                             0, getScaledSize(5), 0, getScaledSize(1)),
                         child: AgendaUtil.getQuestionDescriptionText(
-                            widget.question,
+                            widget.question!,
                             widget.settings.storeboardSettings
                                 .questionDescriptionFontSize
                                 .toDouble(),
@@ -1332,12 +1333,6 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
   }
 
   Widget getAskWordQueueStoreBoard() {
-    String timeLasts = (_intervalIndicatorValue ~/ 60) > 0
-        ? 'осталось ${_intervalIndicatorValue ~/ 60} мин. ${_intervalIndicatorValue % 60} сек.'
-        : 'осталось ${_intervalIndicatorValue % 60} сек.';
-    var votingModeId = widget.serverState.askWordQueueSession.votingModeId;
-    var selectedVotingMode = widget.votingModes
-        .firstWhere((i) => i.id == votingModeId, orElse: () => null);
     return Column(
       children: [
         getTopRow(),
@@ -1371,7 +1366,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   ),
                 ),
               ),
-              widget.question.name ==
+              widget.question!.name ==
                       widget.settings.questionListSettings.firstQuestion
                           .defaultGroupName
                   ? Container()
@@ -1381,7 +1376,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                         padding: EdgeInsets.fromLTRB(
                             0, getScaledSize(5), 0, getScaledSize(1)),
                         child: AgendaUtil.getQuestionDescriptionText(
-                            widget.question,
+                            widget.question!,
                             widget.settings.storeboardSettings
                                 .questionDescriptionFontSize
                                 .toDouble(),
@@ -1441,15 +1436,15 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     List<Widget> askWordList = <Widget>[];
 
     for (var userId in session.users) {
-      var user = widget.users.firstWhere(
-        (element) => element.id == userId,
-        orElse: () => null,
-      );
+      var user =
+          widget.users.firstWhereOrNull((element) => element.id == userId);
 
-      askWordList.add(getStoreBoardResultLine(
-          user.getFullName(),
-          (session.users.indexOf(userId) + 1).toString(),
-          widget.settings.storeboardSettings.resultItemsFontSize.toDouble()));
+      if (user != null) {
+        askWordList.add(getStoreBoardResultLine(
+            user.getFullName(),
+            (session.users.indexOf(userId) + 1).toString(),
+            widget.settings.storeboardSettings.resultItemsFontSize.toDouble()));
+      }
     }
 
     int rowsPerPage = widget.settings.storeboardSettings.detailsRowsCount;
@@ -1513,7 +1508,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
         getTopRow(),
         Expanded(
           child: Column(
-            mainAxisAlignment: widget.question.name ==
+            mainAxisAlignment: widget.question!.name ==
                     widget.settings.questionListSettings.firstQuestion
                         .defaultGroupName
                 ? MainAxisAlignment.center
@@ -1533,7 +1528,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   ),
                 ),
               ),
-              widget.question.name ==
+              widget.question!.name ==
                       widget.settings.questionListSettings.firstQuestion
                           .defaultGroupName
                   ? Container()
@@ -1542,7 +1537,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                         alignment: Alignment.topLeft,
                         padding: EdgeInsets.fromLTRB(0, getScaledSize(5), 0, 0),
                         child: AgendaUtil.getQuestionDescriptionText(
-                            widget.question,
+                            widget.question!,
                             widget.settings.storeboardSettings
                                 .questionDescriptionFontSize
                                 .toDouble(),
@@ -1563,7 +1558,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
   }
 
   String getQuestionName() {
-    if (widget.question.name ==
+    if (widget.question!.name ==
         widget.settings.questionListSettings.firstQuestion.defaultGroupName) {
       return widget.settings.questionListSettings.firstQuestion.storeboardStub;
     }
@@ -1595,7 +1590,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
         getTopRow(),
         Expanded(child: Container()),
         Text(
-          'ПЕРЕРЫВ ДО ${DateFormat("HH:mm").format(DateTime.parse(json.decode(widget.serverState.storeboardParams)['break']))}',
+          'ПЕРЕРЫВ ДО ${DateFormat("HH:mm").format(DateTime.parse(json.decode(widget.serverState.storeboardParams!)['break']))}',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: getScaledSize(30),

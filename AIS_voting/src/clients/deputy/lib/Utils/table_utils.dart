@@ -10,7 +10,7 @@ class TableUtils {
   Widget getUnregistredTable(ScrollController controller, {int flex = 1}) {
     List<User> users = UsersFilterUtil.getUnregisterUserList(
         AppState().getUsers(),
-        AppState().getCurrentMeeting()!.group,
+        AppState().getCurrentMeeting()!.group!,
         AppState().getServerState());
 
     return Expanded(
@@ -193,7 +193,7 @@ class TableUtils {
       var userId = AppState().getServerState().usersTerminals[currentMic.key];
       var tribuneIndex = AppState()
           .getCurrentMeeting()!
-          .group
+          .group!
           .workplaces
           .tribuneTerminalIds
           .indexOf(currentMic.key);
@@ -215,7 +215,7 @@ class TableUtils {
           currentMic.key,
           () => AppState()
               .getCurrentMeeting()!
-              .group
+              .group!
               .workplaces
               .tribuneNames[tribuneIndex],
         );

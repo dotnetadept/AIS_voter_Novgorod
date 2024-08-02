@@ -1,3 +1,7 @@
+import 'dart:ffi';
+
+import 'package:collection/collection.dart';
+
 import '../ais_model.dart';
 
 enum DecisionMode {
@@ -34,7 +38,8 @@ class DecisionModeHelper {
       case DecisionMode.OneThirdsOfRegistredMembers:
         return '1/3 от зарегистрированных';
       default:
-        return null;
+        // todo: notFound
+        return 'Большинство от установленного числа';
     }
   }
 
@@ -59,7 +64,8 @@ class DecisionModeHelper {
       case '1/3 от зарегистрированных':
         return DecisionMode.OneThirdsOfRegistredMembers;
       default:
-        return null;
+        // todo: notFound
+        return DecisionMode.MajorityOfLawMembers;
     }
   }
 
@@ -103,7 +109,7 @@ class DecisionModeHelper {
         return getRoundedValue(
             usersRegistered.length / 3, selectedGroup.roundingRoule);
       default:
-        return null;
+        return double.maxFinite.toInt();
     }
   }
 

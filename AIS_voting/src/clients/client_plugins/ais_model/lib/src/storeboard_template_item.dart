@@ -1,9 +1,9 @@
 class StoreboardTemplateItem {
-  int order;
-  String text = '';
-  int fontSize = 14;
-  String weight = 'Обычный';
-  String align = 'По центру';
+  late int order;
+  late String text = '';
+  late int fontSize = 14;
+  late String weight = 'Обычный';
+  late String align = 'По центру';
 
   StoreboardTemplateItem() {}
 

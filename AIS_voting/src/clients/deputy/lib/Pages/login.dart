@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
     var user = users.firstWhereOrNull((element) =>
         AppState()
             .getCurrentMeeting()!
-            .group
+            .group!
             .getVoters()
             .any((gu) => gu.user.id == element.id) &&
         element.password == _tecPassword.text);

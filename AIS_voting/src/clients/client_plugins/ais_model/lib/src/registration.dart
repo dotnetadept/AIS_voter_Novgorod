@@ -4,7 +4,11 @@ class Registration {
   late int proxyId;
   late int registrationSessionId;
 
-  Registration({this.id, this.userId, this.registrationSessionId});
+  Registration({
+    required this.id,
+    required this.userId,
+    required this.registrationSessionId,
+  });
 
   Registration.fromJson(Map<String, dynamic> json)
       : id = json['id'],

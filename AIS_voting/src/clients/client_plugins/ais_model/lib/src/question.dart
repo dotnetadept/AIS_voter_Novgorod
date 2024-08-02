@@ -4,25 +4,26 @@ import 'dart:convert';
 import 'settings.dart';
 
 class Question {
-  int id;
-  String name;
-  String folder;
-  int orderNum;
-  List<int> accessRights;
-  List<QuestionDescriptionItem> descriptions;
-  List<QuestionFile> files;
+  late int id;
+  late String name;
+  late String folder;
+  late int orderNum;
+  late List<int> accessRights;
+  late List<QuestionDescriptionItem> descriptions;
+  late List<QuestionFile> files;
 
   int agendaId;
 
-  Question(
-      {this.id,
-      this.name,
-      this.orderNum,
-      this.accessRights,
-      this.descriptions,
-      this.files,
-      this.folder,
-      this.agendaId});
+  Question({
+    required this.id,
+    required this.name,
+    required this.orderNum,
+    required this.accessRights,
+    required this.descriptions,
+    required this.files,
+    required this.folder,
+    required this.agendaId,
+  });
 
   Map toJson() => {
         'id': id,
@@ -92,7 +93,7 @@ class QuestionListUtil {
 
     var questionNames = _questions.map((e) => e.toString()).toList();
 
-    var groupNumbers = List<int>();
+    var groupNumbers = <int?>[];
     for (int i = 0; i < _questions.length; i++) {
       var itemOderInGroup = questionNames[i]
           .replaceFirst(groupSettings.defaultGroupName, '')
@@ -112,7 +113,7 @@ class QuestionListUtil {
               orElse: () => null,
             );
 
-    int orderNum = nextElement;
+    var orderNum = nextElement;
 
     if (orderNum == null && prevElement != null) {
       orderNum = prevElement + 1;
@@ -136,14 +137,14 @@ class QuestionListUtil {
       _questions[i].orderNum = i;
       if (groupNumbers[i] != null) {
         _questions[i].name = _questions[i].name.replaceAll(
-            groupNumbers[i].toString(), (groupNumbers[i] + 1).toString());
+            groupNumbers[i].toString(), (groupNumbers[i]! + 1).toString());
       }
     }
   }
 
   static QuestionGroupSettings getQuestionGroup(
       Settings settings, Question question) {
-    QuestionGroupSettings groupSettings = null;
+    var groupSettings = null;
 
     if (settings != null) {
       if (question.toString() ==

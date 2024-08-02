@@ -2,8 +2,8 @@ import 'storeboard_template_item.dart';
 import 'dart:convert';
 
 class StoreboardTemplate {
-  int id;
-  String name = '';
+  late int id;
+  late String name = '';
   List<StoreboardTemplateItem> items = <StoreboardTemplateItem>[];
 
   StoreboardTemplate() {}

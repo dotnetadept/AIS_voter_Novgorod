@@ -421,7 +421,7 @@ class ManagerSchemeSettings {
         cellOuterPaddingHorisontal = json['cellOuterPaddingHorisontal'],
         isShortNamesUsed = json['isShortNamesUsed'],
         cellTextSize = json['cellTextSize'],
-        cellTextAlign = json['cellTextAlign'],
+        cellTextAlign = json['cellTextAlign'] ?? 'Слева',
         overflowOption = json['overflowOption'],
         textMaxLines = json['textMaxLines'],
         showOverflow = json['showOverflow'],
@@ -438,14 +438,12 @@ class TableViewSettings {
   late bool showLegend;
 
   late List<HeaderItem> headerItems;
-  late List<IconItem> iconItems;
 
   TableViewSettings() {
     columnsCount = 4;
     cellTextAlign = 'Слева';
     showLegend = true;
     headerItems = <HeaderItem>[];
-    iconItems = <IconItem>[];
   }
 
   Map toJson() => {
@@ -453,7 +451,6 @@ class TableViewSettings {
         'cellTextAlign': cellTextAlign,
         'showLegend': showLegend,
         'headerItems': headerItems.map((item) => item.toJson()).toList(),
-        'iconItems': iconItems,
       };
 
   TableViewSettings.fromJson(Map<String, dynamic> json)
@@ -461,11 +458,10 @@ class TableViewSettings {
         cellTextAlign = json['cellTextAlign'],
         showLegend = json['showLegend'],
         headerItems = json['headerItems'] == null
-            ? List<HeaderItem>()
+            ? <HeaderItem>[]
             : List<dynamic>.from(json['headerItems'])
                 .map((i) => HeaderItem.fromJson(i))
-                .toList(),
-        iconItems = json['iconItems'];
+                .toList();
 }
 
 class HeaderItem {
@@ -495,7 +491,7 @@ class HeaderItem {
 
   HeaderItem.fromJson(Map<String, dynamic> json)
       : name = json['name'],
-        value = EnumToString.fromString(HeaderItemValue.values, json['value']),
+        value = EnumToString.fromString(HeaderItemValue.values, json['value'])!,
         orderNum = json['orderNum'],
         isVisible = json['isVisible'];
 }
@@ -749,7 +745,7 @@ class StoreboardSettings {
         paddingRight = json['paddingRight'],
         paddingBottom = json['paddingBottom'],
         meetingDescriptionTemplate = json['meetingDescriptionTemplate'],
-        noDataText = json['noDataText'],
+        noDataText = json['noDataText'] ?? 'н/д',
         speakerInterval = json['speakerInterval'],
         breakInterval = json['breakInterval'],
         meetingDescriptionFontSize = json['meetingDescriptionFontSize'],

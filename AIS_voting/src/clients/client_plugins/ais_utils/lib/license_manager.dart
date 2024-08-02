@@ -21,35 +21,37 @@ class LicenseManager {
 
       int i = 0;
       for (String keyPart in keyParts) {
-        var subKeyPart1 = int.tryParse(keyPart.substring(1, 3));
-        var subKeyPart2 = int.tryParse(keyPart.substring(3, 5));
+        var subKeyPart1 = int.tryParse(keyPart.substring(1, 3)) ?? 0;
+        var subKeyPart2 = int.tryParse(keyPart.substring(3, 5)) ?? 0;
 
         var currentValue = 0;
         switch (i) {
           case 0:
             {
-              currentValue = state.formattedDevicesOnline['Операторские места'];
+              currentValue =
+                  state.formattedDevicesOnline['Операторские места'] ?? 0;
             }
             break;
           case 1:
             {
               currentValue =
-                  state.formattedDevicesOnline['Председательские места'];
+                  state.formattedDevicesOnline['Председательские места'] ?? 0;
             }
             break;
           case 2:
             {
-              currentValue = state.formattedDevicesOnline['Депутатские места'];
+              currentValue =
+                  state.formattedDevicesOnline['Депутатские места'] ?? 0;
             }
             break;
           case 3:
             {
-              currentValue = state.formattedDevicesOnline['Гости'];
+              currentValue = state.formattedDevicesOnline['Гости'] ?? 0;
             }
             break;
           case 4:
             {
-              currentValue = state.formattedDevicesOnline['Табло'];
+              currentValue = state.formattedDevicesOnline['Табло'] ?? 0;
             }
             break;
         }
@@ -93,8 +95,8 @@ class LicenseManager {
       licenseInfo.add(getLicenseItem('Серверная часть:', 1, 1));
 
       for (String keyPart in keyParts) {
-        var subKeyPart1 = int.tryParse(keyPart.substring(1, 3));
-        var subKeyPart2 = int.tryParse(keyPart.substring(3, 5));
+        var subKeyPart1 = int.tryParse(keyPart.substring(1, 3)) ?? 0;
+        var subKeyPart2 = int.tryParse(keyPart.substring(3, 5)) ?? 0;
 
         var licenceValue =
             subKeyPart2 - subKeyPart1 > 0 ? subKeyPart2 - subKeyPart1 : 0;
@@ -103,7 +105,8 @@ class LicenseManager {
         switch (i) {
           case 0:
             {
-              currentValue = state.formattedDevicesOnline['Операторские места'];
+              currentValue =
+                  state.formattedDevicesOnline['Операторские места'] ?? 0;
               licenseInfo.add(getLicenseItem(
                   'Рабочее место оператора (секретаря) заседания:',
                   licenceValue,
@@ -113,7 +116,7 @@ class LicenseManager {
           case 1:
             {
               currentValue =
-                  state.formattedDevicesOnline['Председательские места'];
+                  state.formattedDevicesOnline['Председательские места'] ?? 0;
               licenseInfo.add(getLicenseItem(
                   'Рабочее место Председателя заседания:',
                   licenceValue,
@@ -122,7 +125,8 @@ class LicenseManager {
             break;
           case 2:
             {
-              currentValue = state.formattedDevicesOnline['Депутатские места'];
+              currentValue =
+                  state.formattedDevicesOnline['Депутатские места'] ?? 0;
               licenseInfo.add(getLicenseItem(
                   'Рабочее место участника заседания (депутата):',
                   licenceValue,
@@ -131,7 +135,7 @@ class LicenseManager {
             break;
           case 3:
             {
-              currentValue = state.formattedDevicesOnline['Гости'];
+              currentValue = state.formattedDevicesOnline['Гости'] ?? 0;
               licenseInfo.add(getLicenseItem(
                   'Рабочее место гостя (без функционала голосования):',
                   licenceValue,
@@ -140,7 +144,7 @@ class LicenseManager {
             break;
           case 4:
             {
-              currentValue = state.formattedDevicesOnline['Табло'];
+              currentValue = state.formattedDevicesOnline['Табло'] ?? 0;
               licenseInfo.add(getLicenseItem(
                   'Модуль отображения информации (табло):',
                   licenceValue,

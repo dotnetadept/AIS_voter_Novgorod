@@ -39,7 +39,7 @@ class _VotingPageState extends State<VotingPage> {
         json.decode(AppState().getServerState().params)['selectedQuestion'];
     _question = AppState()
         .getCurrentMeeting()!
-        .agenda
+        .agenda!
         .questions
         .firstWhere((element) => element.id == selectedQuestionId);
   }

@@ -87,7 +87,7 @@ class WebSocketConnection with ChangeNotifier {
     // check if terminal is guest
     var guest = AppState().getCurrentGuest();
 
-    if (guest != null && guest.isNotEmpty) {
+    if (guest.isNotEmpty) {
       updateClientType('guest', null, isManualLogin: true);
     } else {
       updateClientType('unknown_client', null);
@@ -180,7 +180,7 @@ class WebSocketConnection with ChangeNotifier {
         AppState().setAgendaDocument(null);
         AppState().setCurrentDocument(null);
         AppState().setCurrentQuestion(
-            AppState().getCurrentMeeting()!.agenda.questions.first);
+            AppState().getCurrentMeeting()!.agenda!.questions.first);
         AppState().setAgendaScrollPosition(0.0);
 
         if (AppState().getCurrentPage() == '/viewAgenda') {
@@ -213,14 +213,14 @@ class WebSocketConnection with ChangeNotifier {
 
         if (await Directory('documents/').exists() &&
             !(await Directory('documents/' +
-                    AppState().getCurrentMeeting()!.agenda.folder)
+                    AppState().getCurrentMeeting()!.agenda!.folder)
                 .exists())) {
           await Directory('documents/').delete(recursive: true);
         }
 
         // load file versions data
         var versionFilePath = 'documents/' +
-            AppState().getCurrentMeeting()!.agenda.folder +
+            AppState().getCurrentMeeting()!.agenda!.folder +
             '/version.txt';
         var versionsFile = File(versionFilePath);
         Map<String, dynamic> filesVersions = Map<String, dynamic>();
@@ -229,7 +229,7 @@ class WebSocketConnection with ChangeNotifier {
         }
 
         for (Question question
-            in AppState().getCurrentMeeting()!.agenda.questions) {
+            in AppState().getCurrentMeeting()!.agenda!.questions) {
           for (QuestionFile file in question.files) {
             var fileUrl = ServerConnection.getFileServerDownloadUrl(
                     AppState().getSettings()) +
@@ -267,11 +267,11 @@ class WebSocketConnection with ChangeNotifier {
     } else if (json.decode(responce)['update_agenda'] != null) {
       var decodedAgenda =
           Agenda.fromJson(json.decode(json.decode(responce)['update_agenda']));
-      AppState().getCurrentMeeting()?.agenda.questions =
+      AppState().getCurrentMeeting()?.agenda!.questions =
           decodedAgenda.questions;
 
       AppState().setIsDocumentsChecked(false);
-      AppState().setAgendaDocument(new QuestionFile());
+      AppState().setAgendaDocument(null);
       AppState().setCurrentDocument(null);
       AppState().setCurrentQuestion(null);
       AppState().setAgendaScrollPosition(0.0);
@@ -329,7 +329,7 @@ class WebSocketConnection with ChangeNotifier {
             // auto set user
             var defaultUser = AppState()
                 .getCurrentMeeting()!
-                .group
+                .group!
                 .getVoters()
                 .firstWhereOrNull((element) =>
                     // AppState()
@@ -408,7 +408,7 @@ class WebSocketConnection with ChangeNotifier {
 
   Future<void> updateFilesVersions(String data) async {
     var versionFilePath = 'documents/' +
-        AppState().getCurrentMeeting()!.agenda.folder +
+        AppState().getCurrentMeeting()!.agenda!.folder +
         '/version.txt';
 
     var versionsFile = File(versionFilePath);
@@ -775,13 +775,6 @@ class WebSocketConnection with ChangeNotifier {
           WindowToFrontPlugin.focus();
         }
 
-        //close evince instances on navigation event
-        try {
-          Process.runSync('killall', <String>['evince']);
-        } catch (exc) {
-          print('${DateTime.now()} Navingation Evince Exception: $exc\n');
-        }
-
         await navigatorKey.currentState
             ?.pushNamedAndRemoveUntil(page, (Route<dynamic> route) => false);
       }
@@ -875,7 +868,7 @@ class WebSocketConnection with ChangeNotifier {
     if (_clientType == 'manager') {
       // manager's autoregistration
       if (AppState().getServerState().systemState == SystemState.Registration) {
-        if (AppState().getCurrentMeeting()?.group.isManagerAutoRegistration ==
+        if (AppState().getCurrentMeeting()?.group?.isManagerAutoRegistration ==
             true) {
           sendMessage('ЗАРЕГИСТРИРОВАТЬСЯ');
         }
@@ -901,7 +894,7 @@ class WebSocketConnection with ChangeNotifier {
       navigateToPage('/waitingMeeting');
     } else if (AppState().getServerState().systemState ==
         SystemState.Registration) {
-      if (AppState().getCurrentMeeting()?.group.isManagerAutoRegistration ==
+      if (AppState().getCurrentMeeting()?.group?.isManagerAutoRegistration ==
           true) {
         sendMessage('ЗАРЕГИСТРИРОВАТЬСЯ');
 
@@ -994,7 +987,7 @@ class WebSocketConnection with ChangeNotifier {
       print(DateTime.now().toString() + ' checkMeetingDocumentsStatus');
 
       var versionsFile =
-          new File('documents/${currentMeeting.agenda.folder}/version.txt');
+          new File('documents/${currentMeeting.agenda!.folder}/version.txt');
 
       if (await versionsFile.exists()) {
         Map<String, dynamic> filesVersions = Map<String, dynamic>();
@@ -1002,16 +995,16 @@ class WebSocketConnection with ChangeNotifier {
 
         var isAllDocumentsLoaded = true;
 
-        for (int q = 0; q < currentMeeting.agenda.questions.length; q++) {
+        for (int q = 0; q < currentMeeting.agenda!.questions.length; q++) {
           for (int f = 0;
-              f < currentMeeting.agenda.questions[q].files.length;
+              f < currentMeeting.agenda!.questions[q].files.length;
               f++) {
             var filePath = 'documents/' +
-                currentMeeting.agenda.questions[q].files[f].relativePath +
+                currentMeeting.agenda!.questions[q].files[f].relativePath +
                 '/' +
-                currentMeeting.agenda.questions[q].files[f].fileName;
+                currentMeeting.agenda!.questions[q].files[f].fileName;
             if (filesVersions[filePath] ==
-                currentMeeting.agenda.questions[q].files[f].version) {
+                currentMeeting.agenda!.questions[q].files[f].version) {
               continue;
             } else {
               isAllDocumentsLoaded = false;

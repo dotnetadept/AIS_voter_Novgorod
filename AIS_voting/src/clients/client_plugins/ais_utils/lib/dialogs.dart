@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Utility {
-  Future<void> showMessageOkDialog(BuildContext context,
-      {String title, TextSpan message, String okButtonText}) async {
+  Future<void> showMessageOkDialog(
+    BuildContext context, {
+    required String title,
+    required TextSpan message,
+    required String okButtonText,
+  }) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -43,12 +47,12 @@ class Utility {
 
   Future<void> showYesNoDialog(
     BuildContext context, {
-    String title,
-    TextSpan message,
-    String yesButtonText,
-    String noButtonText,
-    VoidCallback yesCallBack,
-    VoidCallback noCallBack,
+    required String title,
+    required TextSpan message,
+    required String yesButtonText,
+    required String noButtonText,
+    required VoidCallback yesCallBack,
+    required VoidCallback noCallBack,
   }) async {
     return showDialog<void>(
       context: context,
@@ -99,13 +103,13 @@ class Utility {
 
   Future<void> showYesNoOptionsDialog(
     BuildContext context, {
-    String title,
-    String text,
-    List<String> options,
-    String yesButtonText,
-    String noButtonText,
-    void Function(String) yesCallBack,
-    VoidCallback noCallBack,
+    required String title,
+    required String text,
+    required List<String> options,
+    required String yesButtonText,
+    required String noButtonText,
+    required void Function(String) yesCallBack,
+    required VoidCallback noCallBack,
   }) async {
     String selectedOption = options.first;
     return showDialog<void>(
@@ -125,7 +129,7 @@ class Utility {
                         title: Text(e),
                         value: true,
                         groupValue: e == selectedOption,
-                        onChanged: (bool value) {
+                        onChanged: (bool? value) {
                           selectedOption = e;
                           setStateForDialog(() {});
                         },

@@ -13,66 +13,66 @@ import 'voting_history.dart';
 
 class ServerState {
   //storeboard and deputy
-  SystemState systemState;
-  String params;
+  late SystemState? systemState;
+  late String params;
 
-  StoreboardState storeboardState;
-  String storeboardParams;
-  bool isDetailsStoreboard;
+  late StoreboardState? storeboardState;
+  late String? storeboardParams;
+  late bool isDetailsStoreboard;
 
-  int registrationResult;
-  int votingResultYes;
-  int votingResultNo;
-  int votingResultIndiffirent;
-  int votingTotalVotes;
-  RegistrationSession registrationSession;
-  QuestionSession questionSession;
-  AskWordQueueSession askWordQueueSession;
-  SpeakerSession speakerSession;
-  Signal startSignal;
-  Signal endSignal;
+  late int registrationResult;
+  late int votingResultYes;
+  late int votingResultNo;
+  late int votingResultIndiffirent;
+  late int votingTotalVotes;
+  late RegistrationSession? registrationSession;
+  late QuestionSession? questionSession;
+  late AskWordQueueSession? askWordQueueSession;
+  late SpeakerSession? speakerSession;
+  late Signal? startSignal;
+  late Signal? endSignal;
 
-  VotingHistory votingHistory;
-  bool isRegistrationCompleted;
+  late VotingHistory? votingHistory;
+  late bool isRegistrationCompleted;
 
-  bool isStreamStarted;
-  String streamUrl;
-  String streamControl;
-  bool showToManager;
-  bool showAskWordButton;
+  late bool isStreamStarted;
+  late String? streamUrl;
+  late String? streamControl;
+  late bool? showToManager;
+  late bool? showAskWordButton;
 
   //operator and manager
-  Map<String, int> formattedDevicesOnline;
-  Map<String, String> versions;
+  late Map<String, int> formattedDevicesOnline;
+  late Map<String, String> versions;
 
-  Map<String, int> usersTerminals;
-  List<String> terminalsOnline;
-  List<String> terminalsWithDocuments;
-  List<String> terminalsLoadingDocuments = <String>[];
-  Map<String, String> terminalsDocumentErrors = <String, String>{};
+  late Map<String, int> usersTerminals;
+  late List<String> terminalsOnline;
+  late List<String> terminalsWithDocuments;
+  late List<String> terminalsLoadingDocuments = <String>[];
+  late Map<String, String> terminalsDocumentErrors = <String, String>{};
 
-  List<int> usersRegistered;
-  List<int> usersAskSpeech;
-  List<int> usersOnSpeech;
+  late List<int> usersRegistered;
+  late List<int> usersAskSpeech;
+  late List<int> usersOnSpeech;
 
-  List<String> guestsAskSpeech;
-  List<GuestPlace> guestsPlaces;
+  late List<String> guestsAskSpeech;
+  late List<GuestPlace> guestsPlaces;
 
-  Map<String, String> usersDecisions;
+  late Map<String, String> usersDecisions;
 
-  bool isVissonicModuleOnline;
-  bool isVissonicServerOnline;
-  bool isVissonicModuleInit;
-  bool isVissonicLoading;
-  bool micsEnabled;
-  Map<String, String> activeMics;
-  List<int> waitingMics;
+  late bool? isVissonicModuleOnline;
+  late bool? isVissonicServerOnline;
+  late bool? isVissonicModuleInit;
+  late bool? isVissonicLoading;
+  late bool? micsEnabled;
+  late Map<String, String> activeMics;
+  late List<int> waitingMics;
 
-  String playSound;
-  double soundVolume;
-  String playSoundTimestamp;
+  late String? playSound;
+  late double? soundVolume;
+  late String? playSoundTimestamp;
 
-  DateTime timestamp;
+  late DateTime timestamp;
 
   ServerState();
 
@@ -81,9 +81,11 @@ class ServerState {
       : systemState =
             EnumToString.fromString(SystemState.values, json['systemState']),
         params = json['params'],
-        storeboardState = EnumToString.fromString(
-            StoreboardState.values, json['storeboardState']),
-        storeboardParams = json['storeboardParams'],
+        storeboardState = json['storeboardState'] == null
+            ? null
+            : EnumToString.fromString(
+                StoreboardState.values, json['storeboardState']),
+        storeboardParams = json['storeboard'],
         isDetailsStoreboard = json['isDetailsStoreboard'],
         registrationResult = json['registrationResult'],
         votingTotalVotes = json['votingTotalVotes'],

@@ -32,7 +32,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         GlobalConfiguration().getValue('registration_view_use_flex_buttons') ==
             'true';
 
-    _interval = AppState().getServerState().registrationSession.interval;
+    _interval = AppState().getServerState().registrationSession!.interval;
     _startDate = DateTime.parse(
         json.decode(AppState().getServerState().params)['lastUpdated']);
 

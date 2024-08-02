@@ -1,4 +1,5 @@
 import 'package:ais_model/ais_model.dart';
+import 'package:collection/collection.dart';
 
 class UsersFilterUtil {
   static List<User> getNotVotedUserList(
@@ -6,12 +7,13 @@ class UsersFilterUtil {
     List<User> notVotedUsers = <User>[];
 
     for (int i = 0; i < group.groupUsers.length; i++) {
-      var user = users.firstWhere(
-          (element) => element.id == group.groupUsers[i].user.id,
-          orElse: () => null);
+      var user = users.firstWhereOrNull(
+          (element) => element.id == group.groupUsers[i].user.id);
 
-      if (!serverState.usersDecisions.keys.contains(user.id.toString())) {
-        notVotedUsers.add(user);
+      if (user != null) {
+        if (!serverState.usersDecisions.keys.contains(user.id.toString())) {
+          notVotedUsers.add(user);
+        }
       }
     }
 
@@ -27,11 +29,12 @@ class UsersFilterUtil {
     List<User> registredUsers = <User>[];
 
     for (int i = 0; i < group.groupUsers.length; i++) {
-      var user = users.firstWhere(
-          (element) => element.id == group.groupUsers[i].user.id,
-          orElse: () => null);
-      if (serverState.usersRegistered.contains(user.id)) {
-        registredUsers.add(user);
+      var user = users.firstWhereOrNull(
+          (element) => element.id == group.groupUsers[i].user.id);
+      if (user != null) {
+        if (serverState.usersRegistered.contains(user.id)) {
+          registredUsers.add(user);
+        }
       }
     }
 
@@ -47,11 +50,12 @@ class UsersFilterUtil {
     List<User> usersNotRegistered = <User>[];
 
     for (int i = 0; i < group.groupUsers.length; i++) {
-      var user = users.firstWhere(
-          (element) => element.id == group.groupUsers[i].user.id,
-          orElse: () => null);
-      if (!serverState.usersRegistered.contains(user.id)) {
-        usersNotRegistered.add(user);
+      var user = users.firstWhereOrNull(
+          (element) => element.id == group.groupUsers[i].user.id);
+      if (user != null) {
+        if (!serverState.usersRegistered.contains(user.id)) {
+          usersNotRegistered.add(user);
+        }
       }
     }
 
@@ -67,18 +71,20 @@ class UsersFilterUtil {
     List<User> usersAbsent = <User>[];
 
     for (int i = 0; i < group.groupUsers.length; i++) {
-      var user = users.firstWhere(
-          (element) => element.id == group.groupUsers[i].user.id,
-          orElse: () => null);
+      var user = users.firstWhereOrNull(
+          (element) => element.id == group.groupUsers[i].user.id);
 
-      var foundUserTerminal = serverState.usersTerminals.entries.firstWhere(
-          (element) =>
-              element.value == users[i].id &&
-              serverState.terminalsOnline.contains(element.key),
-          orElse: () => null);
+      var foundUserTerminal =
+          serverState.usersTerminals.entries.firstWhereOrNull(
+        (element) =>
+            element.value == users[i].id &&
+            serverState.terminalsOnline.contains(element.key),
+      );
 
-      if (foundUserTerminal == null) {
-        usersAbsent.add(user);
+      if (user != null) {
+        if (foundUserTerminal == null) {
+          usersAbsent.add(user);
+        }
       }
     }
 

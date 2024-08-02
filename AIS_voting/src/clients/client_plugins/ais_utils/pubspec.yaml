@@ -21,6 +21,7 @@ dependencies:
     path: '../window_size'
   transparent_pointer: ^1.0.0
   select2dot1: ^2.0.7
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:

@@ -1,15 +1,20 @@
 import 'registration.dart';
 
 class RegistrationSession {
-  int id;
-  int meetingId;
-  int interval;
-  DateTime startDate;
-  DateTime endDate;
-  List<Registration> registrations;
+  late int id;
+  late int meetingId;
+  late int interval;
+  late DateTime startDate;
+  late DateTime? endDate;
+  late List<Registration> registrations;
 
-  RegistrationSession(
-      {this.id, this.meetingId, this.interval, this.startDate, this.endDate});
+  RegistrationSession({
+    required this.id,
+    required this.meetingId,
+    required this.interval,
+    required this.startDate,
+    required this.endDate,
+  });
 
   Map toJson() => {
         'id': id,

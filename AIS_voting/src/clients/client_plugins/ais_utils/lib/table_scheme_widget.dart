@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:ais_utils/ais_utils.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:ais_model/ais_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,39 +9,39 @@ import 'package:ais_model/ais_model.dart' as ais;
 import 'time_util.dart';
 
 class TableSchemeWidget extends StatefulWidget {
-  TableSchemeWidget(
-      {Key key,
-      this.settings,
-      this.serverState,
-      this.group,
-      this.interval,
-      this.users,
-      this.isOperatorView,
-      this.timeOffset,
-      this.setRegistration,
-      this.undoRegistration,
-      this.setSpeaker,
-      this.removeAskWord,
-      this.setCurrentSpeaker,
-      this.setGuestSpeaker,
-      this.removeGuestAskWord,
-      this.setTribuneSpeaker,
-      this.setUser,
-      this.setUserExit,
-      this.setTerminalReset,
-      this.setTerminalShutdown,
-      this.setTerminalScreenOff,
-      this.setTerminalScreenOn,
-      this.addUserAskWord,
-      this.setResetAll,
-      this.setRefreshStreamAll,
-      this.setShutdownAll})
-      : super(key: key);
+  TableSchemeWidget({
+    Key? key,
+    required this.settings,
+    required this.serverState,
+    required this.group,
+    required this.interval,
+    required this.users,
+    required this.isOperatorView,
+    required this.timeOffset,
+    required this.setRegistration,
+    required this.undoRegistration,
+    required this.setSpeaker,
+    required this.removeAskWord,
+    required this.setCurrentSpeaker,
+    required this.setGuestSpeaker,
+    this.removeGuestAskWord,
+    required this.setTribuneSpeaker,
+    required this.setUser,
+    required this.setUserExit,
+    required this.setTerminalReset,
+    required this.setTerminalShutdown,
+    required this.setTerminalScreenOff,
+    required this.setTerminalScreenOn,
+    this.addUserAskWord,
+    required this.setResetAll,
+    required this.setRefreshStreamAll,
+    required this.setShutdownAll,
+  }) : super(key: key);
 
   final Settings settings;
   final ServerState serverState;
   final Group group;
-  final ais.Interval interval;
+  final ais.Interval? interval;
   final List<User> users;
   final bool isOperatorView;
   final int timeOffset;
@@ -51,7 +52,7 @@ class TableSchemeWidget extends StatefulWidget {
   final void Function(String, String) setCurrentSpeaker;
   final void Function(String) setGuestSpeaker;
   final void Function(int) removeAskWord;
-  final void Function(String) removeGuestAskWord;
+  final void Function(String)? removeGuestAskWord;
   final void Function(String, String) setTribuneSpeaker;
   final void Function(String, int) setUser;
   final void Function(String) setUserExit;
@@ -59,7 +60,7 @@ class TableSchemeWidget extends StatefulWidget {
   final void Function(String) setTerminalShutdown;
   final void Function(String) setTerminalScreenOff;
   final void Function(String) setTerminalScreenOn;
-  final Function(int) addUserAskWord;
+  final Function(int)? addUserAskWord;
   final void Function() setResetAll;
   final void Function() setShutdownAll;
   final void Function() setRefreshStreamAll;
@@ -73,7 +74,7 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
   bool _isShowTribune = false;
   bool _isControlSound = false;
   var _autoSizeGroup = AutoSizeGroup();
-  Timer _clockTimer;
+  late Timer _clockTimer;
 
   @override
   void initState() {
@@ -107,11 +108,12 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
 
     // sort users in group by name
     for (int i = 0; i < widget.group.groupUsers.length; i++) {
-      var user = widget.users.firstWhere(
-          (element) => element.id == widget.group.groupUsers[i].user.id,
-          orElse: () => null);
+      var user = widget.users.firstWhereOrNull(
+          (element) => element.id == widget.group.groupUsers[i].user.id);
 
-      widget.group.groupUsers[i].user = user;
+      if (user != null) {
+        widget.group.groupUsers[i].user = user;
+      }
 
       widget.group.groupUsers
           .sort((a, b) => a.user.getFullName().compareTo(b.user.getFullName()));
@@ -236,9 +238,8 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
   List<User> getAskwordUserList() {
     var usersAskingWord = <User>[];
     for (int i = 0; i < widget.serverState.usersAskSpeech.length; i++) {
-      var foundUser = widget.users.firstWhere(
-          (element) => element.id == widget.serverState.usersAskSpeech[i],
-          orElse: () => null);
+      var foundUser = widget.users.firstWhereOrNull(
+          (element) => element.id == widget.serverState.usersAskSpeech[i]);
       if (foundUser != null) {
         usersAskingWord.add(foundUser);
       }
@@ -259,9 +260,8 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
       var userId = widget.serverState.usersTerminals[currentMic.key];
       var tribuneIndex =
           widget.group.workplaces.tribuneTerminalIds.indexOf(currentMic.key);
-      var guestPlace = widget.serverState.guestsPlaces.firstWhere(
-          (element) => element.terminalId == currentMic.key,
-          orElse: () => null);
+      var guestPlace = widget.serverState.guestsPlaces
+          .firstWhereOrNull((element) => element.terminalId == currentMic.key);
 
       if (userId != null) {
         usersMicEnabled.putIfAbsent(
@@ -293,8 +293,11 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
 
   String getTerminalByUserId(User user) {
     return widget.serverState.usersTerminals.entries
-        .firstWhere((element) => element.value == user.id, orElse: () => null)
-        ?.key;
+            .firstWhereOrNull(
+              (element) => element.value == user.id,
+            )
+            ?.key ??
+        '00000';
   }
 
   Widget getUnregistredTable(String header, String tooltip, List<User> users,
@@ -349,7 +352,7 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                                 // ),
                                 // TextButton(
                                 //   style: ButtonStyle(
-                                //     padding: MaterialStateProperty.all(
+                                //     padding: WidgetStateProperty.all(
                                 //         EdgeInsets.all(0)),
                                 //   ),
                                 //   onPressed: () {},
@@ -403,7 +406,8 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                         return InkWell(
                           onTap: () {
                             widget.setCurrentSpeaker(
-                                getTerminalByUserId(users[index]), null);
+                                getTerminalByUserId(users[index]),
+                                users[index].getShortName());
                             widget.removeAskWord(users[index].id);
                           },
                           child: Card(
@@ -427,7 +431,7 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                                   ),
                                   TextButton(
                                     style: ButtonStyle(
-                                      padding: MaterialStateProperty.all(
+                                      padding: WidgetStateProperty.all(
                                           EdgeInsets.all(0)),
                                     ),
                                     onPressed: () {
@@ -487,7 +491,9 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                         return InkWell(
                           onTap: () {
                             widget.setGuestSpeaker(guests[index]);
-                            widget.removeGuestAskWord(guests[index]);
+                            if (widget.removeGuestAskWord != null) {
+                              widget.removeGuestAskWord!(guests[index]);
+                            }
                           },
                           child: Card(
                             child: Container(
@@ -505,11 +511,9 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                                 children: [
                                   Icon(Icons.person),
                                   Text(widget.serverState.guestsPlaces
-                                          .firstWhere(
-                                              (element) =>
-                                                  element.terminalId ==
-                                                  guests[index],
-                                              orElse: () => null)
+                                          .firstWhereOrNull((element) =>
+                                              element.terminalId ==
+                                              guests[index])
                                           ?.name ??
                                       'Гость[${guests[index]}]'),
                                   Expanded(
@@ -517,13 +521,15 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                                   ),
                                   TextButton(
                                     style: ButtonStyle(
-                                      padding: MaterialStateProperty.all(
+                                      padding: WidgetStateProperty.all(
                                           EdgeInsets.all(0)),
                                     ),
                                     onPressed: () {
                                       setState(() {
-                                        widget
-                                            .removeGuestAskWord(guests[index]);
+                                        if (widget.removeGuestAskWord != null) {
+                                          widget.removeGuestAskWord!(
+                                              guests[index]);
+                                        }
                                       });
                                     },
                                     child: Text('x'),
@@ -577,11 +583,9 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                       itemBuilder: (BuildContext context, int index) {
                         var startDate = DateTime.parse(widget
                             .serverState.activeMics.entries
-                            .firstWhere(
-                                (element) =>
-                                    element.key == mics.keys.elementAt(index),
-                                orElse: () => null)
-                            ?.value);
+                            .firstWhereOrNull((element) =>
+                                element.key == mics.keys.elementAt(index))!
+                            .value);
 
                         var activeTime =
                             TimeUtil.getDateTimeNow(widget.timeOffset)
@@ -785,16 +789,17 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
     }
 
     for (int i = 0; i < group.workplaces.schemeManagement.length; i++) {
-      var user = widget.users.firstWhere(
-          (element) => element.id == group.groupUsers[i].user.id,
-          orElse: () => null);
+      var user = widget.users.firstWhereOrNull(
+          (element) => element.id == group.groupUsers[i].user.id);
 
-      managerCells.add(
-        getDetailedUser(
-          user,
-          Colors.lightBlue.withOpacity(0.2),
-        ),
-      );
+      if (user != null) {
+        managerCells.add(
+          getDetailedUser(
+            user,
+            const Color.fromARGB(255, 231, 247, 255).withOpacity(0.2),
+          ),
+        );
+      }
     }
 
     if (managerCells.length == 0) {
@@ -955,9 +960,7 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
 
   Widget getDetailedUser(User user, Color cellColor) {
     // mic and speaker icons
-    String terminalId = widget.serverState.usersTerminals.entries
-        .firstWhere((element) => element.value == user.id, orElse: () => null)
-        ?.key;
+    String terminalId = getTerminalByUserId(user);
 
     var isUserAskSpeech = widget.serverState.usersAskSpeech.contains(user.id);
     var isMicEnabled = widget.serverState.activeMics.entries
@@ -1009,12 +1012,12 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                 message: setSpeakerTooltip,
                 child: TextButton(
                   style: ButtonStyle(
-                    padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                    padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                     side: widget.interval == null
                         ? null
-                        : MaterialStateProperty.all(BorderSide(width: 1)),
-                    backgroundColor: MaterialStateProperty.all(micColor),
-                    overlayColor: MaterialStateProperty.all(
+                        : WidgetStateProperty.all(BorderSide(width: 1)),
+                    backgroundColor: WidgetStateProperty.all(micColor),
+                    overlayColor: WidgetStateProperty.all(
                         Colors.blueAccent.withAlpha(125)),
                   ),
                   child: Icon(
@@ -1029,7 +1032,9 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                       if (isMicEnabled) {
                         widget.setSpeaker(terminalId, false);
                       } else {
-                        widget.addUserAskWord(user.id);
+                        if (widget.addUserAskWord != null) {
+                          widget.addUserAskWord!(user.id);
+                        }
                       }
                     }
 

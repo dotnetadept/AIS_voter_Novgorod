@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:ais_model/ais_model.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:pdfrx/pdfrx.dart';
 import '../Utils/utils.dart';
 import '../Widgets/voting_utils.dart';
 import '/State/WebSocketConnection.dart';
@@ -20,6 +21,8 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
   QuestionFile? _currentDocument;
   String _documentPageCount = '0';
   String _errorMessage = '';
+  String _documentPath = '';
+  final controller = PdfViewerController();
 
   @override
   void initState() {
@@ -31,48 +34,42 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
           .navigateToPage('viewAgenda');
     }
 
-    String documentPath =
+    _documentPath =
         'file:/${GlobalConfiguration().getValue('folder_path')}/documents/' +
             _currentDocument!.relativePath +
             '/' +
             _currentDocument!.fileName;
 
-    openDocument(documentPath);
-  }
-
-  void openDocument(String documentPath) {
-    if (!File(documentPath.replaceFirst('file:/', '')).existsSync()) {
-      _errorMessage = 'Не найден документ: $documentPath';
-      return;
-    }
-
-    // load new evince window on top of main
-    try {
-      var stats = Process.runSync('pdfinfo', <String>[documentPath]);
-      var statsLines = stats.stdout.toString().split('\n').toList();
-      for (var i = 0; i < statsLines.length; i++) {
-        if (statsLines[i] != null &&
-            statsLines[i].isNotEmpty &&
-            statsLines[i].toLowerCase().trim().startsWith('pages:')) {
-          setState(() {
-            _documentPageCount =
-                statsLines[i].toLowerCase().replaceAll('pages:', '').trim();
-          });
-          break;
-        }
-      }
-      print('Путь документа: $documentPath\n');
-      Process.run('evince', <String>[documentPath]);
-    } catch (exc) {
-      print('Ошибка evice: $exc\n');
-      _errorMessage =
-          'В ходе открытия документа $documentPath возникла ошибка: $exc';
+    if (!File(_documentPath.replaceFirst('file:/', '')).existsSync()) {
+      _errorMessage = 'Не найден документ: $_documentPath';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          Text(_currentDocument?.description ?? ''),
+          IconButton(
+            icon: const Icon(Icons.zoom_in),
+            onPressed: () => controller.zoomUp(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.zoom_out),
+            onPressed: () => controller.zoomDown(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.first_page),
+            onPressed: () => controller.goToPage(pageNumber: 1),
+          ),
+          IconButton(
+            icon: const Icon(Icons.last_page),
+            onPressed: () =>
+                controller.goToPage(pageNumber: controller.pages.length),
+          ),
+        ],
+      ),
       body: body(),
       backgroundColor: Colors.blue[100],
     );
@@ -94,55 +91,48 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
       color: Colors.white,
       child: Column(
         children: [
-          Row(children: [
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
-                child: Text(
-                  _currentDocument!.description,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: false,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
+          Expanded(
+            child: PdfViewer.file(
+              _documentPath,
+              passwordProvider: () => null,
+              controller: controller,
+              params: PdfViewerParams(
+                maxScale: 8,
+                viewerOverlayBuilder: (context, size, handleLinkTap) => [
+                  //
+                  // Scroll-thumbs example
+                  //
+                  // Show vertical scroll thumb on the right; it has page number on it
+                  PdfViewerScrollThumb(
+                    controller: controller,
+                    orientation: ScrollbarOrientation.right,
+                    thumbSize: const Size(40, 25),
+                    thumbBuilder:
+                        (context, thumbSize, pageNumber, controller) =>
+                            Container(
+                      color: Colors.black,
+                      child: Center(
+                        child: Text(
+                          pageNumber.toString(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Just a simple horizontal scroll thumb on the bottom
+                  PdfViewerScrollThumb(
+                    controller: controller,
+                    orientation: ScrollbarOrientation.bottom,
+                    thumbSize: const Size(80, 30),
+                    thumbBuilder:
+                        (context, thumbSize, pageNumber, controller) =>
+                            Container(
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Container(
-              padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-              child: Text('($_documentPageCount стр.) '),
-            ),
-          ]),
-          Expanded(
-            child: Container(),
-          ),
-          _errorMessage.isEmpty
-              ? Row(children: [
-                  Expanded(
-                    child: Container(),
-                  ),
-                  Container(
-                    height: 30,
-                    width: 30,
-                    child: CircularProgressIndicator(),
-                  ),
-                  Container(
-                    width: 15,
-                  ),
-                  Text(
-                    'Загрузка ...',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Expanded(
-                    child: Container(),
-                  ),
-                ])
-              : Text(
-                  _errorMessage,
-                  style: TextStyle(color: Colors.red),
-                ),
-          Expanded(
-            child: Container(),
           ),
           getButtonsSection(),
           Container(

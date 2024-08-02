@@ -9,9 +9,12 @@ class LicenseWidget extends StatefulWidget {
 
   final void Function() navigateLicenseTab;
 
-  LicenseWidget(
-      {Key key, this.settings, this.serverState, this.navigateLicenseTab})
-      : super(key: key);
+  LicenseWidget({
+    Key? key,
+    required this.settings,
+    required this.serverState,
+    required this.navigateLicenseTab,
+  }) : super(key: key);
 
   @override
   _LicenseWidgetState createState() => _LicenseWidgetState();
@@ -27,8 +30,8 @@ class _LicenseWidgetState extends State<LicenseWidget> {
       return Container(
         child: TextButton(
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.transparent),
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
+            backgroundColor: WidgetStateProperty.all(Colors.transparent),
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
           ),
           child: Text(
             'Нет лицензии',
@@ -49,21 +52,15 @@ class _LicenseWidgetState extends State<LicenseWidget> {
     var cardCount = 0;
 
     if (widget.serverState?.formattedDevicesOnline != null) {
-      if (widget.serverState.formattedDevicesOnline['Количество карт'] !=
-          null) {
-        cardCount +=
-            widget.serverState.formattedDevicesOnline['Количество карт'];
-      }
+      cardCount +=
+          widget.serverState.formattedDevicesOnline['Количество карт'] ?? 0;
     }
 
     var terminalsCount = 0;
 
     if (widget.serverState?.formattedDevicesOnline != null) {
-      if (widget.serverState.formattedDevicesOnline['Windows клиенты'] !=
-          null) {
-        terminalsCount +=
-            widget.serverState.formattedDevicesOnline['Windows клиенты'];
-      }
+      terminalsCount +=
+          widget.serverState.formattedDevicesOnline['Windows клиенты'] ?? 0;
     }
 
     var text = 'Количество карт: $cardCount';

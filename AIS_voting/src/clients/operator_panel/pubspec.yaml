@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.05.17
 
 environment:
-  sdk: '>=2.10.0 <3.2.0'
+  sdk: '>=2.12.0 <4.0.0'
 
 dependencies:
   cupertino_icons: ^1.0.0
@@ -18,8 +18,8 @@ dependencies:
   uuid: any
   enum_to_string: 1.0.14
   flutter_colorpicker: ^0.3.5
-  global_configuration: 
-    path: '../client_plugins/global_configuration-1.6.0'
+  global_configuration: any
+    #path: '../client_plugins/global_configuration-1.6.0'
   csv: any
   ntp: ^2.0.0
   media_kit: any
