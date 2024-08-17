@@ -1,21 +1,20 @@
 import 'dart:io' show WebSocket;
 
 class WSConnection {
-  final String id;
-  String type;
-  String terminalId;
-  String version;
-  int deputyId;
-  bool isUseAuthcard;
-  bool isWindowsClient;
-  final WebSocket socket;
-  DateTime disconnectedTime;
+  late final String id;
+  late String type;
+  late String? terminalId;
+  late String? version;
+  int? deputyId;
+  late bool isUseAuthcard = false;
+  late bool isWindowsClient = false;
+  late final WebSocket socket;
+  late DateTime disconnectedTime = DateTime.now();
 
   WSConnection(
-      {this.id,
-      this.type,
-      this.terminalId,
-      this.deputyId,
-      this.version,
-      this.socket});
+      {required this.id,
+      required this.type,
+      required this.terminalId,
+      required this.version,
+      required this.socket});
 }

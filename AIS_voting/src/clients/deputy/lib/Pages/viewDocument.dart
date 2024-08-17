@@ -35,7 +35,7 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
     }
 
     _documentPath =
-        'file:/${GlobalConfiguration().getValue('folder_path')}/documents/' +
+        '${GlobalConfiguration().getValue('folder_path')}/documents/' +
             _currentDocument!.relativePath +
             '/' +
             _currentDocument!.fileName;
@@ -98,6 +98,11 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
               controller: controller,
               params: PdfViewerParams(
                 maxScale: 8,
+                errorBannerBuilder: (context, error, stackTrace, documentRef) =>
+                    Container(
+                  child:
+                      Text('Невозможно открыть файл:\r\n${error.toString()}'),
+                ),
                 viewerOverlayBuilder: (context, size, handleLinkTap) => [
                   //
                   // Scroll-thumbs example
@@ -135,9 +140,6 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
             ),
           ),
           getButtonsSection(),
-          Container(
-            height: 20,
-          ),
         ],
       ),
     );

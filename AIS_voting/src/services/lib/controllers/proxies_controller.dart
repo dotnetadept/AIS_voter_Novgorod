@@ -1,4 +1,5 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:collection/collection.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:services/models/proxy_user.dart';
 import '../models/proxy.dart';
 import '../models/user.dart';
@@ -20,8 +21,8 @@ class ProxiesController extends ResourceController {
     for (var i = 0; i < allProxies.length; i++) {
       var proxy = allProxies[i];
 
-      var user = allUsers.firstWhere((element) => element.id == proxy.proxy.id,
-          orElse: () => null);
+      var user =
+          allUsers.firstWhereOrNull((element) => element.id == proxy.proxy?.id);
       proxy.proxy = user;
     }
 

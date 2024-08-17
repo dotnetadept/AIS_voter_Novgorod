@@ -4,17 +4,11 @@ class RegistrationSession {
   late int id;
   late int meetingId;
   late int interval;
-  late DateTime startDate;
+  late DateTime? startDate;
   late DateTime? endDate;
   late List<Registration> registrations;
 
-  RegistrationSession({
-    required this.id,
-    required this.meetingId,
-    required this.interval,
-    required this.startDate,
-    required this.endDate,
-  });
+  RegistrationSession();
 
   Map toJson() => {
         'id': id,
@@ -28,7 +22,9 @@ class RegistrationSession {
       : id = json['id'],
         meetingId = json['meetingId'],
         interval = json['interval'],
-        startDate = DateTime.parse(json['startDate']),
+        startDate = json['startDate'] == null
+            ? null
+            : DateTime.parse(json['startDate']),
         endDate =
             json['endDate'] == null ? null : DateTime.parse(json['endDate']),
         registrations = json['registrations'] == null

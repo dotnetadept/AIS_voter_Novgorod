@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'result.dart';
 import 'package:ais_model/ais_model.dart' as client_models;
 
@@ -31,29 +31,25 @@ class QuestionSession extends ManagedObject<_QuestionSession>
 
 class _QuestionSession {
   @primaryKey
-  int id;
-  int meetingSessionId;
-  int questionId;
-  int votingModeId;
-  String votingRegim;
-  String decision;
-  int interval;
-  int usersCountRegistred;
-  int usersCountForSuccess;
-  int usersCountForSuccessDisplay;
+  late int id;
+  late int meetingSessionId;
+  late int questionId;
+  late int votingModeId;
+  late String votingRegim;
+  late String decision;
+  late int interval;
+  late int usersCountRegistred;
+  late int usersCountForSuccess;
+  late int usersCountForSuccessDisplay;
+  late int usersCountVoted;
+  late int usersCountVotedYes;
+  late int usersCountVotedNo;
+  late int usersCountVotedIndiffirent;
+  late DateTime startDate;
   @Column(nullable: true)
-  int usersCountVoted;
+  DateTime? endDate;
   @Column(nullable: true)
-  int usersCountVotedYes;
-  @Column(nullable: true)
-  int usersCountVotedNo;
-  @Column(nullable: true)
-  int usersCountVotedIndiffirent;
-  DateTime startDate;
-  @Column(nullable: true)
-  DateTime endDate;
-  @Column(nullable: true)
-  int managerId;
+  int? managerId;
 
-  ManagedSet<Result> results;
+  late ManagedSet<Result> results;
 }

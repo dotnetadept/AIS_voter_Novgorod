@@ -1,16 +1,16 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'question_session.dart';
 
 class Result extends ManagedObject<_Result> implements _Result {}
 
 class _Result {
   @primaryKey
-  int id;
-  int userId;
+  late int id;
+  late int userId;
   @Column(nullable: true)
-  int proxyId;
-  String result;
+  int? proxyId;
+  late String result;
 
   @Relate(#results, onDelete: DeleteRule.cascade)
-  QuestionSession questionSession;
+  late QuestionSession questionSession;
 }

@@ -27,9 +27,9 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
 
   late List<Question> _questions;
   late Question _firstQuestion;
-  late Question? _highlightedQuestion;
-  late Question? _selectedQuestion;
-  late QuestionFile? _selectedQuestionFile;
+  Question? _highlightedQuestion;
+  Question? _selectedQuestion;
+  QuestionFile? _selectedQuestionFile;
 
   late bool _showRightPanel;
   late bool _isFirstQuestionPage;

@@ -1,4 +1,5 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:collection/collection.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:services/models/signal.dart';
 import '../models/interval.dart';
 
@@ -19,14 +20,12 @@ class IntervalsController extends ResourceController {
     for (var i = 0; i < allIntervals.length; i++) {
       var interval = allIntervals[i];
 
-      var signalStart = allSignals.firstWhere(
-          (element) => element.id == interval.startSignal?.id,
-          orElse: () => null);
+      var signalStart = allSignals.firstWhereOrNull(
+          (element) => element.id == interval.startSignal?.id);
       interval.startSignal = signalStart;
 
-      var endSignal = allSignals.firstWhere(
-          (element) => element.id == interval.endSignal?.id,
-          orElse: () => null);
+      var endSignal = allSignals
+          .firstWhereOrNull((element) => element.id == interval.endSignal?.id);
       interval.endSignal = endSignal;
     }
     return Response.ok(allIntervals);

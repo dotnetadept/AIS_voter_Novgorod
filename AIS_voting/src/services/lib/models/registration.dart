@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'registration_session.dart';
 
 class Registration extends ManagedObject<_Registration>
@@ -6,10 +6,10 @@ class Registration extends ManagedObject<_Registration>
 
 class _Registration {
   @primaryKey
-  int id;
-  int userId;
-  int proxyId;
+  late int id;
+  late int userId;
+  late int proxyId;
 
   @Relate(#registrations, onDelete: DeleteRule.cascade)
-  RegistrationSession registrationSession;
+  late RegistrationSession registrationSession;
 }

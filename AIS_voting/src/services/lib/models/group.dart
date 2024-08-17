@@ -1,6 +1,5 @@
-import 'dart:convert';
 
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:services/models/ais_model.dart';
 
 import 'package:ais_model/ais_model.dart' as client_models;
@@ -44,32 +43,32 @@ class Group extends ManagedObject<_Group> implements _Group {
 
 class _Group {
   @primaryKey
-  int id;
-  String name;
-  ManagedSet<GroupUser> groupUsers;
-  int lawUsersCount;
-  int quorumCount;
-  int majorityCount;
-  int oneThirdsCount;
-  int twoThirdsCount;
-  int chosenCount;
-  int majorityChosenCount;
-  int oneThirdsChosenCount;
-  int twoThirdsChosenCount;
-  String roundingRoule;
-  String managerRoule;
-  String workplaces;
-  bool isActive;
+  late int id;
+  late String name;
+  late ManagedSet<GroupUser> groupUsers;
+  late int lawUsersCount;
+  late int quorumCount;
+  late int majorityCount;
+  late int oneThirdsCount;
+  late int twoThirdsCount;
+  late int chosenCount;
+  late int majorityChosenCount;
+  late int oneThirdsChosenCount;
+  late int twoThirdsChosenCount;
+  late String roundingRoule;
+  late String managerRoule;
+  late String workplaces;
+  late bool isActive;
 
-  bool isManagerCastingVote;
-  bool isUnregisterUserOnExit;
-  bool isFastRegistrationUsed;
-  bool isDeputyAutoRegistration;
-  bool isManagerAutoRegistration;
-  Meeting meetingGroup;
+  late bool isManagerCastingVote;
+  late bool isUnregisterUserOnExit;
+  late bool isFastRegistrationUsed;
+  late bool isDeputyAutoRegistration;
+  late bool isManagerAutoRegistration;
+  late Meeting meetingGroup;
 
-  String unblockedMics;
-  String guests;
-  int MicsNotActiveFrom;
-  String managerTerminal;
+  late String unblockedMics;
+  late String guests;
+  late int MicsNotActiveFrom;
+  late String managerTerminal;
 }

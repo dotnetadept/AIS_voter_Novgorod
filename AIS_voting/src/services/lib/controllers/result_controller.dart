@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:services/models/result.dart';
 
 class ResultController extends ResourceController {

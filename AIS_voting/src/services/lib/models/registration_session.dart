@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'registration.dart';
 import 'package:ais_model/ais_model.dart' as client_models;
 
@@ -19,13 +19,12 @@ class RegistrationSession extends ManagedObject<_RegistrationSession>
 
 class _RegistrationSession {
   @primaryKey
-  int id;
-  int meetingId;
-  int interval;
+  late int id;
+  late int meetingId;
+  late int interval;
+  late DateTime startDate;
   @Column(nullable: true)
-  DateTime startDate;
-  @Column(nullable: true)
-  DateTime endDate;
+  DateTime? endDate;
 
-  ManagedSet<Registration> registrations;
+  late ManagedSet<Registration> registrations;
 }

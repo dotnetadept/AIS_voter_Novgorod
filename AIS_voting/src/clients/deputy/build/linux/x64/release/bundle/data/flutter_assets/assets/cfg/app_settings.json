@@ -1,0 +1,44 @@
+{
+    "voting_view_use_flex_buttons": "true",
+    "registration_view_use_flex_buttons": "true",
+
+    "default_buttons_height": "150",
+    "default_buttons_width": "520",
+
+    "agenda_view_show_right_panel": "true",
+    "agenda_view_right_panel_show_exit_button":"false",
+
+    "agenda_view_show_top_panel":"true",
+    "agenda_view_top_panel_show_debug_info":"true",
+    "agenda_view_top_panel_show_exit_button":"true",
+
+    "agenda_view_first_question_page": "false",
+    "agenda_view_selected_question_page":"true",
+    "agenda_view_first_question_page_show_top_panel":"true",
+    "agenda_view_use_navigation":"true",
+    "agenda_view_show_unregistred":"false",
+    
+    "server": "172.13.7.110",
+    "http_port": "27153",
+    "ws_port": "27154",
+    "auto_reconnect": "true",
+    "connection_timeout":"1000",
+    "reconnect_delay": "1000",
+    "ping_interval": "1000",
+    "ntp_timeout": "500",
+    "use_manual_login": "true",
+
+    "oven_media_server": "192.168.15.103",
+    "oven_signaling_port": "3333",
+    "player_show_fps": "true",
+    "player_show_reload": "false",
+
+    "show_stream_in_browser": "true",
+    "start_browser_command": "google-chrome",
+    "start_browser_command_params": "--kiosk;--autoplay-policy=no-user-gesture-required;--no-sandbox;--no-first-run;--password-store=basic;--disable-background-networking;--temp-profile;--user-data-dir=$HOME/chrome1/",
+    "close_browser_command": "pkill",
+    "close_browser_command_params": "-f;chrome",
+    "folder_path": "//home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/deputy/build/linux/x64/debug/bundle",
+    
+    "terminal_id": "071"
+}

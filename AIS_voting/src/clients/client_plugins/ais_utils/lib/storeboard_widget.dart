@@ -31,7 +31,7 @@ class StoreboardWidget extends StatefulWidget {
   final List<VotingMode> votingModes;
   final List<User> users;
 
-  static late bool Function(Signal signal) onIntervalEndingSignal;
+  static bool Function(Signal signal)? onIntervalEndingSignal;
 
   @override
   _StoreboardStateWidgetState createState() => _StoreboardStateWidgetState();
@@ -42,17 +42,17 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
   late Timer _clockTimer;
   String _clockText = '';
 
-  late Timer _intervalTimer;
+  Timer? _intervalTimer;
   int _intervalIndicatorValue = 0;
   int _intervalValue = 0;
   late Timer _resultsTimer;
-  late TabController _resultsTabController;
-  late TabController _askWordQueueTabController;
+  TabController? _resultsTabController;
+  TabController? _askWordQueueTabController;
   int _maxDetailsPagesCount = 0;
   bool _intervalEndWasPlayed = false;
 
-  late SpeakerSession _prevSpeakerSession;
-  late SystemState _previousState;
+  SpeakerSession? _prevSpeakerSession;
+  SystemState? _previousState;
 
   @override
   void initState() {
@@ -62,17 +62,21 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
         Duration(
             seconds: widget.settings.storeboardSettings
                 .detailsAnimationDuration), (v) async {
-      var nextIndexResults =
-          (_resultsTabController.index + 1) >= _resultsTabController.length
-              ? 0
-              : _resultsTabController.index + 1;
-      _resultsTabController.animateTo(nextIndexResults);
+      if (_resultsTabController != null) {
+        var nextIndexResults =
+            (_resultsTabController!.index + 1) >= _resultsTabController!.length
+                ? 0
+                : _resultsTabController!.index + 1;
+        _resultsTabController!.animateTo(nextIndexResults);
+      }
 
-      var nextIndexAskWordQueue = (_askWordQueueTabController.index + 1) >=
-              _askWordQueueTabController.length
-          ? 0
-          : _askWordQueueTabController.index + 1;
-      _askWordQueueTabController.animateTo(nextIndexAskWordQueue);
+      if (_askWordQueueTabController != null) {
+        var nextIndexAskWordQueue = (_askWordQueueTabController!.index + 1) >=
+                _askWordQueueTabController!.length
+            ? 0
+            : _askWordQueueTabController!.index + 1;
+        _askWordQueueTabController!.animateTo(nextIndexAskWordQueue);
+      }
     });
 
     _clockText = DateFormat('dd.MM.yyyy HH:mm:ss')
@@ -131,7 +135,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     if (_previousState != widget.serverState.systemState ||
         json.encode(_prevSpeakerSession?.toJson()) !=
             json.encode(widget.serverState.speakerSession?.toJson())) {
-      _prevSpeakerSession = widget.serverState.speakerSession!;
+      _prevSpeakerSession = widget.serverState.speakerSession;
       _intervalEndWasPlayed = false;
 
       _intervalTimer?.cancel();
@@ -176,7 +180,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
             (Timer t) => updateIndicatorInterval(startTime, _intervalValue));
       }
 
-      _previousState = widget.serverState.systemState!;
+      _previousState = widget.serverState.systemState;
     }
 
     return DefaultTextStyle(
@@ -384,8 +388,8 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           !_intervalEndWasPlayed &&
           _intervalIndicatorValue == 0 &&
           widget.serverState.storeboardState == StoreboardState.Speaker) {
-        _intervalEndWasPlayed = StoreboardWidget.onIntervalEndingSignal(
-            widget.serverState.endSignal!);
+        _intervalEndWasPlayed = StoreboardWidget
+            .onIntervalEndingSignal!(widget.serverState.endSignal!);
       }
     });
   }
@@ -1794,8 +1798,8 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
 
   @override
   dispose() {
-    _resultsTabController.dispose();
-    _askWordQueueTabController.dispose();
+    _resultsTabController?.dispose();
+    _askWordQueueTabController?.dispose();
 
     _clockTimer.cancel();
     _intervalTimer?.cancel();

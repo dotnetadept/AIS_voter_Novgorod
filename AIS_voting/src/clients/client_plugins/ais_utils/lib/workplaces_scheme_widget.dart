@@ -151,9 +151,9 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
         currentRow.add(
           createUserCell(
             widget.group,
-            widget.group.workplaces.workplacesTerminalIds[i][j],
+            widget.group.workplaces.workplacesTerminalIds[i][j] ?? '',
             widget.serverState.usersTerminals[
-                widget.group.workplaces.workplacesTerminalIds[i][j]],
+                widget.group.workplaces.workplacesTerminalIds[i][j] ?? ''],
             isDisplayEmptyCell,
             isAlternateRow
                 ? Color(widget.settings.palletteSettings.alternateCellColor)

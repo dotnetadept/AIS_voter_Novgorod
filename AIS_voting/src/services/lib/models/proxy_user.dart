@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'user.dart';
 import 'proxy.dart';
 
@@ -6,11 +6,11 @@ class ProxyUser extends ManagedObject<_ProxyUser> implements _ProxyUser {}
 
 class _ProxyUser {
   @primaryKey
-  int id;
+  late int id;
 
   @Relate(#subjects)
-  Proxy proxy;
+  late Proxy proxy;
 
   @Relate(#userProxys)
-  User user;
+  late User user;
 }

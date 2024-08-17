@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:services/models/ais_model.dart';
 
 class QuestionController extends ResourceController {
@@ -36,18 +36,22 @@ class QuestionController extends ResourceController {
     final q = Query<Question>(context)..where((o) => o.id).equalTo(id);
     final question = await q.fetchOne();
 
+    if (question == null) {
+      return Response.notFound();
+    }
+
     final a = Query<Agenda>(context)
       ..where((o) => o.id).equalTo(question.agenda.id);
     final agenda = await a.fetchOne();
 
-    if (question == null || agenda == null) {
+    if (agenda == null) {
       return Response.notFound();
     }
 
     // remove documents folder
     await Directory('documents/' + agenda.folder + '/' + question.folder)
         .delete(recursive: true)
-        .catchError(null);
+        .catchError((err) {});
 
     // delete agenda
     var query = Query<Question>(context)..where((u) => u.id).equalTo(id);

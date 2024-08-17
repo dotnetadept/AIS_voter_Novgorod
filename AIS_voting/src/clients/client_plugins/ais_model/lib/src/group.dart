@@ -133,7 +133,7 @@ class Group {
 }
 
 class GroupUtil {
-  static bool isTerminalGuest(ServerState serverState, String terminalId) {
+  static bool isTerminalGuest(ServerState serverState, String? terminalId) {
     if (terminalId == null || terminalId.isEmpty) {
       return false;
     }

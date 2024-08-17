@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'agenda.dart';
 import 'file.dart';
 
@@ -6,14 +6,14 @@ class Question extends ManagedObject<_Question> implements _Question {}
 
 class _Question {
   @primaryKey
-  int id;
-  String name;
-  int orderNum;
+  late int id;
+  late String name;
+  late int orderNum;
   @Column(nullable: true)
-  String accessRights;
-  String description;
-  String folder;
+  String? accessRights;
+  late String description;
+  late String folder;
   @Relate(#questions, onDelete: DeleteRule.cascade)
-  Agenda agenda;
-  ManagedSet<File> files;
+  late Agenda agenda;
+  late ManagedSet<File> files;
 }

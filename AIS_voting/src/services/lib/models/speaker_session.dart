@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:ais_model/ais_model.dart' as client_models;
 
 class SpeakerSession extends ManagedObject<_SpeakerSession>
@@ -36,17 +36,17 @@ class SpeakerSession extends ManagedObject<_SpeakerSession>
 
 class _SpeakerSession {
   @primaryKey
-  int id;
+  late int id;
   @Column(nullable: true)
-  int meetingId;
+  int? meetingId;
   @Column(nullable: true)
-  int userId;
-  String terminalId;
-  String name;
-  String type;
-  int interval;
-  bool autoEnd;
-  DateTime startDate;
+  int? userId;
+  late String terminalId;
+  late String name;
+  late String type;
+  late int interval;
+  late bool autoEnd;
+  late DateTime startDate;
   @Column(nullable: true)
-  DateTime endDate;
+  DateTime? endDate;
 }

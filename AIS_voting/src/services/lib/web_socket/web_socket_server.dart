@@ -3,12 +3,13 @@ import 'dart:convert' show json;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:ntp/ntp.dart';
 import 'package:ais_model/ais_model.dart' as cm;
 import 'package:services/models/system_log.dart';
 //import 'package:process_run/shell_run.dart';
 import 'package:uuid/uuid.dart';
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:pedantic/pedantic.dart';
 
 import 'package:enum_to_string/enum_to_string.dart';
@@ -29,13 +30,13 @@ class WebSocketServer {
 
   final List<WSConnection> _connections = <WSConnection>[];
   final List<WSConnection> _tempRemovedConnections = <WSConnection>[];
-  List<io.HttpRequest> _connectionQueue;
-  List<Meeting> _meetings;
-  List<Proxy> _proxies;
-  cm.Settings _settings;
+  late List<io.HttpRequest> _connectionQueue;
+  late List<Meeting> _meetings;
+  late List<Proxy> _proxies;
+  late cm.Settings _settings;
 
-  int _interval;
-  int _timeOffset;
+  int? _interval;
+  late int _timeOffset;
 
   bool _isSendState = false;
 
@@ -56,13 +57,9 @@ class WebSocketServer {
         .onError((error, stackTrace) {
       print(
           'Отсутствует синхронизация с сервером времени. ${error.toString()} ${stackTrace.toString()}');
-      return null;
-    });
-
-    //do not continue without time sync
-    if (_timeOffset == null) {
+      //do not continue without time sync
       io.exit(0);
-    }
+    });
 
     print(
         '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Синхронизация времени завершена');
@@ -78,11 +75,10 @@ class WebSocketServer {
     final queryMeetingSessions = Query<MeetingSession>(_context);
     var meetingSessions = await queryMeetingSessions.fetch();
 
-    var startedMeetingSession = meetingSessions
-        .lastWhere((element) => element.endDate == null, orElse: () => null);
-    var startedMeeting = _meetings.firstWhere(
-        (element) => element.id == startedMeetingSession?.meetingId,
-        orElse: () => null);
+    var startedMeetingSession =
+        meetingSessions.lastWhereOrNull((element) => element.endDate == null);
+    var startedMeeting = _meetings.firstWhereOrNull(
+        (element) => element.id == startedMeetingSession?.meetingId);
     var lastUpdated = CommonUtils.getDateTimeNow(_timeOffset);
 
     if (startedMeetingSession != null && startedMeeting != null) {
@@ -130,7 +126,7 @@ class WebSocketServer {
     await updateRegistationSession.update();
 
     // end previous voting session
-    QuestionSession updatedQuestionSession;
+    QuestionSession? updatedQuestionSession;
     var updateQuestionSession = Query<QuestionSession>(_context)
       ..values.usersCountVoted = 0
       ..values.usersCountVotedYes = 0
@@ -138,10 +134,7 @@ class WebSocketServer {
       ..values.usersCountVotedIndiffirent = 0
       ..values.endDate = lastUpdated
       ..where((u) => u.endDate).isNull();
-    var updateQuestionSessionRequest = (await updateQuestionSession.update());
-    if (updateQuestionSessionRequest.isNotEmpty) {
-      updatedQuestionSession = updateQuestionSessionRequest.first;
-    }
+    updatedQuestionSession = (await updateQuestionSession.update()).firstOrNull;
 
     if (startedMeeting != null) {
       if (startedMeeting.status.startsWith('Регистрация')) {
@@ -194,29 +187,28 @@ class WebSocketServer {
 
       ServerState.selectedMeeting = startedMeeting;
       // load default users termnals if needed
-      loadDefaultUsersTerminals(ServerState.selectedMeeting);
+      loadDefaultUsersTerminals(ServerState.selectedMeeting!);
       ServerState.meetingSession = startedMeetingSession;
 
-      ServerState.guestsPlaces = startedMeetingSession.guestPlaces == null
+      ServerState.guestsPlaces = startedMeetingSession?.guestPlaces == null
           ? <cm.GuestPlace>[]
-          : (json.decode(startedMeetingSession.guestPlaces) as List)
+          : (json.decode(startedMeetingSession!.guestPlaces ?? '') as List)
               .map((data) => cm.GuestPlace.fromJson(data))
               .toList();
 
       // find registration session
       if (ServerState.selectedMeeting != null &&
-          ServerState.meetingSession.startDate != null) {
+          ServerState.meetingSession!.startDate != null) {
         final queryRegistrationSessions = Query<RegistrationSession>(_context);
         var registrationSessions = await queryRegistrationSessions.fetch();
         registrationSessions.sort((a, b) => a.startDate.compareTo(b.startDate));
 
-        var registrationSession = registrationSessions.lastWhere(
+        var registrationSession = registrationSessions.lastWhereOrNull(
             (element) =>
-                element.meetingId == ServerState.selectedMeeting.id &&
-                element.startDate != null &&
+                element.meetingId == ServerState.selectedMeeting!.id &&
                 element.startDate.microsecondsSinceEpoch >
-                    ServerState.meetingSession.startDate.microsecondsSinceEpoch,
-            orElse: () => null);
+                    ServerState
+                        .meetingSession!.startDate!.microsecondsSinceEpoch);
         ServerState.registrationSession = registrationSession;
         if (registrationSession != null) {
           // load registred users from db
@@ -242,7 +234,8 @@ class WebSocketServer {
       }
 
       // set system state
-      if (startedMeetingSession.startDate == null) {
+      if (startedMeetingSession != null &&
+          startedMeetingSession.startDate == null) {
         ServerState.systemState = cm.SystemState.MeetingPreparation;
       }
 
@@ -252,17 +245,15 @@ class WebSocketServer {
 
       // find selectedQuestion
       if (startedMeeting.status.startsWith('Просмотр')) {
-        Question selectedQuestion;
+        Question? selectedQuestion;
         if (updatedQuestionSession != null) {
-          selectedQuestion = startedMeeting.agenda.questions.firstWhere(
-              (element) => element.id == updatedQuestionSession.questionId,
-              orElse: () => null);
+          selectedQuestion = startedMeeting.agenda!.questions.firstWhereOrNull(
+              (element) => element.id == updatedQuestionSession!.questionId);
         } else {
-          selectedQuestion = startedMeeting.agenda.questions.firstWhere(
+          selectedQuestion = startedMeeting.agenda!.questions.firstWhereOrNull(
               (element) =>
                   startedMeeting.status ==
-                  'Просмотр ${element.name} ${element.orderNum}',
-              orElse: () => null);
+                  'Просмотр ${element.name} ${element.orderNum}');
         }
         if (selectedQuestion != null) {
           ServerState.systemState = cm.SystemState.QuestionLocked;
@@ -286,23 +277,23 @@ class WebSocketServer {
         if (ServerState.systemState == cm.SystemState.QuestionVoting) {
           var secondsElapsed =
               ((CommonUtils.getDateTimeNow(_timeOffset).millisecondsSinceEpoch -
-                          ServerState.questionSession.startDate
+                          ServerState.questionSession!.startDate
                               .millisecondsSinceEpoch) /
                       1000)
                   .round();
-          if (secondsElapsed > _interval && ServerState.autoEnd) {
-            await completeVoting(ServerState.selectedQuestion);
+          if (secondsElapsed > _interval! && ServerState.autoEnd) {
+            await completeVoting(ServerState.selectedQuestion!);
             _isSendState = true;
           }
         }
         if (ServerState.systemState == cm.SystemState.Registration) {
           var secondsElapsed =
               ((CommonUtils.getDateTimeNow(_timeOffset).millisecondsSinceEpoch -
-                          ServerState.registrationSession.startDate
+                          ServerState.registrationSession!.startDate!
                               .millisecondsSinceEpoch) /
                       1000)
                   .round();
-          if (secondsElapsed > _interval && ServerState.autoEnd) {
+          if (secondsElapsed > _interval! && ServerState.autoEnd) {
             await completeRegistration();
             _isSendState = true;
           }
@@ -311,11 +302,11 @@ class WebSocketServer {
         if (ServerState.systemState == cm.SystemState.AskWordQueue) {
           var secondsElapsed =
               ((CommonUtils.getDateTimeNow(_timeOffset).millisecondsSinceEpoch -
-                          ServerState.askWordQueueSession.startDate
+                          ServerState.askWordQueueSession!.startDate
                               .millisecondsSinceEpoch) /
                       1000)
                   .round();
-          if ((secondsElapsed > _interval) && ServerState.autoEnd) {
+          if ((secondsElapsed > _interval!) && ServerState.autoEnd) {
             await completeAskQueue();
             _isSendState = true;
           }
@@ -324,11 +315,11 @@ class WebSocketServer {
         if (ServerState.storeboardState == cm.StoreboardState.Speaker) {
           var secondsElapsed =
               ((CommonUtils.getDateTimeNow(_timeOffset).millisecondsSinceEpoch -
-                          ServerState.speakerSession.startDate
+                          ServerState.speakerSession!.startDate
                               .millisecondsSinceEpoch) /
                       1000)
                   .round();
-          if ((secondsElapsed > _interval) && ServerState.autoEnd) {
+          if ((secondsElapsed > _interval!) && ServerState.autoEnd) {
             await completeSpeaker();
             _isSendState = true;
           }
@@ -416,10 +407,8 @@ class WebSocketServer {
               break;
             }
             // set new client for download
-            var connection = _connections.firstWhere(
-                (element) =>
-                    element.terminalId == ServerState.terminalsForDownload[i],
-                orElse: () => null);
+            var connection = _connections.firstWhereOrNull((element) =>
+                element.terminalId == ServerState.terminalsForDownload[i]);
             if (connection != null) {
               sendMessage(
                   connection, <String, String>{'documents': 'ЗАГРУЗИТЬ'});
@@ -446,8 +435,8 @@ class WebSocketServer {
   }
 
   void updateServerStateMeeting(Meeting updatedMeeting) {
-    ServerState.selectedMeeting.status = updatedMeeting.status;
-    ServerState.selectedMeeting.lastUpdated = updatedMeeting.lastUpdated;
+    ServerState.selectedMeeting!.status = updatedMeeting.status;
+    ServerState.selectedMeeting!.lastUpdated = updatedMeeting.lastUpdated;
   }
 
   bool getIsMicsEnabledState() {
@@ -470,7 +459,7 @@ class WebSocketServer {
       // puts deputy clients to connection queue
       if (USE_CONNECTION_QUEUE &&
           request.headers.value('terminalId') != null &&
-          request.headers.value('terminalId').isNotEmpty) {
+          request.headers.value('terminalId')!.isNotEmpty) {
         _connectionQueue.add(request);
       } else {
         // connect other clients without queue
@@ -526,7 +515,7 @@ class WebSocketServer {
 
     var connection = WSConnection(
       id: Uuid().v4(),
-      type: type,
+      type: type ?? 'н/д',
       terminalId: terminalId,
       version: version,
       socket: webSocket,
@@ -547,12 +536,12 @@ class WebSocketServer {
 
     if (connection.terminalId != null &&
         !ServerState.terminalsOnline.contains(connection.terminalId)) {
-      ServerState.terminalsOnline.add(connection.terminalId);
+      ServerState.terminalsOnline.add(connection.terminalId!);
     }
 
     if (connection.terminalId != null &&
         (connection.type == 'deputy' || connection.type == 'manager')) {
-      addUserTerminal(connection.terminalId, connection.deputyId);
+      addUserTerminal(connection.terminalId!, connection.deputyId);
     }
 
     if (connection.type == 'vissonic_client') {
@@ -607,9 +596,10 @@ class WebSocketServer {
         }
 
         if (value['systemState'] != null) {
-          await processOperatorMessage(
+          processOperatorMessage(
               EnumToString.fromString(
-                  cm.SystemState.values, value['systemState']),
+                      cm.SystemState.values, value['systemState']) ??
+                  cm.SystemState.None,
               value['params']);
         }
       }
@@ -643,34 +633,32 @@ class WebSocketServer {
         }
 
         if (value['guest_set_askword'] != null) {
-          await processSetGuestAskWord(value['guest_set_askword']);
+          processSetGuestAskWord(value['guest_set_askword']);
           isMessageProcessed = true;
         }
         if (value['guest_remove_askword'] != null) {
-          await processRemoveGuestAskWord(value['guest_remove_askword']);
+          processRemoveGuestAskWord(value['guest_remove_askword']);
           isMessageProcessed = true;
         }
 
         if (value['terminalId'] != null) {
           if (value['userId'] == null) {
-            await processSetUserExit(value['terminalId']);
+            processSetUserExit(value['terminalId']);
           } else {
-            await processSetUser(
-                value['terminalId'], int.tryParse(value['userId']));
+            processSetUser(value['terminalId'], int.tryParse(value['userId']));
           }
           isMessageProcessed = true;
         }
 
         if (value['userId'] != null) {
-          var userConnection = _connections.firstWhere(
-              (element) => element.deputyId == value['userId'],
-              orElse: () => null);
+          var userConnection = _connections.firstWhereOrNull(
+              (element) => element.deputyId == value['userId']);
           if (userConnection != null && ServerState.isRegistrationCompleted) {
             if (value['setRegistration'] == true) {
-              await setUserRegistration(userConnection, value['userId']);
+              setUserRegistration(userConnection, value['userId']);
             }
             if (value['undoRegistration'] == true) {
-              await undoUserRegistration(userConnection, value['userId']);
+              undoUserRegistration(userConnection, value['userId']);
             }
           }
 
@@ -678,18 +666,18 @@ class WebSocketServer {
         }
 
         if (value['update_agenda'] != null) {
-          await processSaveAgenda(json.encode(value['update_agenda']));
+          processSaveAgenda(json.encode(value['update_agenda']));
           isMessageProcessed = true;
         }
 
         if (value['download'] != null) {
-          await processDocumentDownload(
+          processDocumentDownload(
               json.decode(value['download']).toList().cast<String>());
           isMessageProcessed = true;
         }
 
         if (value['download_stop'] != null) {
-          await processDocumentDownloadStop();
+          processDocumentDownloadStop();
           isMessageProcessed = true;
         }
 
@@ -769,7 +757,8 @@ class WebSocketServer {
 
           processSetStoreboard(
               EnumToString.fromString(
-                  cm.StoreboardState.values, value['storeboardState']),
+                      cm.StoreboardState.values, value['storeboardState']) ??
+                  cm.StoreboardState.None,
               value['storeboardParams']);
 
           processSetHistory(json.encode(value['voting_history']));
@@ -787,7 +776,7 @@ class WebSocketServer {
             processSetFlushNavigation();
           }
           if (value['flush_meeting'] == 'true') {
-            await processSetFlushMeeting();
+            processSetFlushMeeting();
           }
 
           // Запущен стрим
@@ -822,9 +811,8 @@ class WebSocketServer {
               ServerState.usersAskSpeech
                   .removeWhere((element) => element == userId);
 
-              var connection = _connections.firstWhere(
-                  (element) => element.deputyId == userId,
-                  orElse: () => null);
+              var connection = _connections
+                  .firstWhereOrNull((element) => element.deputyId == userId);
               if (connection != null) {
                 sendMessage(connection,
                     <String, String>{'askWordStatus': 'ПРОШУ СЛОВА СБРОС'});
@@ -839,15 +827,12 @@ class WebSocketServer {
                 ServerState.usersAskSpeech.add(userId);
               }
 
-              var connection = _connections.firstWhere(
-                  (element) => element.deputyId == userId,
-                  orElse: () => null);
+              var connection = _connections
+                  .firstWhereOrNull((element) => element.deputyId == userId);
               if (connection != null) {
                 sendMessage(connection,
                     <String, String>{'askWordStatus': 'ПРОШУ СЛОВА'});
               }
-
-              return true;
             }
 
             _isSendState = true;
@@ -855,16 +840,17 @@ class WebSocketServer {
 
           // установка системного статуса
           if (value['systemState'] != null) {
-            await processOperatorMessage(
+            processOperatorMessage(
                 EnumToString.fromString(
-                    cm.SystemState.values, value['systemState']),
+                        cm.SystemState.values, value['systemState']) ??
+                    cm.SystemState.None,
                 value['params']);
           }
         }
       }
 
       if (value['clientType'] != null) {
-        await processClientTypeChange(
+        processClientTypeChange(
             connection,
             value['clientType'],
             value['deputyId'],
@@ -926,12 +912,12 @@ class WebSocketServer {
           }
 
           if (value['guest_set_askword'] != null) {
-            await processSetGuestAskWord(value['guest_set_askword']);
+            processSetGuestAskWord(value['guest_set_askword']);
             isMessageProcessed = true;
           }
 
           if (value['guest_remove_askword'] != null) {
-            await processRemoveGuestAskWord(value['guest_remove_askword']);
+            processRemoveGuestAskWord(value['guest_remove_askword']);
             isMessageProcessed = true;
           }
 
@@ -959,9 +945,10 @@ class WebSocketServer {
 
             processSetStoreboard(
                 EnumToString.fromString(
-                  cm.StoreboardState.values,
-                  value['storeboardState'],
-                ),
+                      cm.StoreboardState.values,
+                      value['storeboardState'],
+                    ) ??
+                    cm.StoreboardState.None,
                 value['storeboardParams']);
 
             if (value['flush_navigation'] == 'true') {
@@ -1009,6 +996,7 @@ class WebSocketServer {
       _isSendState = true;
     }, cancelOnError: true);
     streamSubscription.onDone(() {
+      print('ondone');
       if (ServerState.isStreamStarted) {
         addConnectionForClose(connection);
       } else {
@@ -1017,6 +1005,7 @@ class WebSocketServer {
 
       streamSubscription.cancel();
     });
+
     streamSubscription.onError((err) async {
       print(
           'Connection error:${err.toString()} terminalId:${connection.terminalId}');
@@ -1042,7 +1031,7 @@ class WebSocketServer {
   // Sends full server state for operator and manager,
   // otherwise sends short serverState
   void sendStateTo(Iterable<WSConnection> connections) {
-    Map<dynamic, dynamic> longState;
+    Map<dynamic, dynamic>? longState;
     if (connections.isNotEmpty) {
       for (var connection in connections) {
         // do not sent any state to vissonic client
@@ -1057,6 +1046,7 @@ class WebSocketServer {
             connection.type == 'storeboard' ||
             connection.type == 'stream_player') {
           longState ??= ServerState().toJson();
+
           connection.socket.add(json.encode(longState));
         } else {
           connection.socket
@@ -1101,19 +1091,19 @@ class WebSocketServer {
           key == connection.terminalId || value == connection.deputyId);
 
       if (ServerState.selectedMeeting != null) {
-        if (ServerState.selectedMeeting.group.isUnregisterUserOnExit) {
+        if (ServerState.selectedMeeting!.group?.isUnregisterUserOnExit ==
+            true) {
           undoUserRegistration(connection, connection.deputyId);
         }
         // set user terminal back if it default
         var defaultUserTerminals =
-            CommonUtils.getDefaultUsersTerminals(ServerState.selectedMeeting)
+            CommonUtils.getDefaultUsersTerminals(ServerState.selectedMeeting!)
                 .entries
                 .toList();
-        var defaultUserTerminal = defaultUserTerminals.firstWhere(
+        var defaultUserTerminal = defaultUserTerminals.firstWhereOrNull(
             (element) =>
                 element.key == connection.terminalId &&
-                element.value == connection.deputyId,
-            orElse: () => null);
+                element.value == connection.deputyId);
 
         if (defaultUserTerminal != null) {
           addUserTerminal(defaultUserTerminal.key, defaultUserTerminal.value);
@@ -1175,19 +1165,18 @@ class WebSocketServer {
         key == connection.terminalId || value == connection.deputyId);
 
     if (ServerState.selectedMeeting != null) {
-      if (ServerState.selectedMeeting.group.isUnregisterUserOnExit) {
+      if (ServerState.selectedMeeting!.group!.isUnregisterUserOnExit) {
         undoUserRegistration(connection, connection.deputyId);
       }
       // set user terminal back if it default
       var defaultUserTerminals =
-          CommonUtils.getDefaultUsersTerminals(ServerState.selectedMeeting)
+          CommonUtils.getDefaultUsersTerminals(ServerState.selectedMeeting!)
               .entries
               .toList();
-      var defaultUserTerminal = defaultUserTerminals.firstWhere(
+      var defaultUserTerminal = defaultUserTerminals.firstWhereOrNull(
           (element) =>
               element.key == connection.terminalId &&
-              element.value == connection.deputyId,
-          orElse: () => null);
+              element.value == connection.deputyId);
 
       if (defaultUserTerminal != null) {
         addUserTerminal(defaultUserTerminal.key, defaultUserTerminal.value);
@@ -1202,49 +1191,45 @@ class WebSocketServer {
   }
 
   void removeGuest(String quest) {
-    var foundGuestPlace = ServerState.guestsPlaces.firstWhere(
-      (element) => element.name == quest,
-      orElse: () => null,
-    );
+    var foundGuestPlace = ServerState.guestsPlaces
+        .firstWhereOrNull((element) => element.name == quest);
 
     if (foundGuestPlace != null) {
       ServerState.guestsPlaces.remove(foundGuestPlace);
     }
 
     // update meeting session
-    ServerState.meetingSession.guestPlaces =
+    ServerState.meetingSession!.guestPlaces =
         json.encode(ServerState.guestsPlaces);
 
     final updateMeetingSession = Query<MeetingSession>(_context)
-      ..values.guestPlaces = ServerState.meetingSession.guestPlaces
-      ..where((ms) => ms.id).equalTo(ServerState.meetingSession.id);
+      ..values.guestPlaces = ServerState.meetingSession!.guestPlaces
+      ..where((ms) => ms.id).equalTo(ServerState.meetingSession!.id);
     updateMeetingSession.update();
   }
 
-  void removeGuestPlace(String terminalId) {
-    if (terminalId == null) {
-      return;
-    }
-    var foundGuestPlace = ServerState.guestsPlaces.firstWhere(
-      (element) => element.terminalId == terminalId,
-      orElse: () => null,
-    );
+  // void removeGuestPlace(String terminalId) {
+  //   if (terminalId == null) {
+  //     return;
+  //   }
+  //   var foundGuestPlace = ServerState.guestsPlaces
+  //       .firstWhereOrNull((element) => element.terminalId == terminalId);
 
-    if (foundGuestPlace != null) {
-      ServerState.guestsPlaces.remove(foundGuestPlace);
-    }
+  //   if (foundGuestPlace != null) {
+  //     ServerState.guestsPlaces.remove(foundGuestPlace);
+  //   }
 
-    // update meeting session
-    ServerState.meetingSession.guestPlaces =
-        json.encode(ServerState.guestsPlaces);
+  //   // update meeting session
+  //   ServerState.meetingSession.guestPlaces =
+  //       json.encode(ServerState.guestsPlaces);
 
-    final updateMeetingSession = Query<MeetingSession>(_context)
-      ..values.guestPlaces = ServerState.meetingSession.guestPlaces
-      ..where((ms) => ms.id).equalTo(ServerState.meetingSession.id);
-    updateMeetingSession.update();
-  }
+  //   final updateMeetingSession = Query<MeetingSession>(_context)
+  //     ..values.guestPlaces = ServerState.meetingSession.guestPlaces
+  //     ..where((ms) => ms.id).equalTo(ServerState.meetingSession.id);
+  //   updateMeetingSession.update();
+  // }
 
-  void addUserTerminal(String terminalId, int deputyId) {
+  void addUserTerminal(String? terminalId, int? deputyId) {
     ServerState.usersTerminals
         .removeWhere((key, value) => key == terminalId || value == deputyId);
 
@@ -1254,7 +1239,7 @@ class WebSocketServer {
 
     // enable managers mics
     if (ServerState.selectedMeeting != null) {
-      var managerIds = ServerState.selectedMeeting.group.groupUsers
+      var managerIds = ServerState.selectedMeeting!.group!.groupUsers
           .where((element) => element.isManager)
           .map((e) => e.user.id)
           .toList();
@@ -1274,7 +1259,7 @@ class WebSocketServer {
       WSConnection connection, String value) async {
     if (value == 'ПРОШУ СЛОВА') {
       if (!ServerState.guestsAskSpeech.contains(connection.terminalId)) {
-        ServerState.guestsAskSpeech.add(connection.terminalId);
+        ServerState.guestsAskSpeech.add(connection.terminalId!);
       }
 
       sendMessage(connection, <String, String>{'askWordStatus': 'ПРОШУ СЛОВА'});
@@ -1295,7 +1280,7 @@ class WebSocketServer {
       WSConnection connection, int deputyId, String value) async {
     if (ServerState.systemState == cm.SystemState.Registration) {
       if (value == 'ЗАРЕГИСТРИРОВАТЬСЯ') {
-        await setUserRegistration(connection, deputyId);
+        setUserRegistration(connection, deputyId);
         return true;
       }
       if (value == 'ОТМЕНИТЬ РЕГИСТРАЦИЮ') {
@@ -1316,9 +1301,8 @@ class WebSocketServer {
         sendMessage(connection, <String, String>{'voting': value});
 
         // vote for proxies
-        var proxy = _proxies.firstWhere(
-            (element) => element.proxy.id == deputyId,
-            orElse: () => null);
+        var proxy = _proxies
+            .firstWhereOrNull((element) => element.proxy?.id == deputyId);
         if (proxy != null) {
           for (var proxyUser in proxy.getVotingSubjects()) {
             ServerState.usersDecisions.removeWhere(
@@ -1326,9 +1310,8 @@ class WebSocketServer {
             ServerState.usersDecisions
                 .putIfAbsent(proxyUser.user.id.toString(), () => value);
 
-            var proxyConnection = _connections.firstWhere(
-                (element) => element.deputyId == proxyUser.user.id,
-                orElse: () => null);
+            var proxyConnection = _connections.firstWhereOrNull(
+                (element) => element.deputyId == proxyUser.user.id);
             if (proxyConnection != null) {
               sendMessage(connection, <String, String>{'voting': value});
             }
@@ -1360,9 +1343,8 @@ class WebSocketServer {
         var userId = int.parse(value.replaceFirst('ПРОШУ СЛОВА СБРОС ', ''));
         ServerState.usersAskSpeech.removeWhere((element) => element == userId);
 
-        var connection = _connections.firstWhere(
-            (element) => element.deputyId == userId,
-            orElse: () => null);
+        var connection = _connections
+            .firstWhereOrNull((element) => element.deputyId == userId);
         if (connection != null) {
           sendMessage(connection,
               <String, String>{'askWordStatus': 'ПРОШУ СЛОВА СБРОС'});
@@ -1375,9 +1357,8 @@ class WebSocketServer {
         ServerState.usersAskSpeech.add(userId);
       }
 
-      var connection = _connections.firstWhere(
-          (element) => element.deputyId == userId,
-          orElse: () => null);
+      var connection = _connections
+          .firstWhereOrNull((element) => element.deputyId == userId);
       if (connection != null) {
         sendMessage(
             connection, <String, String>{'askWordStatus': 'ПРОШУ СЛОВА'});
@@ -1401,15 +1382,15 @@ class WebSocketServer {
 
       var deputyRegistration = Registration();
       deputyRegistration.userId = deputyId;
-      deputyRegistration.registrationSession = ServerState.registrationSession;
+      deputyRegistration.registrationSession = ServerState.registrationSession!;
       registrationsForInsert.add(deputyRegistration);
     }
     sendMessage(
         connection, <String, String>{'registration': 'ЗАРЕГИСТРИРОВАН'});
 
     // registration for proxies
-    var proxy = _proxies.firstWhere((element) => element.proxy.id == deputyId,
-        orElse: () => null);
+    var proxy =
+        _proxies.firstWhereOrNull((element) => element.proxy?.id == deputyId);
     if (proxy != null) {
       for (var i = 0; i < proxy.getVotingSubjects().length; i++) {
         var proxyUser = proxy.getVotingSubjects()[i];
@@ -1420,13 +1401,12 @@ class WebSocketServer {
           proxyRegistration.userId = proxyUser.user.id;
           proxyRegistration.proxyId = proxy.id;
           proxyRegistration.registrationSession =
-              ServerState.registrationSession;
+              ServerState.registrationSession!;
           registrationsForInsert.add(proxyRegistration);
         }
 
-        var proxyConnection = _connections.firstWhere(
-            (element) => element.deputyId == proxyUser.user.id,
-            orElse: () => null);
+        var proxyConnection = _connections.firstWhereOrNull(
+            (element) => element.deputyId == proxyUser.user.id);
         if (proxyConnection != null) {
           sendMessage(
               connection, <String, String>{'registration': 'ЗАРЕГИСТРИРОВАН'});
@@ -1444,12 +1424,16 @@ class WebSocketServer {
     }
   }
 
-  void undoUserRegistration(WSConnection connection, int deputyId) async {
+  void undoUserRegistration(WSConnection connection, int? deputyId) async {
+    if (deputyId == null) {
+      return;
+    }
+
     var registrationsForDelete = <Registration>[];
 
     var deputyRegistration = Registration();
     deputyRegistration.userId = deputyId;
-    deputyRegistration.registrationSession = ServerState.registrationSession;
+    deputyRegistration.registrationSession = ServerState.registrationSession!;
     registrationsForDelete.add(deputyRegistration);
 
     ServerState.usersRegistered.remove(deputyId);
@@ -1457,20 +1441,20 @@ class WebSocketServer {
         connection, <String, String>{'registration': 'НЕЗАРЕГИСТРИРОВАН'});
 
     // registration for proxies
-    var proxy = _proxies.firstWhere((element) => element.proxy.id == deputyId,
-        orElse: () => null);
+    var proxy =
+        _proxies.firstWhereOrNull((element) => element.proxy?.id == deputyId);
     if (proxy != null) {
       for (var proxyUser in proxy.getVotingSubjects()) {
         var proxyRegistration = Registration();
         proxyRegistration.userId = proxyUser.user.id;
-        proxyRegistration.registrationSession = ServerState.registrationSession;
+        proxyRegistration.registrationSession =
+            ServerState.registrationSession!;
         registrationsForDelete.add(proxyRegistration);
 
         ServerState.usersRegistered.remove(proxyUser.user.id);
 
-        var proxyConnection = _connections.firstWhere(
-            (element) => element.deputyId == proxyUser.user.id,
-            orElse: () => null);
+        var proxyConnection = _connections.firstWhereOrNull(
+            (element) => element.deputyId == proxyUser.user.id);
         if (proxyConnection != null) {
           sendMessage(connection,
               <String, String>{'registration': 'НЕЗАРЕГИСТРИРОВАН'});
@@ -1507,20 +1491,22 @@ class WebSocketServer {
   }
 
   void processDocumentDownloadForAll() async {
-    await processDocumentDownload(_connections
+    processDocumentDownload(_connections
         .where((element) =>
             element.type == 'deputy' ||
             element.type == 'guest' ||
             element.type == 'unknown_client')
         .map((e) => e.terminalId)
+        .toList()
+        .whereType<String>()
         .toList());
   }
 
   void processClientTypeChange(
       WSConnection connection,
       String clientType,
-      int deputyId,
-      String terminalId,
+      int? deputyId,
+      String? terminalId,
       bool isUseAuthCard,
       bool isWindowsClient) async {
     print(terminalId);
@@ -1531,12 +1517,12 @@ class WebSocketServer {
       }
       connection.terminalId = terminalId;
       if (!ServerState.terminalsOnline.contains(connection.terminalId)) {
-        ServerState.terminalsOnline.add(connection.terminalId);
+        ServerState.terminalsOnline.add(connection.terminalId!);
       }
     }
 
     print(
-        '${CommonUtils.getDateTimeNow(_timeOffset).toString()} ${connection.id} ${connection.type} -> ${clientType} client type changed on ${connection.terminalId}');
+        '${CommonUtils.getDateTimeNow(_timeOffset).toString()} ${connection.id} ${connection.type} -> $clientType client type changed on ${connection.terminalId}');
 
     connection.isUseAuthcard = isUseAuthCard == true;
     connection.isWindowsClient = isWindowsClient == true;
@@ -1575,24 +1561,23 @@ class WebSocketServer {
 
     // auto registration
     if (deputyId != null && ServerState.selectedMeeting != null) {
-      if (ServerState.selectedMeeting.group.isFastRegistrationUsed ||
+      if (ServerState.selectedMeeting!.group!.isFastRegistrationUsed ||
           (connection.type == 'deputy' &&
-              ServerState.selectedMeeting.group.isDeputyAutoRegistration) ||
+              ServerState.selectedMeeting!.group!.isDeputyAutoRegistration) ||
           (connection.type == 'manager' &&
-              ServerState.selectedMeeting.group.isManagerAutoRegistration)) {
-        await setUserRegistration(connection, deputyId);
+              ServerState.selectedMeeting!.group!.isManagerAutoRegistration)) {
+        setUserRegistration(connection, deputyId);
       }
     }
 
     // set empty guest place if needed
     if (connection.type == 'guest') {
-      var foundPlace = ServerState.guestsPlaces.firstWhere(
-          (element) => element.terminalId == connection.terminalId,
-          orElse: () => null);
+      var foundPlace = ServerState.guestsPlaces.firstWhereOrNull(
+          (element) => element.terminalId == connection.terminalId);
 
       if (foundPlace == null) {
         ServerState.guestsPlaces
-            .add(cm.GuestPlace(name: '', terminalId: connection.terminalId));
+            .add(cm.GuestPlace(name: '', terminalId: connection.terminalId!));
       }
     }
     // else {
@@ -1600,20 +1585,19 @@ class WebSocketServer {
     // }
   }
 
-  void processSetUser(String terminalId, int userId) async {
+  void processSetUser(String terminalId, int? userId) async {
     // remove guest askword
     ServerState.guestsAskSpeech.remove(terminalId);
 
-    var connection = _connections.firstWhere(
-        (element) => element.terminalId == terminalId,
-        orElse: () => null);
+    var connection = _connections
+        .firstWhereOrNull((element) => element.terminalId == terminalId);
     if (connection != null && userId != null) {
       // change type of terminal
-      var clientType = ServerState.selectedMeeting.group.groupUsers
+      var clientType = ServerState.selectedMeeting!.group!.groupUsers
               .any((element) => element.isManager && element.user.id == userId)
           ? 'manager'
           : 'deputy';
-      await processClientTypeChange(
+      processClientTypeChange(
           connection,
           clientType,
           userId,
@@ -1636,9 +1620,8 @@ class WebSocketServer {
     if (!ServerState.guestsAskSpeech.contains(guest)) {
       ServerState.guestsAskSpeech.add(guest);
 
-      var connection = _connections.firstWhere(
-          (element) => element.terminalId == guest,
-          orElse: () => null);
+      var connection = _connections
+          .firstWhereOrNull((element) => element.terminalId == guest);
       if (connection != null) {
         sendMessage(
             connection, <String, String>{'askWordStatus': 'ПРОШУ СЛОВА'});
@@ -1652,9 +1635,8 @@ class WebSocketServer {
     if (ServerState.guestsAskSpeech.contains(guest)) {
       ServerState.guestsAskSpeech.remove(guest);
 
-      var connection = _connections.firstWhere(
-          (element) => element.terminalId == guest,
-          orElse: () => null);
+      var connection = _connections
+          .firstWhereOrNull((element) => element.terminalId == guest);
       if (connection != null) {
         sendMessage(
             connection, <String, String>{'askWordStatus': 'ПРОШУ СЛОВА СБРОС'});
@@ -1666,16 +1648,15 @@ class WebSocketServer {
 
   void processSetGuest(String guest, String terminalId) {
     // remove guest based on place
-    var guestFoundByPlace = ServerState.guestsPlaces.firstWhere(
-        (element) => element.terminalId == terminalId,
-        orElse: () => null);
+    var guestFoundByPlace = ServerState.guestsPlaces
+        .firstWhereOrNull((element) => element.terminalId == terminalId);
 
     ServerState.guestsAskSpeech.remove(guestFoundByPlace?.name);
     ServerState.guestsPlaces.remove(guestFoundByPlace);
 
     // remove guest based on name
     var guestFoundByName = ServerState.guestsPlaces
-        .firstWhere((element) => element.name == guest, orElse: () => null);
+        .firstWhereOrNull((element) => element.name == guest);
 
     ServerState.guestsAskSpeech.remove(guestFoundByName?.name);
     ServerState.guestsPlaces.remove(guestFoundByName);
@@ -1688,12 +1669,12 @@ class WebSocketServer {
 
     // update meeting session
     if (ServerState.meetingSession != null) {
-      ServerState.meetingSession.guestPlaces =
+      ServerState.meetingSession!.guestPlaces =
           json.encode(ServerState.guestsPlaces);
 
       final updateMeetingSession = Query<MeetingSession>(_context)
-        ..values.guestPlaces = ServerState.meetingSession.guestPlaces
-        ..where((ms) => ms.id).equalTo(ServerState.meetingSession.id);
+        ..values.guestPlaces = ServerState.meetingSession!.guestPlaces
+        ..where((ms) => ms.id).equalTo(ServerState.meetingSession!.id);
       updateMeetingSession.update();
     }
 
@@ -1701,12 +1682,11 @@ class WebSocketServer {
   }
 
   void processSetUserExit(String terminalId) {
-    var connection = _connections.firstWhere(
-        (element) => element.terminalId == terminalId,
-        orElse: () => null);
+    var connection = _connections
+        .firstWhereOrNull((element) => element.terminalId == terminalId);
 
-    undoUserRegistration(connection, connection.deputyId);
     if (connection != null) {
+      undoUserRegistration(connection, connection.deputyId);
       sendMessage(connection, <String, String>{'setUserExit': 'true'});
     }
 
@@ -1714,9 +1694,8 @@ class WebSocketServer {
   }
 
   void processSetTerminalReset(String terminalId) {
-    var connection = _connections.firstWhere(
-        (element) => element.terminalId == terminalId,
-        orElse: () => null);
+    var connection = _connections
+        .firstWhereOrNull((element) => element.terminalId == terminalId);
 
     if (connection != null) {
       sendMessage(connection, <String, String>{'reset': 'true'});
@@ -1724,9 +1703,8 @@ class WebSocketServer {
   }
 
   void processSetTerminalShutdown(String terminalId) {
-    var connection = _connections.firstWhere(
-        (element) => element.terminalId == terminalId,
-        orElse: () => null);
+    var connection = _connections
+        .firstWhereOrNull((element) => element.terminalId == terminalId);
 
     if (connection != null) {
       sendMessage(connection, <String, String>{'shutdown': 'true'});
@@ -1734,9 +1712,8 @@ class WebSocketServer {
   }
 
   void processSetTerminalScreenOn(String terminalId) {
-    var connection = _connections.firstWhere(
-        (element) => element.terminalId == terminalId,
-        orElse: () => null);
+    var connection = _connections
+        .firstWhereOrNull((element) => element.terminalId == terminalId);
 
     if (connection != null) {
       sendMessage(connection, <String, String>{'screen_on': 'true'});
@@ -1744,16 +1721,15 @@ class WebSocketServer {
   }
 
   void processSetTerminalScreenOff(String terminalId) {
-    var connection = _connections.firstWhere(
-        (element) => element.terminalId == terminalId,
-        orElse: () => null);
+    var connection = _connections
+        .firstWhereOrNull((element) => element.terminalId == terminalId);
 
     if (connection != null) {
       sendMessage(connection, <String, String>{'screen_off': 'true'});
     }
   }
 
-  Future<void> processSetSpeakerStoreboard(String speakerSession,
+  Future<void> processSetSpeakerStoreboard(String? speakerSession,
       String signalStart, String signalEnd, bool autoEnd) async {
     if (speakerSession != null) {
       var session = SpeakerSession.fromClient(
@@ -1778,7 +1754,7 @@ class WebSocketServer {
           : cm.Signal.fromJson(json.decode(signalEnd));
       ServerState.autoEnd = autoEnd;
 
-      _interval = ServerState.speakerSession.interval;
+      _interval = ServerState.speakerSession!.interval;
     } else {
       await completeSpeaker();
     }
@@ -1787,8 +1763,8 @@ class WebSocketServer {
   }
 
   void processSetSchemePreviev(int meetingId) {
-    var startedMeeting = _meetings
-        .firstWhere((element) => element.id == meetingId, orElse: () => null);
+    var startedMeeting =
+        _meetings.firstWhereOrNull((element) => element.id == meetingId);
 
     if (startedMeeting != null) {
       loadDefaultUsersTerminals(startedMeeting);
@@ -1864,15 +1840,15 @@ class WebSocketServer {
     var updateMeeting = Query<Meeting>(_context)
       ..values.status = 'Начато'
       ..values.lastUpdated = lastUpdated
-      ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
+      ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
 
     await updateMeeting.update();
 
     await completeSpeaker();
 
     ServerState.systemState = cm.SystemState.MeetingStarted;
-    ServerState.selectedMeeting.status = 'Начато';
-    ServerState.selectedMeeting.lastUpdated = lastUpdated;
+    ServerState.selectedMeeting!.status = 'Начато';
+    ServerState.selectedMeeting!.lastUpdated = lastUpdated;
     ServerState.selectedQuestion = null;
     ServerState.questionSession = null;
     ServerState.usersDecisions = <String, String>{};
@@ -1881,7 +1857,7 @@ class WebSocketServer {
   }
 
   void processSetHistory(String value) {
-    if (value != null && value.isNotEmpty && value != 'null') {
+    if (value.isNotEmpty && value != 'null') {
       ServerState.votingHistory = cm.VotingHistory.fromJson(json.decode(value));
     } else {
       ServerState.votingHistory = null;
@@ -1892,7 +1868,7 @@ class WebSocketServer {
 
   void processSaveAgenda(String value) async {
     var agendaForSave = cm.Agenda.fromJson(json.decode(value));
-    var previousAgenda = ServerState.selectedMeeting.agenda;
+    var previousAgenda = ServerState.selectedMeeting!.agenda!;
 
     // delete questions
     var questionsForDelete = previousAgenda.questions
@@ -1987,15 +1963,16 @@ class WebSocketServer {
       var updatedQuestions = await queryUpdate.update();
 
       var updatedQuestion = updatedQuestions[0];
-      var oldQuestion = previousAgenda.questions.firstWhere(
-          (element) => element.id == question.id,
-          orElse: () => null);
+      var oldQuestion = previousAgenda.questions
+          .firstWhereOrNull((element) => element.id == question.id);
 
       //update question files
       // add files
       var filesForAdd = question.files
           .where((prevElement) =>
-              !oldQuestion.files.any((element) => element.id == prevElement.id))
+              oldQuestion?.files
+                  .any((element) => element.id == prevElement.id) ??
+              false)
           .toList();
       for (var j = 0; j < filesForAdd.length; j++) {
         final insertedQuestionFile = Query<File>(_context)
@@ -2014,15 +1991,17 @@ class WebSocketServer {
       }
 
       // delete files
-      var filesForDelete = oldQuestion.files
+      var filesForDelete = oldQuestion?.files
           .where((prevElement) =>
               !question.files.any((element) => element.id == prevElement.id))
           .toList();
 
-      for (var j = 0; j < filesForDelete.length; j++) {
-        final queryDelete = Query<File>(_context)
-          ..where((f) => f.id).equalTo(filesForDelete[j].id);
-        await queryDelete.delete();
+      if (filesForDelete != null) {
+        for (var j = 0; j < filesForDelete.length; j++) {
+          final queryDelete = Query<File>(_context)
+            ..where((f) => f.id).equalTo(filesForDelete[j].id);
+          await queryDelete.delete();
+        }
       }
 
       //ToDo: updateFiles
@@ -2031,30 +2010,32 @@ class WebSocketServer {
         ..where((o) => o.id).equalTo(updatedQuestion.id);
       final selectedUpdatedQuestion = await q.fetchOne();
 
-      //copy files from temp folder
-      var fromPath = 'documents/' +
-          previousAgenda.folder +
-          '/temp/' +
-          selectedUpdatedQuestion.folder;
-      var toPath = 'documents/' +
-          previousAgenda.folder +
-          '/' +
-          selectedUpdatedQuestion.folder;
+      if (selectedUpdatedQuestion != null) {
+        //copy files from temp folder
+        var fromPath = 'documents/' +
+            previousAgenda.folder +
+            '/temp/' +
+            selectedUpdatedQuestion.folder;
+        var toPath = 'documents/' +
+            previousAgenda.folder +
+            '/' +
+            selectedUpdatedQuestion.folder;
 
-      await copyPath(fromPath, toPath);
+        await copyPath(fromPath, toPath);
 
-      //clear question tempFolder
-      if (await io.Directory(fromPath).exists()) {
-        await io.Directory(fromPath).delete(recursive: true);
+        //clear question tempFolder
+        if (await io.Directory(fromPath).exists()) {
+          await io.Directory(fromPath).delete(recursive: true);
+        }
+
+        sendQuestions.add(selectedUpdatedQuestion);
       }
-
-      sendQuestions.add(selectedUpdatedQuestion);
     }
 
     // update agenda last updated
     var query = Query<Agenda>(_context)
       ..values.lastUpdated = CommonUtils.getDateTimeNow(_timeOffset)
-      ..where((u) => u.id).equalTo(ServerState.selectedMeeting.agenda.id);
+      ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.agenda!.id);
 
     await query.update();
 
@@ -2065,7 +2046,7 @@ class WebSocketServer {
           .delete(recursive: true);
     }
 
-    ServerState.selectedMeeting.agenda.questions = sendQuestions;
+    ServerState.selectedMeeting!.agenda!.questions = sendQuestions;
 
     if (_connections.isNotEmpty) {
       for (var connection in _connections) {
@@ -2119,7 +2100,7 @@ class WebSocketServer {
 
       ServerState.systemState = cm.SystemState.MeetingPreparation;
       ServerState.selectedMeeting = updatedMeeting;
-      loadDefaultUsersTerminals(ServerState.selectedMeeting);
+      loadDefaultUsersTerminals(ServerState.selectedMeeting!);
       ServerState.meetingSession = insertedMeetingSession;
       ServerState.selectedQuestion = null;
       ServerState.questionSession = null;
@@ -2203,16 +2184,16 @@ class WebSocketServer {
       await sendVissonicMessage('setAllState',
           isEnabled: getIsMicsEnabledState());
 
-      if (ServerState.selectedMeeting.group.isFastRegistrationUsed) {
+      if (ServerState.selectedMeeting!.group!.isFastRegistrationUsed) {
         await fastRegistration();
-        await processSetFlushMeeting();
+        processSetFlushMeeting();
       }
 
       return;
     }
 
-    var selectedQuestion = ServerState.selectedMeeting.agenda.questions
-        .firstWhere((element) => element.id == questionId, orElse: () => null);
+    var selectedQuestion = ServerState.selectedMeeting?.agenda?.questions
+        .firstWhereOrNull((element) => element.id == questionId);
     var votingInterval = json.decode(params)['voting_interval'];
     var registrationInterval = json.decode(params)['registration_interval'];
     var askWordQueueInterval = json.decode(params)['askwordqueue_interval'];
@@ -2223,7 +2204,7 @@ class WebSocketServer {
 
     // Регистрация
     if (systemState == cm.SystemState.Registration) {
-      if (ServerState.selectedMeeting.group.isFastRegistrationUsed) {
+      if (ServerState.selectedMeeting!.group!.isFastRegistrationUsed) {
         await fastRegistration();
         return;
       }
@@ -2232,7 +2213,7 @@ class WebSocketServer {
       _interval = registrationInterval;
 
       final insertRegistrationSession = Query<RegistrationSession>(_context)
-        ..values.meetingId = ServerState.selectedMeeting.id
+        ..values.meetingId = ServerState.selectedMeeting!.id
         ..values.interval = registrationInterval
         ..values.startDate = lastUpdated;
       var insertedRegistrationSession =
@@ -2241,7 +2222,7 @@ class WebSocketServer {
       var updateMeeting = Query<Meeting>(_context)
         ..values.status = 'Регистрация'
         ..values.lastUpdated = lastUpdated
-        ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
+        ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
       var updatedMeeting = (await updateMeeting.update()).first;
 
       await completeSpeaker();
@@ -2282,16 +2263,16 @@ class WebSocketServer {
     if (systemState == cm.SystemState.QuestionLocked) {
       var query = Query<Meeting>(_context)
         ..values.status =
-            'Просмотр ${selectedQuestion.name} ${selectedQuestion.orderNum}'
+            'Просмотр ${selectedQuestion!.name} ${selectedQuestion.orderNum}'
         ..values.lastUpdated = CommonUtils.getDateTimeNow(_timeOffset)
-        ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
+        ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
       var updatedMeeting = (await query.update()).first;
 
       updateServerStateMeeting(updatedMeeting);
 
       ServerState.systemState = cm.SystemState.QuestionLocked;
       ServerState.selectedQuestion = selectedQuestion;
-      if (ServerState.previousSelectedQuestion?.id != selectedQuestion?.id) {
+      if (ServerState.previousSelectedQuestion?.id != selectedQuestion.id) {
         ServerState.previousSelectedQuestion = selectedQuestion;
         ServerState.usersAskSpeech = <int>[];
         ServerState.guestsAskSpeech = <String>[];
@@ -2308,10 +2289,10 @@ class WebSocketServer {
       _interval = votingInterval;
 
       final insertQuestionSession = Query<QuestionSession>(_context)
-        ..values.meetingSessionId = ServerState.meetingSession.id
+        ..values.meetingSessionId = ServerState.meetingSession!.id
         ..values.questionId = questionId
         ..values.votingRegim = votingRegim
-        ..values.interval = _interval
+        ..values.interval = _interval ?? 0
         ..values.votingModeId = votingModeId
         ..values.decision = votingDecision
         ..values.usersCountRegistred = ServerState.usersRegistered.length
@@ -2322,9 +2303,9 @@ class WebSocketServer {
 
       var query = Query<Meeting>(_context)
         ..values.status =
-            'Голосование ${selectedQuestion.name} ${selectedQuestion.orderNum}'
+            'Голосование ${selectedQuestion!.name} ${selectedQuestion.orderNum}'
         ..values.lastUpdated = lastUpdated
-        ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
+        ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
       var updatedMeeting = (await query.update()).first;
 
       await completeSpeaker();
@@ -2351,7 +2332,7 @@ class WebSocketServer {
 
     // Голосование завершено
     if (systemState == cm.SystemState.QuestionVotingComplete) {
-      await completeVoting(selectedQuestion);
+      await completeVoting(selectedQuestion!);
       return;
     }
 
@@ -2361,9 +2342,9 @@ class WebSocketServer {
       _interval = askWordQueueInterval;
 
       final insertAskWordQueueSession = Query<AskWordQueueSession>(_context)
-        ..values.meetingSessionId = ServerState.meetingSession.id
+        ..values.meetingSessionId = ServerState.meetingSession!.id
         ..values.questionId = questionId
-        ..values.interval = _interval
+        ..values.interval = _interval ?? 0
         ..values.votingModeId = votingModeId
         ..values.decision = votingDecision
         ..values.startDate = lastUpdated
@@ -2374,9 +2355,9 @@ class WebSocketServer {
 
       var updateMeeting = Query<Meeting>(_context)
         ..values.status =
-            'Запись в очередь на выступление ${selectedQuestion.name} ${selectedQuestion.orderNum}'
+            'Запись в очередь на выступление ${selectedQuestion!.name} ${selectedQuestion.orderNum}'
         ..values.lastUpdated = lastUpdated
-        ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
+        ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
       var updatedMeeting = (await updateMeeting.update()).first;
 
       await completeSpeaker();
@@ -2468,7 +2449,7 @@ class WebSocketServer {
       for (var registration in ServerState.usersRegistered) {
         var insertRegistrationQuery = Query<Registration>(_context)
           ..values.userId = registration
-          ..values.registrationSession.id = ServerState.registrationSession.id;
+          ..values.registrationSession.id = ServerState.registrationSession!.id;
 
         unawaited(insertRegistrationQuery.insert());
       }
@@ -2476,14 +2457,14 @@ class WebSocketServer {
 
     var updateRegistationSession = Query<RegistrationSession>(_context)
       ..values.endDate = lastUpdated
-      ..where((u) => u.id).equalTo(ServerState.registrationSession.id);
+      ..where((u) => u.id).equalTo(ServerState.registrationSession!.id);
     var updatedRegistationSession =
         (await updateRegistationSession.update()).first;
 
     var updateMeeting = Query<Meeting>(_context)
       ..values.status = 'Регистрация завершена'
       ..values.lastUpdated = lastUpdated
-      ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
+      ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
     var updatedMeeting = (await updateMeeting.update()).first;
 
     ServerState.isRegistrationCompleted = true;
@@ -2497,7 +2478,7 @@ class WebSocketServer {
     var lastUpdated = CommonUtils.getDateTimeNow(_timeOffset);
 
     final insertRegistrationSession = Query<RegistrationSession>(_context)
-      ..values.meetingId = ServerState.selectedMeeting.id
+      ..values.meetingId = ServerState.selectedMeeting!.id
       ..values.interval = 0
       ..values.startDate = lastUpdated;
     var insertedRegistrationSession = await insertRegistrationSession.insert();
@@ -2527,8 +2508,8 @@ class WebSocketServer {
     var lastUpdated = CommonUtils.getDateTimeNow(_timeOffset);
     _interval = null;
 
-    ServerState.questionSession.managerId = cm.GroupUtil().getManagerId(
-        ServerState.selectedMeeting.group.toClient(),
+    ServerState.questionSession!.managerId = cm.GroupUtil().getManagerId(
+        ServerState.selectedMeeting!.group!.toClient(),
         ServerState.usersTerminals);
 
     var registredAndOnline = <int>[];
@@ -2544,37 +2525,36 @@ class WebSocketServer {
     }
 
     // update success count for registered and online users
-    var isManagerVoted = ServerState.usersDecisions.entries.firstWhere(
-          (element) =>
-              element.key == ServerState.questionSession.managerId.toString() &&
-              (element.value == 'ЗА' || element.value == 'ПРОТИВ'),
-          orElse: () => null,
-        ) !=
+    var isManagerVoted = ServerState.usersDecisions.entries.firstWhereOrNull(
+            (element) =>
+                element.key ==
+                    ServerState.questionSession!.managerId.toString() &&
+                (element.value == 'ЗА' || element.value == 'ПРОТИВ')) !=
         null;
-    ServerState.questionSession.usersCountRegistred = registredAndOnline.length;
+    ServerState.questionSession!.usersCountRegistred =
+        registredAndOnline.length;
     if ((DecisionModeHelper.getEnumValue(
-                ServerState.questionSession.decision) ==
+                ServerState.questionSession!.decision) ==
             cm.DecisionMode.MajorityOfRegistredMembers) ||
         (DecisionModeHelper.getEnumValue(
-                ServerState.questionSession.decision) ==
+                ServerState.questionSession!.decision) ==
             cm.DecisionMode.TwoThirdsOfRegistredMembers) ||
         (DecisionModeHelper.getEnumValue(
-                ServerState.questionSession.decision) ==
+                ServerState.questionSession!.decision) ==
             cm.DecisionMode.OneThirdsOfRegistredMembers)) {
-      ServerState.questionSession.usersCountForSuccess =
+      ServerState.questionSession!.usersCountForSuccess =
           DecisionModeHelper.getSuccuessValue(
               DecisionModeHelper.getEnumValue(
-                  ServerState.questionSession.decision),
-              ServerState.selectedMeeting.group.toClient(),
+                  ServerState.questionSession!.decision),
+              ServerState.selectedMeeting!.group!.toClient(),
               registredAndOnline,
               isManagerVoted);
     }
 
     // Set user voted indifferent if it registered and not voted
     for (var i = 0; i < registredAndOnline.length; i++) {
-      var foundDecision = ServerState.usersDecisions.entries.firstWhere(
-          (element) => element.key == registredAndOnline[i].toString(),
-          orElse: () => null);
+      var foundDecision = ServerState.usersDecisions.entries.firstWhereOrNull(
+          (element) => element.key == registredAndOnline[i].toString());
 
       if (foundDecision == null) {
         ServerState.usersDecisions
@@ -2584,12 +2564,11 @@ class WebSocketServer {
 
     if (ServerState.usersDecisions.entries.isNotEmpty) {
       for (var decision in ServerState.usersDecisions.entries) {
-        var proxy = _proxies.firstWhere(
-            (element) => element.proxy.id.toString() == decision.key,
-            orElse: () => null);
+        var proxy = _proxies.firstWhereOrNull(
+            (element) => element.proxy?.id.toString() == decision.key);
 
         var insertDecisionQuery = Query<Result>(_context)
-          ..values.questionSession.id = ServerState.questionSession.id
+          ..values.questionSession.id = ServerState.questionSession!.id
           ..values.userId = int.parse(decision.key)
           ..values.proxyId = proxy?.id
           ..values.result = decision.value;
@@ -2609,21 +2588,21 @@ class WebSocketServer {
           .where((element) => element == 'ВОЗДЕРЖАЛСЯ')
           .length
       ..values.managerId = cm.GroupUtil().getManagerId(
-          ServerState.selectedMeeting.group.toClient(),
+          ServerState.selectedMeeting!.group!.toClient(),
           ServerState.usersTerminals)
       ..values.usersCountRegistred =
-          ServerState.questionSession.usersCountRegistred
+          ServerState.questionSession!.usersCountRegistred
       ..values.usersCountForSuccess =
-          ServerState.questionSession.usersCountForSuccess
+          ServerState.questionSession!.usersCountForSuccess
       ..values.endDate = lastUpdated
-      ..where((u) => u.id).equalTo(ServerState.questionSession.id);
+      ..where((u) => u.id).equalTo(ServerState.questionSession!.id);
     var updatedQuestionSession = (await updateQuestionSession.update()).first;
 
     var query = Query<Meeting>(_context)
       ..values.status =
           'Голосование ${selectedQuestion.name} ${selectedQuestion.orderNum} завершено'
       ..values.lastUpdated = lastUpdated
-      ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
+      ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
     var updatedMeeting = (await query.update()).first;
 
     ServerState.systemState = cm.SystemState.QuestionVotingComplete;
@@ -2651,13 +2630,13 @@ class WebSocketServer {
     var updateAskWordSession = Query<AskWordQueueSession>(_context)
       ..values.endDate = lastUpdated
       ..values.users = ServerState.usersAskSpeech.join(',')
-      ..where((u) => u.id).equalTo(ServerState.askWordQueueSession.id);
+      ..where((u) => u.id).equalTo(ServerState.askWordQueueSession!.id);
     var updatedAskWordSession = (await updateAskWordSession.update()).first;
 
     var updateMeeting = Query<Meeting>(_context)
-      ..values.status = ServerState.selectedMeeting.status + ' завершена'
+      ..values.status = ServerState.selectedMeeting!.status + ' завершена'
       ..values.lastUpdated = lastUpdated
-      ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
+      ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
     var updatedMeeting = (await updateMeeting.update()).first;
 
     ServerState.askWordQueueSession = updatedAskWordSession;
@@ -2675,19 +2654,22 @@ class WebSocketServer {
 
     var updateSpeakerSession = Query<SpeakerSession>(_context)
       ..values.endDate = lastUpdated
-      ..where((u) => u.id).equalTo(ServerState.speakerSession.id);
-    var updatedSpeakerSession = (await updateSpeakerSession.update()).first;
+      ..where((u) => u.id).equalTo(ServerState.speakerSession!.id);
+    await updateSpeakerSession.update();
 
     var updateMeeting = Query<Meeting>(_context)
       ..values.lastUpdated = lastUpdated
-      ..where((u) => u.id).equalTo(ServerState.selectedMeeting.id);
-    var updatedMeeting = (await updateMeeting.update()).first;
+      ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
+    var updatedMeeting = (await updateMeeting.update()).firstOrNull;
 
     await sendVissonicMessage('setMicSound',
-        terminalId: ServerState.speakerSession.terminalId, isEnabled: false);
+        terminalId: ServerState.speakerSession!.terminalId, isEnabled: false);
 
     ServerState.storeboardState = cm.StoreboardState.None;
-    updateServerStateMeeting(updatedMeeting);
+    if (updatedMeeting != null) {
+      updateServerStateMeeting(updatedMeeting);
+    }
+
     ServerState.speakerSession = null;
     ServerState.startSignal = null;
     ServerState.endSignal = null;
@@ -2712,16 +2694,17 @@ class WebSocketServer {
   List<TerminalMic> loadDefaultTerminalMics() {
     var currentMics = <TerminalMic>[];
 
-    if (ServerState.selectedMeeting == null) {
+    if (ServerState.selectedMeeting == null ||
+        ServerState.selectedMeeting!.group == null) {
       return currentMics;
     }
 
     var unblockedMics = CommonUtils.getUnblockedMicsList(
-        ServerState.selectedMeeting, ServerState.usersTerminals);
+        ServerState.selectedMeeting!, ServerState.usersTerminals);
 
     // add workplaces mics
     var defaultUserTerminals =
-        CommonUtils.getDefaultUsersTerminals(ServerState.selectedMeeting)
+        CommonUtils.getDefaultUsersTerminals(ServerState.selectedMeeting!)
             .entries
             .toList();
 
@@ -2748,7 +2731,7 @@ class WebSocketServer {
 
     // add tribune mics
     var workplaces = Workplaces.fromJson(
-        json.decode(ServerState.selectedMeeting.group.workplaces));
+        json.decode(ServerState.selectedMeeting!.group!.workplaces));
 
     for (var i = 0; i < workplaces.tribuneTerminalIds.length; i++) {
       var parts = workplaces.tribuneTerminalIds[i].split(',');
@@ -2805,9 +2788,9 @@ class WebSocketServer {
 
     // remove enabled ask word users
     for (var i = 0; i < ServerState.usersAskSpeech.length; i++) {
-      var foundUserTerminal = ServerState.usersTerminals.entries.firstWhere(
-          (element) => element.value == ServerState.usersAskSpeech[i],
-          orElse: () => null);
+      var foundUserTerminal = ServerState.usersTerminals.entries
+          .firstWhereOrNull(
+              (element) => element.value == ServerState.usersAskSpeech[i]);
 
       if (foundUserTerminal != null) {
         var parts = foundUserTerminal.key.split(',');
@@ -2827,10 +2810,9 @@ class WebSocketServer {
   }
 
   Future<void> sendVissonicMessage(String command,
-      {String terminalId, bool isEnabled}) async {
-    var vissonicClientConnection = _connections.firstWhere(
-        (element) => element.type == 'vissonic_client',
-        orElse: () => null);
+      {String? terminalId, bool? isEnabled}) async {
+    var vissonicClientConnection = _connections
+        .firstWhereOrNull((element) => element.type == 'vissonic_client');
 
     if (vissonicClientConnection != null) {
       vissonicClientConnection.socket.add(json.encode({
@@ -2937,9 +2919,8 @@ class WebSocketServer {
     var wasInit = false;
     print(
         '${CommonUtils.getDateTimeNow(_timeOffset).toString()} Инициализация модуля Vissonic.');
-    var vissonicClientConnection = _connections.firstWhere(
-        (element) => element.type == 'vissonic_client',
-        orElse: () => null);
+    var vissonicClientConnection = _connections
+        .firstWhereOrNull((element) => element.type == 'vissonic_client');
 
     if (vissonicClientConnection != null) {
       var currentMics = loadDefaultTerminalMics();

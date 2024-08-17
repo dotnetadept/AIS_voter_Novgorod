@@ -4,10 +4,13 @@ import 'controllers/result_controller.dart';
 import 'services.dart';
 import 'controllers/controllers.dart';
 
+import 'package:conduit_core/conduit_core.dart';
+import 'package:conduit_postgresql/conduit_postgresql.dart';
+
 /// This type initializes an application.
 class ServicesChannel extends ApplicationChannel {
-  ManagedContext _context;
-  WebSocketServer _wsServer;
+  late ManagedContext _context;
+  late WebSocketServer _wsServer;
 
   @override
   Future prepare() async {
@@ -21,7 +24,7 @@ class ServicesChannel extends ApplicationChannel {
     _wsServer = WebSocketServer(ADDRESS, WEB_SOCKET_PORT, _context);
 
     // init web socket server
-    await _wsServer.load();
+    _wsServer.load();
     _wsServer.bind();
 
     logger.onRecord.listen(

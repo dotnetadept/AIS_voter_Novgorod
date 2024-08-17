@@ -18,6 +18,7 @@ class AskWordQueueSession {
     required this.interval,
     required this.startDate,
     required this.endDate,
+    required this.users,
   });
 
   Map toJson() => {

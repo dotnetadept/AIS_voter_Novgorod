@@ -25,6 +25,7 @@ class AppState with ChangeNotifier {
   static late Settings _settings;
   static late int _timeOffset;
   static bool _isLoadingComplete = false;
+  static bool _isServerStateLoadingComplete = false;
 
   static bool _isRegistred = false;
   static bool _isDocumentsChecked = false;
@@ -170,7 +171,7 @@ class AppState with ChangeNotifier {
   }
 
   bool getIsLoadingComplete() {
-    return _isLoadingComplete;
+    return _isLoadingComplete && _isServerStateLoadingComplete;
   }
 
   void setIsLoadingComplete(bool isLoadingComplete) {
@@ -184,6 +185,7 @@ class AppState with ChangeNotifier {
 
   void setServerState(ServerState state) {
     _serverState = state;
+    _isServerStateLoadingComplete = true;
 
     notifyListeners();
   }

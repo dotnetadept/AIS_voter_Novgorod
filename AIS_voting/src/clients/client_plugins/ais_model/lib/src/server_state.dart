@@ -20,11 +20,11 @@ class ServerState {
   late String? storeboardParams;
   late bool isDetailsStoreboard;
 
-  late int registrationResult;
-  late int votingResultYes;
-  late int votingResultNo;
-  late int votingResultIndiffirent;
-  late int votingTotalVotes;
+  late int registrationResult = 0;
+  late int votingResultYes = 0;
+  late int votingResultNo = 0;
+  late int votingResultIndiffirent = 0;
+  late int votingTotalVotes = 0;
   late RegistrationSession? registrationSession;
   late QuestionSession? questionSession;
   late AskWordQueueSession? askWordQueueSession;
@@ -87,11 +87,11 @@ class ServerState {
                 StoreboardState.values, json['storeboardState']),
         storeboardParams = json['storeboard'],
         isDetailsStoreboard = json['isDetailsStoreboard'],
-        registrationResult = json['registrationResult'],
-        votingTotalVotes = json['votingTotalVotes'],
-        votingResultIndiffirent = json['votingResultIndiffirent'],
-        votingResultNo = json['votingResultNo'],
-        votingResultYes = json['votingResultYes'],
+        registrationResult = json['registrationResult'] ?? 0,
+        votingTotalVotes = json['votingTotalVotes'] ?? 0,
+        votingResultIndiffirent = json['votingResultIndiffirent'] ?? 0,
+        votingResultNo = json['votingResultNo'] ?? 0,
+        votingResultYes = json['votingResultYes'] ?? 0,
         registrationSession = json['registrationSession'] == null
             ? null
             : RegistrationSession.fromJson(json['registrationSession']),

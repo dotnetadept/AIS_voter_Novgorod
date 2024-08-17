@@ -24,23 +24,9 @@ class QuestionSession {
   late DateTime startDate;
   late DateTime? endDate;
   late List<Result> results;
-  late int managerId;
+  late int? managerId;
 
-  QuestionSession({
-    required this.id,
-    required this.meetingSessionId,
-    required this.questionId,
-    required this.votingModeId,
-    required this.votingRegim,
-    required this.decision,
-    required this.interval,
-    required this.usersCountRegistred,
-    required this.usersCountForSuccess,
-    required this.usersCountForSuccessDisplay,
-    required this.startDate,
-    required this.endDate,
-    required this.managerId,
-  });
+  QuestionSession();
 
   Map toJson() => {
         'id': id,
@@ -57,7 +43,7 @@ class QuestionSession {
         'usersCountVotedYes': usersCountVotedYes,
         'usersCountVotedNo': usersCountVotedNo,
         'usersCountVotedIndiffirent': usersCountVotedIndiffirent,
-        'startDate': startDate?.toIso8601String(),
+        'startDate': startDate.toIso8601String(),
         'endDate': endDate?.toIso8601String(),
         'managerId': managerId
       };
@@ -73,10 +59,10 @@ class QuestionSession {
         usersCountRegistred = json['usersCountRegistred'],
         usersCountForSuccess = json['usersCountForSuccess'],
         usersCountForSuccessDisplay = json['usersCountForSuccessDisplay'],
-        usersCountVoted = json['usersCountVoted'],
-        usersCountVotedYes = json['usersCountVotedYes'],
-        usersCountVotedNo = json['usersCountVotedNo'],
-        usersCountVotedIndiffirent = json['usersCountVotedIndiffirent'],
+        usersCountVoted = json['usersCountVoted'] ?? 0,
+        usersCountVotedYes = json['usersCountVotedYes'] ?? 0,
+        usersCountVotedNo = json['usersCountVotedNo'] ?? 0,
+        usersCountVotedIndiffirent = json['usersCountVotedIndiffirent'] ?? 0,
         startDate = DateTime.parse(json['startDate']),
         endDate =
             json['endDate'] == null ? null : DateTime.parse(json['endDate']),

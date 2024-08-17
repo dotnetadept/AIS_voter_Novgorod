@@ -1,4 +1,5 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:collection/collection.dart';
+import 'package:conduit_core/conduit_core.dart';
 import '../models/meeting.dart';
 import '../models/group.dart';
 import '../models/agenda.dart';
@@ -25,13 +26,11 @@ class MeetingsController extends ResourceController {
     for (var i = 0; i < allMeetings.length; i++) {
       var meeting = allMeetings[i];
 
-      var group = allGroups.firstWhere(
-          (element) => element.id == meeting.group.id,
-          orElse: () => null);
+      var group = allGroups
+          .firstWhereOrNull((element) => element.id == meeting.group?.id);
       meeting.group = group;
-      var agenda = allAgendas.firstWhere(
-          (element) => element.id == meeting.agenda.id,
-          orElse: () => null);
+      var agenda = allAgendas
+          .firstWhereOrNull((element) => element.id == meeting.agenda?.id);
       meeting.agenda = agenda;
     }
     return Response.ok(allMeetings);
@@ -48,13 +47,13 @@ class MeetingsController extends ResourceController {
 
     final queryGroup = Query<Group>(context)
       ..join(set: (g) => g.groupUsers).join(object: (gu) => gu.user)
-      ..where((g) => g.id).equalTo(meeting.group.id);
+      ..where((g) => g.id).equalTo(meeting.group?.id ?? 0);
     var group = await queryGroup.fetchOne();
     meeting.group = group;
 
     final queryAgenda = Query<Agenda>(context)
       ..join(set: (a) => a.questions).join(set: (q) => q.files)
-      ..where((a) => a.id).equalTo(meeting.agenda.id);
+      ..where((a) => a.id).equalTo(meeting.agenda?.id ?? 0);
     var agenda = await queryAgenda.fetchOne();
     meeting.agenda = agenda;
 

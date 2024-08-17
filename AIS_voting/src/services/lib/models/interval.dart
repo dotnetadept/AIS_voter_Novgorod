@@ -1,18 +1,18 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:services/models/signal.dart';
 
 class Interval extends ManagedObject<_Interval> implements _Interval {}
 
 class _Interval {
   @primaryKey
-  int id;
-  int orderNum;
-  String name;
-  int duration;
+  late int id;
+  late int orderNum;
+  late String name;
+  late int duration;
   @Relate(#startSignalInterval)
-  Signal startSignal;
+  Signal? startSignal;
   @Relate(#endSignalInterval)
-  Signal endSignal;
-  bool isActive;
-  bool isAutoEnd;
+  Signal? endSignal;
+  late bool isActive;
+  late bool isAutoEnd;
 }

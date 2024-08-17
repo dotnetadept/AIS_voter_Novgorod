@@ -6,11 +6,7 @@ class GroupUser {
   late User user;
   late bool isManager;
 
-  GroupUser({
-    required this.groupId,
-    required this.user,
-    required this.isManager,
-  });
+  GroupUser();
 
   Map toJson() => {
         'id': id,

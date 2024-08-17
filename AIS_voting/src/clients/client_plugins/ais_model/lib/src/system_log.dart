@@ -4,12 +4,7 @@ class SystemLog {
   late String message;
   late DateTime time;
 
-  SystemLog({
-    required this.id,
-    required this.type,
-    required this.message,
-    required this.time,
-  });
+  SystemLog();
 
   Map toJson() => {
         'id': id,

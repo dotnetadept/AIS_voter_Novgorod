@@ -11,8 +11,8 @@ class Workplaces {
   late List<String> managementTerminalIds;
   late List<String> tribuneTerminalIds;
   late List<String> tribuneNames;
-  late List<List<int>> schemeWorkplaces;
-  late List<List<String>> workplacesTerminalIds;
+  late List<List<int?>> schemeWorkplaces;
+  late List<List<String?>> workplacesTerminalIds;
 
   Workplaces() {
     hasManagement = false;
@@ -102,11 +102,11 @@ class Workplaces {
             json['managementTerminalIds'].toList().cast<String>(),
         tribuneTerminalIds = json['tribuneTerminalIds'].toList().cast<String>(),
         tribuneNames = json['tribuneNames'].toList().cast<String>(),
-        schemeWorkplaces = json['schemeWorkplaces'].map<List<int>>((i) {
-          return List<int>.from(i);
+        schemeWorkplaces = json['schemeWorkplaces'].map<List<int?>>((i) {
+          return List<int?>.from(i);
         }).toList(),
         workplacesTerminalIds =
-            json['workplacesTerminalIds'].map<List<String>>((i) {
-          return List<String>.from(i);
+            json['workplacesTerminalIds'].map<List<String?>>((i) {
+          return List<String?>.from(i);
         }).toList();
 }

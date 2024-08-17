@@ -6,17 +6,18 @@ import 'package:enum_to_string/enum_to_string.dart';
 
 class ServerState {
   // current state of the system
-  static client_models.SystemState systemState;
+  static client_models.SystemState? systemState;
 
   // current state of the storeboard
-  static client_models.StoreboardState storeboardState;
+  static client_models.StoreboardState storeboardState =
+      client_models.StoreboardState.None;
   // params of storeboard
-  static String storeboardParams;
+  static String storeboardParams = '';
   static bool isDetailsStoreboard = false;
 
   // connected devices summary
-  static String formattedDevicesOnline;
-  static String versions;
+  static String formattedDevicesOnline = '';
+  static String versions = '';
 
   // list of terminals online
   static List<String> terminalsOnline = <String>[];
@@ -41,7 +42,7 @@ class ServerState {
 
   // video stream settings
   static bool isStreamStarted = false;
-  static String streamControl;
+  static String streamControl = '';
   static bool showToManager = false;
   static bool showAskWordButton = false;
 
@@ -50,24 +51,24 @@ class ServerState {
   static bool isVissonicServerOnline = false;
   static bool isVissonicModuleInit = false;
   static bool isVissonicLoading = false;
-  static bool micsEnabled;
+  static bool? micsEnabled;
 
   // active microphones
   static Map<String, String> activeMics = <String, String>{};
   static List<int> waitingMics = <int>[];
 
   // Storeboard params
-  static int registrationResult;
-  static int votingResultYes;
-  static int votingResultNo;
-  static int votingResultIndiffirent;
-  static int votingTotalVotes;
+  static int registrationResult = 0;
+  static int votingResultYes = 0;
+  static int votingResultNo = 0;
+  static int votingResultIndiffirent = 0;
+  static int votingTotalVotes = 0;
   // signalization signals
-  static client_models.Signal startSignal;
-  static client_models.Signal endSignal;
-  static bool autoEnd;
+  static client_models.Signal? startSignal;
+  static client_models.Signal? endSignal;
+  static bool autoEnd = false;
   //  voting history
-  static client_models.VotingHistory votingHistory;
+  static client_models.VotingHistory? votingHistory;
   // refresh stream
   static bool isRefreshStream = false;
 
@@ -75,14 +76,14 @@ class ServerState {
   static bool isRegistrationCompleted = false;
 
   // internal state
-  static Meeting selectedMeeting;
-  static MeetingSession meetingSession;
-  static Question selectedQuestion;
-  static Question previousSelectedQuestion;
-  static QuestionSession questionSession;
-  static AskWordQueueSession askWordQueueSession;
-  static RegistrationSession registrationSession;
-  static SpeakerSession speakerSession;
+  static Meeting? selectedMeeting;
+  static MeetingSession? meetingSession;
+  static Question? selectedQuestion;
+  static Question? previousSelectedQuestion;
+  static QuestionSession? questionSession;
+  static AskWordQueueSession? askWordQueueSession;
+  static RegistrationSession? registrationSession;
+  static SpeakerSession? speakerSession;
 
   static String playSound = '';
   static double soundVolume = 100.0;
@@ -108,11 +109,10 @@ class ServerState {
           'status': selectedMeeting?.status,
           'lastUpdated': selectedMeeting?.lastUpdated?.toIso8601String(),
           'mode': questionSession?.meetingSessionId,
-          'voting_status': questionSession == null ||
-                  questionSession.usersCountVotedYes == null
+          'voting_status': questionSession == null
               ? false
-              : questionSession.usersCountVotedYes >=
-                  questionSession.usersCountForSuccess,
+              : questionSession!.usersCountVotedYes >=
+                  questionSession!.usersCountForSuccess,
           'isLoadingDocuments': isLoadingDocuments,
         }),
         'questionSession': questionSession?.toClient()?.toJson(),
@@ -233,7 +233,7 @@ class ServerState {
     var connectionVersions = <String, String>{};
     for (var i = 0; i < connections.length; i++) {
       connectionVersions.putIfAbsent(
-          'type:${connections[i].type ?? 'н/д'};terminalId:${connections[i].terminalId ?? 'н/д'};userId:${connections[i].deputyId?.toString() ?? 'н/д'}',
+          'type:${connections[i].type};terminalId:${connections[i].terminalId ?? 'н/д'};userId:${connections[i].deputyId?.toString() ?? 'н/д'}',
           () => connections[i].version ?? 'н/д');
     }
     versions = json.encode(connectionVersions);

@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:services/models/ais_model.dart';
 
 class Proxy extends ManagedObject<_Proxy> implements _Proxy {
@@ -9,12 +9,12 @@ class Proxy extends ManagedObject<_Proxy> implements _Proxy {
 
 class _Proxy {
   @primaryKey
-  int id;
-  ManagedSet<ProxyUser> subjects;
-  bool isActive;
-  DateTime createdDate;
-  DateTime lastUpdated;
+  late int id;
+  late ManagedSet<ProxyUser> subjects;
+  late bool isActive;
+  late DateTime createdDate;
+  late DateTime lastUpdated;
 
   @Relate(#proxys)
-  User proxy;
+  User? proxy;
 }

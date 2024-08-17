@@ -1,5 +1,5 @@
 import 'dart:io' as io;
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:services/models/ais_model.dart';
 
 class QuestionFileController extends ResourceController {
@@ -39,15 +39,23 @@ class QuestionFileController extends ResourceController {
     final f = Query<File>(context)..where((o) => o.id).equalTo(id);
     final file = await f.fetchOne();
 
+    if (file == null) {
+      return Response.notFound();
+    }
+
     final q = Query<Question>(context)
       ..where((o) => o.id).equalTo(file.question.id);
     final question = await q.fetchOne();
+
+    if (question == null) {
+      return Response.notFound();
+    }
 
     final a = Query<Agenda>(context)
       ..where((o) => o.id).equalTo(question.agenda.id);
     final agenda = await a.fetchOne();
 
-    if (question == null || agenda == null) {
+    if (agenda == null) {
       return Response.notFound();
     }
 

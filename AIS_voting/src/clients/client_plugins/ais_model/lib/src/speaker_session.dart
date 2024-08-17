@@ -1,13 +1,13 @@
 class SpeakerSession {
   late int id;
-  late int meetingId;
-  late int userId;
+  int? meetingId;
+  int? userId;
   late String terminalId;
   late String name;
   late String type;
   late int interval;
   late bool autoEnd;
-  late DateTime? startDate;
+  late DateTime startDate;
   late DateTime? endDate;
 
   SpeakerSession();
@@ -21,7 +21,7 @@ class SpeakerSession {
         'type': type,
         'interval': interval,
         'autoEnd': autoEnd,
-        'startDate': startDate?.toIso8601String(),
+        'startDate': startDate.toIso8601String(),
         'endDate': endDate?.toIso8601String()
       };
 
@@ -34,9 +34,7 @@ class SpeakerSession {
         type = json['type'],
         interval = json['interval'],
         autoEnd = json['autoEnd'],
-        startDate = json['startDate'] == null
-            ? null
-            : DateTime.parse(json['startDate']),
+        startDate = DateTime.parse(json['startDate']),
         endDate =
             json['endDate'] == null ? null : DateTime.parse(json['endDate']);
 }

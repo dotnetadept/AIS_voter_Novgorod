@@ -1,11 +1,11 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 
 class StoreboardTemplate extends ManagedObject<_StoreboardTemplate>
     implements _StoreboardTemplate {}
 
 class _StoreboardTemplate {
   @primaryKey
-  int id;
-  String name;
-  String items;
+  late int id;
+  late String name;
+  late String items;
 }

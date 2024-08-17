@@ -1,37 +1,37 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 
 class Settings extends ManagedObject<_Settings> implements _Settings {}
 
 class _Settings {
   @primaryKey
-  int id;
-  String name;
-  DateTime createdDate;
-  bool isSelected;
+  late int id;
+  late String name;
+  late DateTime createdDate;
+  late bool isSelected;
   @Column(nullable: true)
-  String palletteSettings;
+  String? palletteSettings;
   @Column(nullable: true)
-  String operatorSchemeSettings;
+  String? operatorSchemeSettings;
   @Column(nullable: true)
-  String managerSchemeSettings;
+  String? managerSchemeSettings;
   @Column(nullable: true)
-  String tableViewSettings;
+  String? tableViewSettings;
   @Column(nullable: true)
-  String deputySettings;
+  String? deputySettings;
   @Column(nullable: true)
-  String votingSettings;
+  String? votingSettings;
   @Column(nullable: true)
-  String reportSettings;
+  String? reportSettings;
   @Column(nullable: true)
-  String questionListSettings;
+  String? questionListSettings;
   @Column(nullable: true)
-  String fileSettings;
+  String? fileSettings;
   @Column(nullable: true)
-  String storeboardSettings;
+  String? storeboardSettings;
   @Column(nullable: true)
-  String signalsSettings;
+  String? signalsSettings;
   @Column(nullable: true)
-  String intervalsSettings;
+  String? intervalsSettings;
   @Column(nullable: true)
-  String licenseSettings;
+  String? licenseSettings;
 }

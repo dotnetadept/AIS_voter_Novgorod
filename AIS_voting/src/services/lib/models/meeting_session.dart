@@ -1,16 +1,16 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 
 class MeetingSession extends ManagedObject<_MeetingSession>
     implements _MeetingSession {}
 
 class _MeetingSession {
   @primaryKey
-  int id;
-  int meetingId;
+  late int id;
+  late int meetingId;
   @Column(nullable: true)
-  String guestPlaces;
+  String? guestPlaces;
   @Column(nullable: true)
-  DateTime startDate;
+  DateTime? startDate;
   @Column(nullable: true)
-  DateTime endDate;
+  DateTime? endDate;
 }

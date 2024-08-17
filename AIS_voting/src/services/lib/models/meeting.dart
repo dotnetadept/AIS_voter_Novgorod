@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'agenda.dart';
 import 'group.dart';
 
@@ -6,13 +6,13 @@ class Meeting extends ManagedObject<_Meeting> implements _Meeting {}
 
 class _Meeting {
   @primaryKey
-  int id;
-  String name;
-  String description;
-  String status;
+  late int id;
+  late String name;
+  late String description;
+  late String status;
   @Relate(#meetingAgenda)
-  Agenda agenda;
+  Agenda? agenda;
   @Relate(#meetingGroup)
-  Group group;
-  DateTime lastUpdated;
+  Group? group;
+  late DateTime lastUpdated;
 }

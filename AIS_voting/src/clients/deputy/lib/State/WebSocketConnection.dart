@@ -657,7 +657,7 @@ class WebSocketConnection with ChangeNotifier {
     }
   }
 
-  setOffline() {
+  void setOffline() {
     var currentPage = AppState().getCurrentPage();
     setIsOnline(false);
     _clientType = '';
@@ -679,6 +679,7 @@ class WebSocketConnection with ChangeNotifier {
 
     if (!_isConnectStarted) {
       _webSocket?.close();
+
       _websocketState = WebSocket.closed;
     }
 
@@ -782,8 +783,7 @@ class WebSocketConnection with ChangeNotifier {
   }
 
   void processNavigation() {
-    if (!AppState().getIsLoadingComplete() ||
-        AppState().getServerState() == null) {
+    if (!AppState().getIsLoadingComplete()) {
       navigateToPage('/loading');
       return;
     }

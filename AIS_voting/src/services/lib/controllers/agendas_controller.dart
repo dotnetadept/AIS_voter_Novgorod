@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import 'package:services/models/ais_model.dart';
 
 class AgendasController extends ResourceController {

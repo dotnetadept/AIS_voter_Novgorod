@@ -6,24 +6,24 @@ environment:
   sdk: ">=2.12.0 <4.0.0"
 
 dependencies:
-  aqueduct: 3.3.0+1
+  conduit: any
   uuid: any
   mime: any
   intl: any
-  ntp: ^2.0.0
+  ntp: any
   enum_to_string: any
   ais_model:
     path: '../clients/client_plugins/ais_model'
-  dependencies:
   mutex: ^3.0.0
   path: ^1.8.0
-  threading: any
+  #threading: any
   pedantic: any
   package_info_plus: any
   yaml: any
+  collection: ^1.18.0
 
-dependency_overrides:
-  postgres: ^2.1.1
+#dependency_overrides:
+#  postgres: ^2.1.1
 
 #pub run aqueduct db generate
 #pub run aqueduct db upgrade

@@ -1,12 +1,12 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 
 class VotingMode extends ManagedObject<_VotingMode> implements _VotingMode {}
 
 class _VotingMode {
   @primaryKey
-  int id;
-  String name;
-  String defaultDecision;
-  int orderNum;
-  String includedDecisions;
+  late int id;
+  late String name;
+  late String defaultDecision;
+  late int orderNum;
+  late String includedDecisions;
 }

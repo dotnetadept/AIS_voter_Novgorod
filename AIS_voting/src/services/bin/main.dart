@@ -1,3 +1,5 @@
+import 'package:conduit_core/conduit_core.dart';
+
 import 'package:services/services.dart';
 import 'package:yaml/yaml.dart';
 

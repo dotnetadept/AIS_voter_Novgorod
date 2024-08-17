@@ -1,4 +1,4 @@
-import 'package:aqueduct/aqueduct.dart';
+import 'package:conduit_core/conduit_core.dart';
 import '../models/registration_session.dart';
 
 class RegistrationSessionsController extends ResourceController {

@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  web_socket_channel: any
+  web_socket_channel: 3.0.1
   http: any
   ntp: ^2.0.0
   provider: any
