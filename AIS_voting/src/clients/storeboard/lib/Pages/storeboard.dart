@@ -9,7 +9,7 @@ import '../State/SoundPlayer.dart';
 import '../State/WebSocketConnection.dart';
 
 class StoreboardPage extends StatefulWidget {
-  StoreboardPage({Key key}) : super(key: key);
+  StoreboardPage({Key? key}) : super(key: key);
 
   @override
   _StoreboardPageState createState() => _StoreboardPageState();
@@ -27,7 +27,7 @@ class _StoreboardPageState extends State<StoreboardPage> {
   Widget build(BuildContext context) {
     Provider.of<AppState>(context, listen: true);
 
-    if (AppState().getServerState() == null || !AppState().getIsOnline()) {
+    if (!AppState().getIsOnline()) {
       return getLoadingStub('Подключение');
     }
 
@@ -38,7 +38,7 @@ class _StoreboardPageState extends State<StoreboardPage> {
     // calculate scale factor
     // as min of screen.width / settings.width  and screen.height / settings.height
     double scaleFactor = 1.0;
-    var settings = AppState().getSettings().storeboardSettings;
+    var settings = AppState().getSettings()!.storeboardSettings;
     var screen = Size(
         int.parse(GlobalConfiguration().getValue('width')).toDouble(),
         int.parse(GlobalConfiguration().getValue('height'))
@@ -50,14 +50,14 @@ class _StoreboardPageState extends State<StoreboardPage> {
 
     return Scaffold(
         backgroundColor:
-            Color(AppState().getSettings().storeboardSettings.backgroundColor),
+            Color(AppState().getSettings()!.storeboardSettings.backgroundColor),
         body: Transform.scale(
             scale: scaleFactor,
             child: Align(
                 alignment: Alignment.topCenter,
                 child: StoreboardWidget(
                   serverState: AppState().getServerState(),
-                  settings: AppState().getSettings(),
+                  settings: AppState().getSettings()!,
                   meeting: AppState().getCurrentMeeting(),
                   question: AppState().getCurrentQuestion(),
                   isStoreBoardClient: true,
@@ -96,8 +96,8 @@ class _StoreboardPageState extends State<StoreboardPage> {
     );
   }
 
-  static SystemState _prevSystemState;
-  static String _prevPlaySoundTimestamp;
+  static SystemState? _prevSystemState;
+  static String? _prevPlaySoundTimestamp;
 
   void setServerState(ServerState serverState) {
     SoundPlayer.setVolume(serverState.soundVolume);

@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:ais_utils/ais_utils.dart';
 import 'package:ais_model/ais_model.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -15,18 +15,16 @@ import 'AppState.dart';
 
 class WebSocketConnection with ChangeNotifier {
   GlobalKey<NavigatorState> navigatorKey;
-  static WebSocket _webSocket;
-  WebSocketChannel _channel;
+  static WebSocket? _webSocket;
+  late WebSocketChannel _channel;
 
   bool _isOnline = false;
   static bool _isConnectStarted = false;
 
-  static void Function() onConnect;
-  static void Function(String) onFail;
-  static void Function(ServerState) updateServerState;
-  static void Function() stopSound;
+  static void Function(ServerState)? updateServerState;
+  static void Function()? stopSound;
 
-  static WebSocketConnection _singleton;
+  static late WebSocketConnection _singleton;
 
   static WebSocketConnection getInstance() {
     return _singleton;
@@ -61,14 +59,16 @@ class WebSocketConnection with ChangeNotifier {
         });
       }
       if (AppState().getCurrentPage() == '/viewVideo') {
-        await AppState.refreshStream();
+        if (AppState.refreshStream != null) {
+          await AppState.refreshStream!();
+        }
       }
     } else if (json.decode(responce)['update_agenda'] != null) {
       var decodedAgenda =
           Agenda.fromJson(json.decode(json.decode(responce)['update_agenda']));
 
       if (AppState().getCurrentMeeting() != null) {
-        AppState().getCurrentMeeting().agenda.questions =
+        AppState().getCurrentMeeting()!.agenda!.questions =
             decodedAgenda.questions;
       }
     } else {
@@ -83,16 +83,15 @@ class WebSocketConnection with ChangeNotifier {
       } else {
         if (AppState().getCurrentMeeting() != null) {
           AppState().setCurrentQuestion(AppState()
-              .getCurrentMeeting()
-              .agenda
+              .getCurrentMeeting()!
+              .agenda!
               .questions
-              .firstWhere((element) => element.id == questionId,
-                  orElse: () => null));
+              .firstWhereOrNull((element) => element.id == questionId));
         }
       }
 
       if (updateServerState != null) {
-        updateServerState(serverState);
+        updateServerState!(serverState);
       }
     }
 
@@ -100,7 +99,7 @@ class WebSocketConnection with ChangeNotifier {
     notifyListeners();
   }
 
-  WebSocketConnection({this.navigatorKey});
+  WebSocketConnection({required this.navigatorKey});
 
   /// Creates new instance of IOWebSocketChannel and initializes socket listening
   Future<void> initNewChannel(String clientType) async {
@@ -115,11 +114,11 @@ class WebSocketConnection with ChangeNotifier {
           }).timeout(
         Duration(seconds: 10),
       );
-      _webSocket.pingInterval = Duration(
+      _webSocket!.pingInterval = Duration(
         seconds: int.parse(GlobalConfiguration().getValue('ping_interval')),
       );
 
-      _channel = IOWebSocketChannel(_webSocket);
+      _channel = IOWebSocketChannel(_webSocket!);
 
       _channel.stream.listen((data) => setState(data),
           onDone: reconnect, onError: wserror, cancelOnError: true);
@@ -135,7 +134,7 @@ class WebSocketConnection with ChangeNotifier {
 
   setOffline() {
     setIsOnline(false);
-    stopSound();
+    stopSound!();
 
     AppState().setCurrentMeeting(null);
     AppState().setCurrentQuestion(null);
@@ -168,7 +167,7 @@ class WebSocketConnection with ChangeNotifier {
     if (AppState().getCurrentPage() != page) {
       AppState().setCurrentPage(page);
       await navigatorKey.currentState
-          .pushNamedAndRemoveUntil(page, (Route<dynamic> route) => false);
+          ?.pushNamedAndRemoveUntil(page, (Route<dynamic> route) => false);
     }
     //});
   }
@@ -188,7 +187,7 @@ class WebSocketConnection with ChangeNotifier {
 
   @override
   void dispose() {
-    _webSocket.close();
+    _webSocket?.close();
 
     super.dispose();
   }

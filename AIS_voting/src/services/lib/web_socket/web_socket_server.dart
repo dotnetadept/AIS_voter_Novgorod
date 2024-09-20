@@ -1031,7 +1031,8 @@ class WebSocketServer {
   // Sends full server state for operator and manager,
   // otherwise sends short serverState
   void sendStateTo(Iterable<WSConnection> connections) {
-    Map<dynamic, dynamic>? longState;
+    var longState = ServerState().toJson();
+
     if (connections.isNotEmpty) {
       for (var connection in connections) {
         // do not sent any state to vissonic client
@@ -1039,19 +1040,7 @@ class WebSocketServer {
           continue;
         }
 
-        if (connection.type == 'operator' ||
-            connection.type == 'manager' ||
-            connection.type == 'deputy' ||
-            connection.type == 'guest' ||
-            connection.type == 'storeboard' ||
-            connection.type == 'stream_player') {
-          longState ??= ServerState().toJson();
-
-          connection.socket.add(json.encode(longState));
-        } else {
-          connection.socket
-              .add(json.encode(ServerState().toShortJson(connection)));
-        }
+        connection.socket.add(json.encode(longState));
       }
     }
   }
@@ -1969,10 +1958,9 @@ class WebSocketServer {
       //update question files
       // add files
       var filesForAdd = question.files
-          .where((prevElement) =>
-              oldQuestion?.files
+          .where((prevElement) => !(oldQuestion?.files
                   .any((element) => element.id == prevElement.id) ??
-              false)
+              false))
           .toList();
       for (var j = 0; j < filesForAdd.length; j++) {
         final insertedQuestionFile = Query<File>(_context)

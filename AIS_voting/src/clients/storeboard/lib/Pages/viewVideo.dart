@@ -8,15 +8,15 @@ import '../State/VideoSignal.dart';
 import 'package:statsfl/statsfl.dart';
 
 class ViewVideoPage extends StatefulWidget {
-  ViewVideoPage({Key key}) : super(key: key);
+  ViewVideoPage({Key? key}) : super(key: key);
 
   @override
   _ViewVideoPageState createState() => _ViewVideoPageState();
 }
 
 class _ViewVideoPageState extends State<ViewVideoPage> {
-  Signaling _signaling;
-  RTCVideoRenderer _renderer;
+  Signaling? _signaling;
+  RTCVideoRenderer? _renderer;
 
   bool _isPlayerStarted = false;
   bool _isShowFPS = GlobalConfiguration().getValue('player_show_fps') == 'true';
@@ -33,7 +33,7 @@ class _ViewVideoPageState extends State<ViewVideoPage> {
   Future<void> _startStream() async {
     if (_renderer == null) {
       _renderer = RTCVideoRenderer();
-      await _renderer.initialize();
+      await _renderer!.initialize();
     }
 
     await connectVideoPlayer();
@@ -73,7 +73,7 @@ class _ViewVideoPageState extends State<ViewVideoPage> {
   Future<void> connectVideoPlayer() async {
     if (_signaling == null) {
       _signaling = Signaling();
-      _signaling.connect();
+      _signaling!.connect();
     }
 
     _signaling?.onStreamCancel = () {
@@ -85,9 +85,9 @@ class _ViewVideoPageState extends State<ViewVideoPage> {
     };
 
     _signaling?.onAddRemoteStream = ((_, stream) async {
-      _renderer.srcObject = stream;
+      _renderer?.srcObject = stream;
 
-      _renderer.onFirstFrameRendered = () {
+      _renderer?.onFirstFrameRendered = () {
         _isPlayerStarted = true;
 
         setState(() {});
@@ -120,11 +120,11 @@ class _ViewVideoPageState extends State<ViewVideoPage> {
                         height: 30,
                         align: Alignment.topLeft,
                         child: RTCVideoView(
-                          _renderer,
+                          _renderer!,
                         ),
                       )
                     : RTCVideoView(
-                        _renderer,
+                        _renderer!,
                       )
                 : Container(
                     child: Center(

@@ -6,7 +6,7 @@ import 'package:enum_to_string/enum_to_string.dart';
 
 class ServerState {
   // current state of the system
-  static client_models.SystemState? systemState;
+  static client_models.SystemState systemState = client_models.SystemState.None;
 
   // current state of the storeboard
   static client_models.StoreboardState storeboardState =
@@ -156,47 +156,6 @@ class ServerState {
         'playSound': playSound,
         'soundVolume': soundVolume,
         'playSoundTimestamp': playSoundTimestamp,
-      };
-
-  // state message format for deputy, guest and storeboard
-  Map toShortJson(WSConnection connection) => {
-        'systemState': EnumToString.convertToString(systemState),
-        'storeboardState': EnumToString.convertToString(storeboardState),
-        'storeboardParams': storeboardParams,
-        'isDetailsStoreboard': isDetailsStoreboard,
-        'params': json.encode({
-          'selectedMeeting': selectedMeeting?.id,
-          'selectedQuestion': selectedQuestion?.id,
-          'status': selectedMeeting?.status,
-          'lastUpdated': selectedMeeting?.lastUpdated?.toIso8601String(),
-          'mode': questionSession?.meetingSessionId,
-        }),
-        'questionSession': questionSession?.toClient()?.toJson(),
-        'askWordQueueSession': askWordQueueSession?.toClient()?.toJson(),
-        'registrationSession': registrationSession?.toClient()?.toJson(),
-        'speakerSession': speakerSession?.toClient()?.toJson(),
-        'registrationResult': registrationResult,
-        'votingResultIndiffirent': votingResultIndiffirent,
-        'votingResultNo': votingResultNo,
-        'votingResultYes': votingResultYes,
-        'votingTotalVotes': votingTotalVotes,
-        'startSignal': startSignal?.toJson(),
-        'endSignal': endSignal?.toJson(),
-        'autoEnd': autoEnd,
-        'terminalsOnline': terminalsOnline,
-        'votingHistory': json.encode(votingHistory?.toJson()),
-        'isRegistrationCompleted': isRegistrationCompleted,
-        'usersTerminals': json.encode(usersTerminals),
-        'isStreamStarted': isStreamStarted,
-        'isRefreshStream': isRefreshStream,
-        'streamControl': streamControl,
-        'showToManager': showToManager,
-        'showAskWordButton': showAskWordButton,
-        'usersRegistered': usersRegistered,
-        'usersAskSpeech': usersAskSpeech,
-        'guestsAskSpeech': guestsAskSpeech,
-        'guestsPlaces': guestsPlaces,
-        'usersDecisions': json.encode(usersDecisions)
       };
 
   void setDevicesInfo(List<WSConnection> connections) {

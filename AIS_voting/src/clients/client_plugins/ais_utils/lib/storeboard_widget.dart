@@ -11,7 +11,7 @@ class StoreboardWidget extends StatefulWidget {
   StoreboardWidget({
     Key? key,
     required this.serverState,
-    required this.meeting,
+    this.meeting,
     this.question,
     required this.settings,
     this.isStoreBoardClient = false,
@@ -22,7 +22,7 @@ class StoreboardWidget extends StatefulWidget {
   }) : super(key: key);
 
   final ServerState serverState;
-  final Meeting meeting;
+  final Meeting? meeting;
   final Question? question;
   final Settings settings;
   final bool isStoreBoardClient;
@@ -97,7 +97,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   widget.settings.storeboardSettings.detailsRowsCount)
               .ceil();
     } else if (widget.meeting != null) {
-      _maxDetailsPagesCount = (widget.meeting.group!.getVoters().length /
+      _maxDetailsPagesCount = (widget.meeting!.group!.getVoters().length /
               widget.settings.storeboardSettings.detailsRowsCount)
           .ceil();
     }
@@ -277,7 +277,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     if (widget.serverState.systemState == SystemState.QuestionVotingComplete) {
       bool isQuorumSuccess =
           widget.serverState.questionSession!.usersCountRegistred >=
-              widget.meeting.group!.quorumCount;
+              widget.meeting!.group!.quorumCount;
 
       bool isVotingSuccess = false;
       bool isManagerDecides = false;
@@ -287,7 +287,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
         isVotingSuccess = true;
 
         // check is manager vote was casting vote
-        if (widget.meeting.group!.isManagerCastingVote &&
+        if (widget.meeting!.group!.isManagerCastingVote &&
             (DecisionModeHelper.getEnumValue(
                     widget.serverState.questionSession!.decision) ==
                 DecisionMode.MajorityOfRegistredMembers) &&
@@ -296,7 +296,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
             (widget.serverState.questionSession!.usersCountVotedYes ==
                 widget.serverState.questionSession!.usersCountForSuccess)) {
           var currentManagerId = GroupUtil().getManagerId(
-              widget.meeting.group!, widget.serverState.usersTerminals);
+              widget.meeting!.group!, widget.serverState.usersTerminals);
           var managerDecision =
               widget.serverState.usersDecisions.entries.firstWhereOrNull(
             (element) => element.key == currentManagerId?.toString(),
@@ -322,7 +322,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
       int usersCountForSuccessDisplay =
           widget.serverState.questionSession!.usersCountForSuccessDisplay;
 
-      var voters = widget.meeting.group!
+      var voters = widget.meeting!.group!
           .getVoters()
           .map<User>((row) => row.user)
           .toList(growable: false);
@@ -559,7 +559,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
     if (widget.isStoreBoardClient) {
       var timeParts = _clockText.split(' ');
       bool totalResult = widget.serverState.usersRegistered.length >=
-          widget.meeting.group!.quorumCount;
+          widget.meeting!.group!.quorumCount;
 
       return Column(
         children: [
@@ -697,13 +697,13 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
 
     var userCounter = 0;
 
-    var columnsCount = (widget.meeting.group!.groupUsers.length /
+    var columnsCount = (widget.meeting!.group!.groupUsers.length /
             widget.settings.storeboardSettings.detailsRowsCount)
         .ceil();
 
     var users = widget.users
         .where((u) =>
-            widget.meeting.group!.groupUsers.any((gu) => gu.user.id == u.id))
+            widget.meeting!.group!.groupUsers.any((gu) => gu.user.id == u.id))
         .toList();
 
     for (int i = 0; i < columnsCount; i++) {
@@ -806,7 +806,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
 
   Widget getRegistrationResultStoreBoard() {
     bool totalResult = widget.serverState.registrationResult >=
-        widget.meeting.group!.quorumCount;
+        widget.meeting!.group!.quorumCount;
 
     return Column(
       children: [
@@ -884,7 +884,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${widget.meeting.group!.lawUsersCount}',
+                  '${widget.meeting!.group!.lawUsersCount}',
                   style: TextStyle(
                     fontSize: widget
                         .settings.storeboardSettings.resultItemsFontSize
@@ -910,7 +910,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   height: getScaledSize(5),
                 ),
                 Text(
-                  '${widget.meeting.group!.lawUsersCount - widget.serverState.registrationResult}',
+                  '${widget.meeting!.group!.lawUsersCount - widget.serverState.registrationResult}',
                   style: TextStyle(
                     fontSize: widget
                         .settings.storeboardSettings.resultItemsFontSize
@@ -923,7 +923,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
                   height: getScaledSize(5),
                 ),
                 Text(
-                  '${widget.meeting.group!.quorumCount}',
+                  '${widget.meeting!.group!.quorumCount}',
                   style: TextStyle(
                     fontSize: widget
                         .settings.storeboardSettings.resultItemsFontSize
@@ -1575,7 +1575,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
         getMeetingTopRow(),
         Expanded(child: Container()),
         Text(
-          widget.meeting.name,
+          widget.meeting!.name,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: getScaledSize(28),
@@ -1617,7 +1617,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           padding:
               EdgeInsets.fromLTRB(getScaledSize(20), 0, getScaledSize(20), 0),
           child: AutoSizeText(
-            '${widget.meeting.name.toUpperCase()}',
+            '${widget.meeting!.name.toUpperCase()}',
             textAlign: TextAlign.center,
             stepGranularity: 0.1,
             minFontSize: 1,
@@ -1726,7 +1726,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
           child: widget.meeting == null
               ? Container()
               : Text(
-                  widget.meeting.name,
+                  widget.meeting!.name,
                   style: TextStyle(
                       fontSize: getScaledSize(14),
                       color:

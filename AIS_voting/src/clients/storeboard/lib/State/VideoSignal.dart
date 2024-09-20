@@ -9,11 +9,11 @@ import 'package:web_socket_channel/io.dart';
 import '../Utils/random_string.dart';
 
 class Session {
-  Session({this.sid, this.pid});
+  Session({required this.sid, required this.pid});
   String pid;
   String sid;
-  RTCPeerConnection pc;
-  RTCDataChannel dc;
+  late RTCPeerConnection pc;
+  late RTCDataChannel dc;
 }
 
 class Signaling {
@@ -22,30 +22,30 @@ class Signaling {
 
   String _selfId = randomNumeric(6);
 
-  WebSocket _socket;
-  IOWebSocketChannel _channel;
+  WebSocket? _socket;
+  IOWebSocketChannel? _channel;
 
-  Session _session;
+  Session? _session;
 
   JsonEncoder _encoder = JsonEncoder();
   JsonDecoder _decoder = JsonDecoder();
 
   bool _wasClosed = false;
 
-  Function(Session session, MediaStream stream) onAddRemoteStream;
-  Function() onStreamCancel;
+  Function(Session session, MediaStream stream)? onAddRemoteStream;
+  Function()? onStreamCancel;
 
   Signaling();
 
   Future<void> connect() async {
     var url = 'ws://$_host:$_port/app/stream?transport=tcp';
     await WebSocket.connect(url).then((value) {
-      _socket = value;
       print('Websocket of OvenMediaPlayer connected to: $url');
 
-      _channel = IOWebSocketChannel(_socket);
+      _channel = IOWebSocketChannel(value);
+      _socket = value;
 
-      _channel.stream.listen((data) {
+      _channel!.stream.listen((data) {
         if (data == '{"code":404,"error":"Cannot create offer"}') {
           Timer(Duration(seconds: 1), sendOMERequest);
         }
@@ -54,13 +54,13 @@ class Signaling {
         print("OvenMediaServer stream is done");
         await close();
         if (onStreamCancel != null) {
-          onStreamCancel();
+          onStreamCancel!();
         }
 
         Timer(Duration(seconds: 1), () {
           if (AppState().getCurrentPage() == '/viewVideo') {
             if (AppState.refreshStream != null) {
-              AppState.refreshStream();
+              AppState.refreshStream!();
             }
           }
         });
@@ -68,13 +68,13 @@ class Signaling {
         print("OvenMediaServer stream error: $err");
         await close();
         if (onStreamCancel != null) {
-          onStreamCancel();
+          onStreamCancel!();
         }
 
         Timer(Duration(seconds: 1), () {
           if (AppState().getCurrentPage() == '/viewVideo') {
             if (AppState.refreshStream != null) {
-              AppState.refreshStream();
+              AppState.refreshStream!();
             }
           }
         });
@@ -85,12 +85,12 @@ class Signaling {
       print('Websocket of OvenMediaPlayer error: $error');
       await close();
       if (onStreamCancel != null) {
-        onStreamCancel();
+        onStreamCancel!();
       }
       Timer(Duration(seconds: 1), () {
         if (AppState().getCurrentPage() == '/viewVideo') {
           if (AppState.refreshStream != null) {
-            AppState.refreshStream();
+            AppState.refreshStream!();
           }
         }
       });
@@ -100,12 +100,12 @@ class Signaling {
   }
 
   void sendOMERequest() {
-    if (_channel.closeCode != null) {
+    if (_channel?.closeCode != null) {
       return;
     }
     var request = Map();
     request["command"] = "request_offer";
-    _channel.sink.add(_encoder.convert(request));
+    _channel?.sink.add(_encoder.convert(request));
   }
 
   void onMessage(Map<String, dynamic> mapData) async {
@@ -124,38 +124,40 @@ class Signaling {
   }
 
   Future<void> createSession(
-      {String peerId, Map<String, dynamic> sdp, dynamic candidates}) async {
+      {required String peerId,
+      required Map<String, dynamic> sdp,
+      dynamic candidates}) async {
     _session = _session ?? Session(sid: _selfId, pid: peerId);
-    _session.pc = await createPeerConnection(<String, dynamic>{});
+    _session!.pc = await createPeerConnection(<String, dynamic>{});
 
-    _session.pc.onTrack = (event) {
+    _session!.pc.onTrack = (event) {
       if (event.track.kind == 'video') {
-        onAddRemoteStream?.call(_session, event.streams[0]);
+        onAddRemoteStream?.call(_session!, event.streams[0]);
       }
       if (event.track.kind == 'audio') {}
     };
 
-    _session.pc.onDataChannel = (channel) {
-      _session.dc = channel;
+    _session!.pc.onDataChannel = (channel) {
+      _session!.dc = channel;
     };
 
     var remoteDescripton = RTCSessionDescription(sdp['sdp'], sdp['type']);
-    await _session.pc.setRemoteDescription(remoteDescripton);
+    await _session!.pc.setRemoteDescription(remoteDescripton);
 
-    var localSdp = await _session.pc.createAnswer();
+    var localSdp = await _session!.pc.createAnswer();
 
     var answer = _encoder.convert({
       'id': int.parse(_selfId),
-      'peer_id': int.parse(_session.pid),
+      'peer_id': int.parse(_session!.pid),
       'command': 'answer',
       'sdp': {'type': 'answer', 'sdp': localSdp.sdp},
     });
 
-    _channel.sink.add(answer);
+    _channel!.sink.add(answer);
 
-    _session.pc.setLocalDescription(localSdp);
+    _session!.pc.setLocalDescription(localSdp);
 
-    await addIceCandidate(_session.pc, candidates);
+    await addIceCandidate(_session!.pc, candidates);
   }
 
   Future<void> addIceCandidate(
@@ -174,9 +176,9 @@ class Signaling {
     }
     _wasClosed = true;
 
-    if (_session?.pc?.getRemoteStreams()?.isNotEmpty == true) {
-      for (var stream in _session?.pc?.getRemoteStreams()) {
-        stream.getTracks().forEach((track) async {
+    if (_session?.pc.getRemoteStreams().isNotEmpty == true) {
+      for (var stream in _session!.pc.getRemoteStreams()) {
+        stream?.getTracks().forEach((track) async {
           await track.stop();
         });
 

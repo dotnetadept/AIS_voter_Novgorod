@@ -946,7 +946,7 @@ class _ViewAgendaPageState extends State<ViewAgendaPage> {
         ),
         StoreboardWidget(
           serverState: AppState().getServerState(),
-          meeting: AppState().getCurrentMeeting()!,
+          meeting: AppState().getCurrentMeeting(),
           question: AppState()
               .getCurrentMeeting()!
               .agenda!

@@ -1,1 +1,0 @@
- /home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/deputy/.dart_tool/flutter_build/60ae2bd332413e458ea7aa8708a324ae/native_assets.yaml: 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:ntp/ntp.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -11,14 +12,13 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:global_configuration/global_configuration.dart';
 
 class AppState with ChangeNotifier {
-  static WebSocketChannel _channel;
-  static ServerState _serverState;
+  static late ServerState _serverState;
 
-  static List<VotingMode> _votingModes;
-  static List<User> _users;
-  static Meeting _currentMeeting;
-  static Settings _settings;
-  static int _timeOffset;
+  static late List<VotingMode> _votingModes;
+  static late List<User> _users;
+  static Meeting? _currentMeeting;
+  static Settings? _settings;
+  static late int _timeOffset;
   static bool _isOnline = false;
   static bool _isLoadingComplete = false;
 
@@ -28,10 +28,10 @@ class AppState with ChangeNotifier {
   static AppState _singleton = AppState._internal();
 
   // selected agenda items
-  static Question _currentQuestion;
+  static Question? _currentQuestion;
 
   //stream
-  static Future<void> Function() refreshStream;
+  static Future<void> Function()? refreshStream;
 
   factory AppState() {
     return _singleton;
@@ -39,7 +39,7 @@ class AppState with ChangeNotifier {
 
   AppState._internal();
 
-  Future<void> loadData(int meetingId, int selectedQuestionId) async {
+  Future<void> loadData(int? meetingId, int? selectedQuestionId) async {
     if (meetingId != null) {
       await http
           .get(Uri.http(
@@ -47,10 +47,8 @@ class AppState with ChangeNotifier {
               '/meetings/$meetingId'))
           .then((response) {
         _currentMeeting = Meeting.fromJson(json.decode(response.body));
-        _currentQuestion = _currentMeeting.agenda.questions.firstWhere(
-            (element) => element.id == selectedQuestionId, orElse: () {
-          return null;
-        });
+        _currentQuestion = _currentMeeting?.agenda?.questions
+            .firstWhereOrNull((element) => element.id == selectedQuestionId);
       });
     } else {
       _currentMeeting = null;
@@ -64,9 +62,9 @@ class AppState with ChangeNotifier {
       _settings = (json.decode(response.body) as List)
           .map((data) => Settings.fromJson(data))
           .toList()
-          .firstWhere((element) => element.isSelected, orElse: () => null);
+          .firstWhere((element) => element.isSelected);
 
-      SoundPlayer.setIsActive(_settings.signalsSettings.isStoreboardPlaySound);
+      SoundPlayer.setIsActive(_settings!.signalsSettings.isStoreboardPlaySound);
     });
     await http
         .get(Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
@@ -100,8 +98,8 @@ class AppState with ChangeNotifier {
         }
       }
 
-      SoundPlayer.loadSound(_settings.signalsSettings.hymnStart, 'hymn_start');
-      SoundPlayer.loadSound(_settings.signalsSettings.hymnEnd, 'hymn_end');
+      SoundPlayer.loadSound(_settings!.signalsSettings.hymnStart, 'hymn_start');
+      SoundPlayer.loadSound(_settings!.signalsSettings.hymnEnd, 'hymn_end');
     });
     await NTP
         .getNtpOffset(
@@ -111,13 +109,8 @@ class AppState with ChangeNotifier {
         .onError((error, stackTrace) {
       print(
           'Отсутствует синхронизация с сервером времени. ${error.toString()} ${stackTrace.toString()}');
-      return null;
+      return 0;
     }).then((offset) {
-      if (offset == null) {
-        // use local time if ntp offset not  loaded
-        offset = 0;
-      }
-
       _timeOffset = offset;
       setIsLoadingComplete(true);
     });
@@ -167,30 +160,30 @@ class AppState with ChangeNotifier {
     return _users;
   }
 
-  Meeting getCurrentMeeting() {
+  Meeting? getCurrentMeeting() {
     return _currentMeeting;
   }
 
-  void setCurrentMeeting(Meeting meeting) {
+  void setCurrentMeeting(Meeting? meeting) {
     _currentMeeting = meeting;
     if (_currentMeeting != null &&
-        _currentMeeting.agenda.questions.length > 0) {
-      _currentMeeting.agenda.questions
+        _currentMeeting!.agenda!.questions.length > 0) {
+      _currentMeeting!.agenda!.questions
           .sort((a, b) => a.orderNum.compareTo(b.orderNum));
     }
 
     notifyListeners();
   }
 
-  void setCurrentQuestion(Question question) {
+  void setCurrentQuestion(Question? question) {
     _currentQuestion = question;
   }
 
-  Question getCurrentQuestion() {
+  Question? getCurrentQuestion() {
     return _currentQuestion;
   }
 
-  Settings getSettings() {
+  Settings? getSettings() {
     return _settings;
   }
 
@@ -204,14 +197,6 @@ class AppState with ChangeNotifier {
 
   void setTimeOffset(int timeOffset) {
     _timeOffset = timeOffset;
-  }
-
-  WebSocketChannel getWsChannel() {
-    return _channel;
-  }
-
-  void setWsChannel(WebSocketChannel channel) {
-    _channel = channel;
   }
 
   bool getIsLoadingInProgress() {

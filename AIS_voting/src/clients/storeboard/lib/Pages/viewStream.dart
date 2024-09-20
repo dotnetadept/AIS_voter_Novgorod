@@ -6,7 +6,7 @@ import 'package:storeboard/Utils/stream_utils.dart';
 import 'package:window_manager/window_manager.dart';
 
 class ViewStreamPage extends StatefulWidget {
-  ViewStreamPage({Key key}) : super(key: key);
+  ViewStreamPage({Key? key}) : super(key: key);
 
   @override
   _ViewStreamPageState createState() => _ViewStreamPageState();

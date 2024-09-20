@@ -1,13 +1,14 @@
 import 'package:ais_model/ais_model.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'AppState.dart';
 
 class SoundPlayer with ChangeNotifier {
-  static SoundPlayer _singleton;
+  static late SoundPlayer _singleton;
 
-  static Player _player;
-  static bool _isActive;
+  static late Player _player;
+  static bool _isActive = false;
   static var _medias = Map<String, Media>();
 
   static SoundPlayer getInstance() {
@@ -38,9 +39,9 @@ class SoundPlayer with ChangeNotifier {
     _medias.putIfAbsent(type, () => Media(path));
   }
 
-  static Future<void> playSoundByPath(String path) async {
+  static Future<void> playSoundByPath(String? path) async {
     var sound = _medias.entries
-        .firstWhere((element) => element.value.uri == path, orElse: () => null)
+        .firstWhereOrNull((element) => element.value.uri == path)
         ?.value;
     if (sound == null) {
       return;
@@ -78,9 +79,9 @@ class SoundPlayer with ChangeNotifier {
     }
   }
 
-  static void playSignal(Signal signal) {
-    var media = _medias[signal?.id?.toString()];
-    if (media == null) {
+  static void playSignal(Signal? signal) {
+    var media = _medias[signal?.id.toString()];
+    if (signal == null || media == null) {
       return;
     }
 
@@ -96,12 +97,12 @@ class SoundPlayer with ChangeNotifier {
     }
   }
 
-  static bool playEndingSignal(Signal signal) {
+  static bool playEndingSignal(Signal? signal) {
     var result = false;
 
-    var media = _medias[signal?.id?.toString()];
+    var media = _medias[signal?.id.toString()];
 
-    if (media == null) {
+    if (signal == null || media == null) {
       return result;
     }
 

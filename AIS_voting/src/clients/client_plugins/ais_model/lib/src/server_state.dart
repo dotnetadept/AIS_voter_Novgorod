@@ -69,7 +69,7 @@ class ServerState {
   late List<int> waitingMics;
 
   late String? playSound;
-  late double? soundVolume;
+  late double soundVolume;
   late String? playSoundTimestamp;
 
   late DateTime timestamp;

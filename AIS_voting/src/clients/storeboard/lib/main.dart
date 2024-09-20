@@ -90,7 +90,7 @@ class _StoreboardAppState extends State<StoreboardApp> {
       return _buildRoute(settings, new ViewVideoPage());
     }
 
-    return null;
+    return _buildRoute(settings, new StoreboardPage());
   }
 
   CustomPageRoute _buildRoute(RouteSettings settings, Widget builder) {

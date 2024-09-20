@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.04.26
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -12,7 +12,7 @@ dependencies:
   intl: any
   http: any
   ntp: ^2.0.0
-  web_socket_channel: any
+  web_socket_channel: 3.0.1
   ais_model:
     path: '../client_plugins/ais_model'
   ais_utils:
@@ -30,6 +30,7 @@ dependencies:
   flutter_webrtc: #^0.9.48+hotfix.1
     path: '../../../../../AIS_voter_Novgorod/AIS_voting/src/clients/client_plugins/flutter-webrtc-main'
   statsfl: ^2.3.0
+  collection: ^1.18.0
   
 dev_dependencies:
   flutter_test:
