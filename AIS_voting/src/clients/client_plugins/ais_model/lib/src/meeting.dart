@@ -6,17 +6,17 @@ class Meeting {
   late String name;
   late String description;
   late String status;
+  Agenda? agenda;
+  Group? group;
   late DateTime lastUpdated;
-  late Agenda? agenda;
-  late Group? group;
 
   Meeting({
     required this.id,
     required this.name,
     required this.description,
     required this.status,
-    required this.agenda,
-    required this.group,
+    this.agenda,
+    this.group,
     required this.lastUpdated,
   });
 
@@ -25,8 +25,8 @@ class Meeting {
         'name': name,
         'description': description,
         'status': status,
-        'agenda': agenda == null ? null : agenda?.toJson(),
-        'group': group == null ? null : group?.toJson(),
+        'agenda': agenda == agenda?.toJson(),
+        'group': group == group?.toJson(),
         'lastUpdated': lastUpdated.toIso8601String(),
       };
 

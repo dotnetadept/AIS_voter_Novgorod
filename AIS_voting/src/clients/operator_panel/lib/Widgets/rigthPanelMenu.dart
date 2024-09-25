@@ -14,33 +14,33 @@ import '../Providers/WebSocketConnection.dart';
 
 class RightPanelMenu extends StatefulWidget {
   final Settings settings;
-  final Meeting selectedMeeting;
-  final Question lockedQuestion;
-  final Question selectedQuestion;
+  final Meeting? selectedMeeting;
+  final Question? lockedQuestion;
+  final Question? selectedQuestion;
   final List<User> users;
   final int timeOffset;
 
-  final void Function(ais.Interval interval) setInterval;
-  final void Function(bool autoEnd) setAutoEnd;
+  final void Function(ais.Interval? interval) setInterval;
+  final void Function(bool? autoEnd) setAutoEnd;
   final void Function(String) addGuestAskWord;
   final void Function(String) removeGuestAskWord;
   final void Function(int) addUserAskWord;
   final void Function(int) removeUserAskWord;
 
   RightPanelMenu({
-    Key key,
-    this.settings,
-    this.selectedMeeting,
-    this.lockedQuestion,
-    this.selectedQuestion,
-    this.users,
-    this.timeOffset,
-    this.setInterval,
-    this.setAutoEnd,
-    this.addGuestAskWord,
-    this.removeGuestAskWord,
-    this.addUserAskWord,
-    this.removeUserAskWord,
+    Key? key,
+    required this.settings,
+    required this.selectedMeeting,
+    required this.lockedQuestion,
+    required this.selectedQuestion,
+    required this.users,
+    required this.timeOffset,
+    required this.setInterval,
+    required this.setAutoEnd,
+    required this.addGuestAskWord,
+    required this.removeGuestAskWord,
+    required this.addUserAskWord,
+    required this.removeUserAskWord,
   }) : super(key: key);
 
   @override
@@ -48,7 +48,7 @@ class RightPanelMenu extends StatefulWidget {
 }
 
 class _RightPanelMenuState extends State<RightPanelMenu> {
-  WebSocketConnection _connection;
+  late WebSocketConnection _connection;
 
   @override
   void initState() {
@@ -187,11 +187,11 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                   message: 'Настройки',
                   child: TextButton(
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.all(EdgeInsets.all(0)),
-                      backgroundColor: MaterialStateProperty.all(Colors.white),
-                      foregroundColor: MaterialStateProperty.all(Colors.blue),
-                      overlayColor: MaterialStateProperty.all(Colors.black12),
-                      shape: MaterialStateProperty.all(
+                      padding: WidgetStateProperty.all(EdgeInsets.all(0)),
+                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      foregroundColor: WidgetStateProperty.all(Colors.blue),
+                      overlayColor: WidgetStateProperty.all(Colors.black12),
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -205,11 +205,11 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                 ),
               ),
               widget.selectedMeeting != null &&
-                      widget.selectedMeeting.status == 'Подготовка'
+                      widget.selectedMeeting!.status == 'Подготовка'
                   ? Expanded(child: Container())
                   : Container(),
               widget.selectedMeeting != null &&
-                      widget.selectedMeeting.status == 'Подготовка'
+                      widget.selectedMeeting!.status == 'Подготовка'
                   ? Container(
                       width: 40,
                       height: 40,
@@ -217,15 +217,14 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                         message: 'Остановить подготовку',
                         child: TextButton(
                           style: ButtonStyle(
-                            padding:
-                                MaterialStateProperty.all(EdgeInsets.all(0)),
+                            padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
+                                WidgetStateProperty.all(Colors.white),
                             foregroundColor:
-                                MaterialStateProperty.all(Colors.blue),
+                                WidgetStateProperty.all(Colors.blue),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.black12),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.black12),
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -242,13 +241,13 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                     )
                   : Container(),
               widget.selectedMeeting != null &&
-                      (widget.selectedMeeting.status == 'Подготовка' ||
+                      (widget.selectedMeeting!.status == 'Подготовка' ||
                           SystemStateHelper.isStarted(
                               _connection.getServerState.systemState))
                   ? Expanded(child: Container())
                   : Container(),
               widget.selectedMeeting != null &&
-                      (widget.selectedMeeting.status == 'Подготовка' ||
+                      (widget.selectedMeeting!.status == 'Подготовка' ||
                           SystemStateHelper.isStarted(
                               _connection.getServerState.systemState))
                   ? Container(
@@ -262,15 +261,14 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                         child: TextButton(
                           style: ButtonStyle(
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            padding:
-                                MaterialStateProperty.all(EdgeInsets.all(0)),
+                            padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
+                                WidgetStateProperty.all(Colors.white),
                             foregroundColor:
-                                MaterialStateProperty.all(Colors.blue),
+                                WidgetStateProperty.all(Colors.blue),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.black12),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.black12),
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(
                                 color: Colors.transparent,
@@ -292,11 +290,11 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                     )
                   : Container(),
               widget.selectedMeeting == null ||
-                      widget.selectedMeeting.status != 'Ожидание'
+                      widget.selectedMeeting!.status != 'Ожидание'
                   ? Container()
                   : Expanded(child: Container()),
               widget.selectedMeeting == null ||
-                      widget.selectedMeeting.status != 'Ожидание'
+                      widget.selectedMeeting!.status != 'Ожидание'
                   ? Container()
                   : Container(
                       width: 40,
@@ -305,15 +303,14 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                         message: 'Начать подготовку',
                         child: TextButton(
                           style: ButtonStyle(
-                            padding:
-                                MaterialStateProperty.all(EdgeInsets.all(0)),
+                            padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
+                                WidgetStateProperty.all(Colors.white),
                             foregroundColor:
-                                MaterialStateProperty.all(Colors.blue),
+                                WidgetStateProperty.all(Colors.blue),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.black12),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.black12),
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -340,15 +337,14 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                         message: 'Загрузить документы',
                         child: TextButton(
                           style: ButtonStyle(
-                            padding:
-                                MaterialStateProperty.all(EdgeInsets.all(0)),
+                            padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
+                                WidgetStateProperty.all(Colors.white),
                             foregroundColor:
-                                MaterialStateProperty.all(Colors.blue),
+                                WidgetStateProperty.all(Colors.blue),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.black12),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.black12),
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -373,15 +369,14 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                         message: 'Изменить список вопросов',
                         child: TextButton(
                           style: ButtonStyle(
-                            padding:
-                                MaterialStateProperty.all(EdgeInsets.all(0)),
+                            padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
+                                WidgetStateProperty.all(Colors.white),
                             foregroundColor:
-                                MaterialStateProperty.all(Colors.blue),
+                                WidgetStateProperty.all(Colors.blue),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.black12),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.black12),
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -409,21 +404,20 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                         message: 'Настройка текста табло',
                         child: TextButton(
                           style: ButtonStyle(
-                            padding:
-                                MaterialStateProperty.all(EdgeInsets.all(3)),
+                            padding: WidgetStateProperty.all(EdgeInsets.all(3)),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
+                                WidgetStateProperty.all(Colors.white),
                             foregroundColor:
                                 _connection.getServerState.storeboardState !=
                                             null &&
                                         _connection.getServerState
                                                 .storeboardState !=
                                             StoreboardState.None
-                                    ? MaterialStateProperty.all(Colors.green)
-                                    : MaterialStateProperty.all(Colors.blue),
+                                    ? WidgetStateProperty.all(Colors.green)
+                                    : WidgetStateProperty.all(Colors.blue),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.black12),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.black12),
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -444,9 +438,9 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                   message: 'Начать трансляцию',
                   child: TextButton(
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.all(EdgeInsets.all(3)),
-                      backgroundColor: MaterialStateProperty.all(Colors.white),
-                      shape: MaterialStateProperty.all(
+                      padding: WidgetStateProperty.all(EdgeInsets.all(3)),
+                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -488,7 +482,7 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                             'Регистрация: ${_connection.getServerState.isRegistrationCompleted ? "есть" : "нет"}',
                         child: TextButton(
                           style: ButtonStyle(
-                            fixedSize: MaterialStateProperty.all(Size(
+                            fixedSize: WidgetStateProperty.all(Size(
                                 (widget.settings.storeboardSettings.width - 30)
                                     .toDouble(),
                                 52)),
@@ -527,7 +521,7 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                       padding: EdgeInsets.fromLTRB(10, 10, 10, 5),
                       child: TextButton(
                         style: ButtonStyle(
-                          fixedSize: MaterialStateProperty.all(Size(
+                          fixedSize: WidgetStateProperty.all(Size(
                               (widget.settings.storeboardSettings.width - 30)
                                   .toDouble(),
                               52)),
@@ -583,11 +577,11 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
     _connection.setSystemStatus(
         SystemState.MeetingPreparationComplete,
         json.encode({
-          'meeting_id': widget.selectedMeeting.id,
+          'meeting_id': widget.selectedMeeting!.id,
         }));
 
     setState(() {
-      widget.selectedMeeting.status = 'Ожидание';
+      widget.selectedMeeting!.status = 'Ожидание';
     });
   }
 
@@ -618,7 +612,7 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
     _connection.setSystemStatus(
         SystemState.MeetingPreparation,
         json.encode({
-          'meeting_id': widget.selectedMeeting.id,
+          'meeting_id': widget.selectedMeeting!.id,
         }));
   }
 
@@ -653,12 +647,12 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
     _connection.setSystemStatus(
         SystemState.RegistrationComplete,
         json.encode({
-          'meeting_id': widget.selectedMeeting.id,
+          'meeting_id': widget.selectedMeeting!.id,
         }));
   }
 
   void _onQuestionListChange() {
-    QuestionListChangeDialog(context, widget.selectedMeeting,
+    QuestionListChangeDialog(context, widget.selectedMeeting!,
             widget.lockedQuestion, widget.settings, widget.users)
         .openDialog()
         .then((value) => setState(() {}));
@@ -670,8 +664,8 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
       _connection.getServerState,
       widget.timeOffset,
       widget.settings,
-      widget.selectedMeeting,
-      widget.selectedMeeting.group,
+      widget.selectedMeeting!,
+      widget.selectedMeeting!.group!,
       AppState().getIntervals().where((element) => element.isActive).toList(),
       AppState().getSelectedInterval(),
       AppState().getAutoEnd(),
@@ -697,7 +691,7 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
       _connection.setSystemStatus(
           SystemState.QuestionLocked,
           json.encode({
-            'question_id': widget.lockedQuestion.id,
+            'question_id': widget.lockedQuestion!.id,
           }));
     } else if (widget.selectedMeeting != null) {
       _connection.setStoreboardStatus(StoreboardState.None, null);
@@ -736,13 +730,13 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
       _connection.setSystemStatus(
           SystemState.MeetingCompleted,
           json.encode({
-            'meeting_id': widget.selectedMeeting.id,
+            'meeting_id': widget.selectedMeeting!.id,
           }));
     } else {
       _connection.setSystemStatus(
           SystemState.MeetingStarted,
           json.encode({
-            'meeting_id': widget.selectedMeeting.id,
+            'meeting_id': widget.selectedMeeting!.id,
           }));
     }
   }

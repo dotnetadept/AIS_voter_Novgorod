@@ -13,21 +13,15 @@ dependencies:
   intl: any
   global_configuration: any
     #path: '../global_configuration-1.6.0'
-  ntp: ^2.0.0
+  ntp: any
   ais_model:
     path: '../ais_model'
-  auto_size_text: ^3.0.0
-  window_size:
-    path: '../window_size'
-  transparent_pointer: ^1.0.0
-  select2dot1: ^2.0.7
+  auto_size_text: any
+  #window_size:
+  #  path: '../window_size'
+  #transparent_pointer: any
+  select2dot1: any
   collection: ^1.18.0
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-    
-flutter:
 
   # example:
   # fonts:

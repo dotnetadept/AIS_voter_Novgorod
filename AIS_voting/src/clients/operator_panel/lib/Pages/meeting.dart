@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -10,14 +11,15 @@ import 'package:global_configuration/global_configuration.dart';
 class MeetingPage extends StatefulWidget {
   final Meeting meeting;
   final int timeOffset;
-  MeetingPage({Key key, this.meeting, this.timeOffset}) : super(key: key);
+  MeetingPage({Key? key, required this.meeting, required this.timeOffset})
+      : super(key: key);
 
   @override
   _MeetingPageState createState() => _MeetingPageState();
 }
 
 class _MeetingPageState extends State<MeetingPage> {
-  Meeting _originalMeeting;
+  late Meeting _originalMeeting;
   final _formKey = GlobalKey<FormState>();
   List<Group> _groups = <Group>[];
   List<Agenda> _agendas = <Agenda>[];
@@ -64,7 +66,7 @@ class _MeetingPageState extends State<MeetingPage> {
   }
 
   bool _save() {
-    if (!_formKey.currentState.validate()) {
+    if (_formKey.currentState?.validate() != true) {
       return false;
     }
 
@@ -158,7 +160,7 @@ class _MeetingPageState extends State<MeetingPage> {
                 message: 'Сохранить',
                 child: TextButton(
                   style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),
@@ -197,7 +199,7 @@ class _MeetingPageState extends State<MeetingPage> {
               labelText: 'Название',
             ),
             validator: (value) {
-              if (value.isEmpty) {
+              if (value == null || value.isEmpty) {
                 return 'Введите название';
               }
               return null;
@@ -215,7 +217,7 @@ class _MeetingPageState extends State<MeetingPage> {
               labelText: 'Описание',
             ),
             validator: (value) {
-              if (value.isEmpty) {
+              if (value == null || value.isEmpty) {
                 return 'Введите описание';
               }
               return null;
@@ -236,24 +238,23 @@ class _MeetingPageState extends State<MeetingPage> {
 
   Widget getAgendaSelector() {
     return DropdownSearch<Agenda>(
-      mode: Mode.DIALOG,
-      showSearchBox: true,
-      showClearButton: true,
+      // mode: Mode.DIALOG,
+      // showSearchBox: true,
+      // showClearButton: true,
       items: _agendas,
-      label: 'Повестка',
-      popupTitle: Container(
-          alignment: Alignment.center,
-          color: Colors.blueAccent,
-          padding: EdgeInsets.all(10),
-          child: Text(
-            'Повестка',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
-          )),
-      hint: 'Выберите повестку',
-      selectedItem: _agendas.firstWhere(
-          (element) => element.id == widget.meeting.agenda?.id,
-          orElse: () => null),
+      // label: 'Повестка',
+      // popupTitle: Container(
+      //     alignment: Alignment.center,
+      //     color: Colors.blueAccent,
+      //     padding: EdgeInsets.all(10),
+      //     child: Text(
+      //       'Повестка',
+      //       style: TextStyle(
+      //           fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+      //     )),
+      // hint: 'Выберите повестку',
+      selectedItem: _agendas.firstWhereOrNull(
+          (element) => element.id == widget.meeting.agenda?.id),
       onChanged: (value) {
         setState(() {
           widget.meeting.agenda = value;
@@ -266,17 +267,18 @@ class _MeetingPageState extends State<MeetingPage> {
         return null;
       },
       dropdownBuilder: agendaDropDownItemBuilder,
-      popupItemBuilder: agendaItemBuilder,
-      emptyBuilder: emptyBuilder,
+      popupProps: PopupProps.menu(
+        itemBuilder: agendaItemBuilder,
+      ),
+      // emptyBuilder: emptyBuilder,
     );
   }
 
-  Widget emptyBuilder(BuildContext context, String text) {
+  Widget emptyBuilder(BuildContext context, String? text) {
     return Center(child: Text('Нет данных'));
   }
 
-  Widget agendaDropDownItemBuilder(
-      BuildContext context, Agenda item, String itemDesignation) {
+  Widget agendaDropDownItemBuilder(BuildContext context, Agenda? item) {
     return item == null
         ? Container(
             child: Text(
@@ -323,24 +325,23 @@ class _MeetingPageState extends State<MeetingPage> {
 
   Widget getGroupSelector() {
     return DropdownSearch<Group>(
-      mode: Mode.DIALOG,
-      showSearchBox: true,
-      showClearButton: true,
+      // mode: Mode.DIALOG,
+      // showSearchBox: true,
+      // showClearButton: true,
       items: _groups.where((element) => element.isActive).toList(),
-      label: 'Группа',
-      popupTitle: Container(
-          alignment: Alignment.center,
-          color: Colors.blueAccent,
-          padding: EdgeInsets.all(10),
-          child: Text(
-            'Группа',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
-          )),
-      hint: 'Выберите группу',
-      selectedItem: _groups.firstWhere(
-          (element) => element.id == widget.meeting.group?.id,
-          orElse: () => null),
+      // label: 'Группа',
+      // popupTitle: Container(
+      //     alignment: Alignment.center,
+      //     color: Colors.blueAccent,
+      //     padding: EdgeInsets.all(10),
+      //     child: Text(
+      //       'Группа',
+      //       style: TextStyle(
+      //           fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+      //     )),
+      // hint: 'Выберите группу',
+      selectedItem: _groups.firstWhereOrNull(
+          (element) => element.id == widget.meeting.group?.id),
       onChanged: (value) {
         setState(() {
           widget.meeting.group = value;
@@ -353,12 +354,13 @@ class _MeetingPageState extends State<MeetingPage> {
         return null;
       },
       dropdownBuilder: groupDropDownItemBuilder,
-      popupItemBuilder: groupItemBuilder,
+      popupProps: PopupProps.menu(
+        itemBuilder: groupItemBuilder,
+      ),
     );
   }
 
-  Widget groupDropDownItemBuilder(
-      BuildContext context, Group item, String itemDesignation) {
+  Widget groupDropDownItemBuilder(BuildContext context, Group? item) {
     return item == null
         ? Container(
             child: Text(

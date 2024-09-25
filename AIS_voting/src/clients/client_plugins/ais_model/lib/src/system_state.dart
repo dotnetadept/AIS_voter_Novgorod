@@ -37,7 +37,7 @@ class SystemStateHelper {
     return false;
   }
 
-  static bool isPreparation(SystemState systemState) {
+  static bool isPreparation(SystemState? systemState) {
     if (systemState != SystemState.None &&
         systemState == SystemState.MeetingPreparation) {
       return true;

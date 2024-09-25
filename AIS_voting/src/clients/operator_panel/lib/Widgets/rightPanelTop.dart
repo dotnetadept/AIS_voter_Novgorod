@@ -4,6 +4,7 @@ import 'package:ais_model/ais_model.dart';
 import 'package:ais_utils/agenda_util.dart';
 import 'package:ais_utils/dialogs.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:collection/collection.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
@@ -18,38 +19,38 @@ import 'package:ais_model/ais_model.dart' as ais;
 class RightPanelTop extends StatefulWidget {
   final Settings settings;
   final List<Meeting> meetings;
-  final Meeting selectedMeeting;
-  final Question lockedQuestion;
-  final Question selectedQuestion;
+  final Meeting? selectedMeeting;
+  final Question? lockedQuestion;
+  final Question? selectedQuestion;
   final List<VotingMode> votingModes;
   final List<User> users;
 
   final int timeOffset;
   final void Function(Meeting meeting) changeSelectedMeeting;
-  final void Function(ais.Interval interval) setInterval;
-  final void Function(bool autoEnd) setAutoEnd;
+  final void Function(ais.Interval? interval) setInterval;
+  final void Function(bool? autoEnd) setAutoEnd;
   final void Function(String) addGuestAskWord;
   final void Function(String) removeGuestAskWord;
   final void Function(int) addUserAskWord;
   final void Function(int) removeUserAskWord;
 
   RightPanelTop({
-    Key key,
-    this.settings,
-    this.users,
-    this.meetings,
-    this.selectedMeeting,
-    this.lockedQuestion,
-    this.selectedQuestion,
-    this.votingModes,
-    this.timeOffset,
-    this.changeSelectedMeeting,
-    this.setInterval,
-    this.setAutoEnd,
-    this.addGuestAskWord,
-    this.removeGuestAskWord,
-    this.addUserAskWord,
-    this.removeUserAskWord,
+    Key? key,
+    required this.settings,
+    required this.users,
+    required this.meetings,
+    required this.selectedMeeting,
+    required this.lockedQuestion,
+    required this.selectedQuestion,
+    required this.votingModes,
+    required this.timeOffset,
+    required this.changeSelectedMeeting,
+    required this.setInterval,
+    required this.setAutoEnd,
+    required this.addGuestAskWord,
+    required this.removeGuestAskWord,
+    required this.addUserAskWord,
+    required this.removeUserAskWord,
   }) : super(key: key);
 
   @override
@@ -57,15 +58,15 @@ class RightPanelTop extends StatefulWidget {
 }
 
 class _RightPanelTopState extends State<RightPanelTop> {
-  WebSocketConnection _connection;
+  late WebSocketConnection _connection;
   ScrollController agendaViewScrollController = ScrollController();
   ScrollController questionDescriptionScrollController = ScrollController();
-  ScrollController agendaTableScrollController;
+  late ScrollController agendaTableScrollController;
 
-  Meeting _selectedMeeting;
-  VotingMode _selectedVotingMode;
-  String _selectedDecision;
-  Question _selectedQuestion;
+  Meeting? _selectedMeeting;
+  late VotingMode _selectedVotingMode;
+  late String _selectedDecision;
+  Question? _selectedQuestion;
 
   @override
   void initState() {
@@ -84,10 +85,9 @@ class _RightPanelTopState extends State<RightPanelTop> {
     var scrollPosition = 0.0;
 
     if (_selectedMeeting != null) {
-      scrollPosition = _selectedMeeting.agenda.questions.indexOf(
-                  widget.selectedMeeting.agenda.questions.firstWhere(
-                      (element) => element.id == widget.lockedQuestion?.id,
-                      orElse: () => null)) *
+      scrollPosition = _selectedMeeting!.agenda!.questions.indexOf(
+                  widget.selectedMeeting!.agenda!.questions.firstWhere(
+                      (element) => element.id == widget.lockedQuestion?.id)) *
               45.0 -
           90;
     }
@@ -188,54 +188,53 @@ class _RightPanelTopState extends State<RightPanelTop> {
             SystemStateHelper.isPreparation(
                 _connection.getServerState.systemState));
     return DropdownSearch<Meeting>(
-      mode: Mode.DIALOG,
-      showSearchBox: true,
-      showClearButton: true,
+      // mode: Mode.DIALOG,
+      // showSearchBox: true,
+      // showClearButton: true,
       items: widget.meetings
           .where((element) => element.status == 'Ожидание')
           .toList(),
-      label: 'Заседание',
-      searchBoxDecoration: InputDecoration(fillColor: Colors.red),
+      // label: 'Заседание',
+      // searchBoxDecoration: InputDecoration(fillColor: Colors.red),
       enabled: isEnabled,
-      dropDownButton: isEnabled ? null : Container(),
-      clearButton: isEnabled ? null : Container(),
-      popupTitle: Container(
-          alignment: Alignment.center,
-          color: Colors.blueAccent,
-          padding: EdgeInsets.all(10),
-          child: Text(
-            'Заседания',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
-          )),
-      hint: 'Выберите заседание',
-      selectedItem: widget.meetings.firstWhere(
-          (element) =>
-              element.id ==
-              (_selectedMeeting == null ? null : _selectedMeeting.id),
-          orElse: () => null),
+      // dropDownButton: isEnabled ? null : Container(),
+      // clearButton: isEnabled ? null : Container(),
+      // popupTitle: Container(
+      //     alignment: Alignment.center,
+      //     color: Colors.blueAccent,
+      //     padding: EdgeInsets.all(10),
+      //     child: Text(
+      //       'Заседания',
+      //       style: TextStyle(
+      //           fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+      //     )),
+      // hint: 'Выберите заседание',
+      selectedItem: widget.meetings
+          .firstWhereOrNull((element) => element.id == _selectedMeeting?.id),
       onChanged: (value) {
         setState(() {
           if (value != null) {
-            value.agenda.questions
+            value.agenda!.questions
                 .sort((a, b) => a.orderNum.compareTo(b.orderNum));
           }
           _selectedMeeting = value;
           if (_selectedMeeting != null) {
-            _connection.setMeetingPreviev(_selectedMeeting.id);
-            if (_selectedMeeting.agenda.questions.length > 0) {
-              _selectedMeeting.agenda.questions
+            _connection.setMeetingPreviev(_selectedMeeting!.id);
+            if (_selectedMeeting!.agenda!.questions.length > 0) {
+              _selectedMeeting!.agenda!.questions
                   .sort((a, b) => a.orderNum.compareTo(b.orderNum));
-              _selectedQuestion = _selectedMeeting.agenda.questions.first;
+              _selectedQuestion = _selectedMeeting!.agenda!.questions.first;
             }
           }
         });
 
-        widget.changeSelectedMeeting(_selectedMeeting);
+        widget.changeSelectedMeeting(_selectedMeeting!);
       },
       dropdownBuilder: meetingDropDownBuilder,
-      popupItemBuilder: meetingPopupItemBuilder,
-      emptyBuilder: emptyBuilder,
+      popupProps: PopupProps.menu(
+        itemBuilder: meetingPopupItemBuilder,
+      ),
+      //emptyBuilder: emptyBuilder,
     );
   }
 
@@ -262,8 +261,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
     );
   }
 
-  Widget meetingDropDownBuilder(
-      BuildContext context, Meeting item, String itemDesignation) {
+  Widget meetingDropDownBuilder(BuildContext context, Meeting? item) {
     return Container(
       child: (item == null)
           ? ListTile(
@@ -286,7 +284,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
     );
   }
 
-  Widget emptyBuilder(BuildContext context, String text) {
+  Widget emptyBuilder(BuildContext context, String? text) {
     return Center(child: Text('Нет подходящих заседаний'));
   }
 
@@ -301,10 +299,12 @@ class _RightPanelTopState extends State<RightPanelTop> {
         height: 2,
         color: Colors.deepPurpleAccent,
       ),
-      onChanged: (VotingMode newValue) {
-        setState(() {
-          _selectedVotingMode = newValue;
-        });
+      onChanged: (VotingMode? newValue) {
+        if (newValue != null) {
+          setState(() {
+            _selectedVotingMode = newValue;
+          });
+        }
       },
       items: widget.votingModes
           .map<DropdownMenuItem<VotingMode>>((VotingMode value) {
@@ -327,10 +327,12 @@ class _RightPanelTopState extends State<RightPanelTop> {
         height: 2,
         color: Colors.deepPurpleAccent,
       ),
-      onChanged: (String newValue) {
-        setState(() {
-          _selectedDecision = newValue;
-        });
+      onChanged: (String? newValue) {
+        if (newValue != null) {
+          setState(() {
+            _selectedDecision = newValue;
+          });
+        }
       },
       items: <String>[
         DecisionModeHelper.getStringValue(DecisionMode.MajorityOfLawMembers),
@@ -389,10 +391,9 @@ class _RightPanelTopState extends State<RightPanelTop> {
     var agendaTableScrollOffset = isBigView ? 90.0 : 45.0;
 
     if (_connection.getServerState.systemState == SystemState.QuestionVoting) {
-      var index = _selectedMeeting.agenda.questions.indexOf(widget
-          .selectedMeeting.agenda.questions
-          .firstWhere((element) => element.id == widget.lockedQuestion.id,
-              orElse: () => null));
+      var index = _selectedMeeting!.agenda!.questions.indexOf(widget
+          .selectedMeeting!.agenda!.questions
+          .firstWhere((element) => element.id == widget.lockedQuestion!.id));
       var scrollPosition = 45.0 * index - agendaTableScrollOffset;
       if (scrollPosition < 0) {
         scrollPosition = 0;
@@ -436,11 +437,11 @@ class _RightPanelTopState extends State<RightPanelTop> {
               columns: [
                 DataColumn(label: Text('Повестка')),
               ],
-              rows: _selectedMeeting.agenda.questions
+              rows: _selectedMeeting!.agenda!.questions
                   .map(
                     ((element) => DataRow(
-                          color: MaterialStateProperty.resolveWith<Color>(
-                              (Set<MaterialState> states) {
+                          color: WidgetStateProperty.resolveWith<Color>(
+                              (Set<WidgetState> states) {
                             if (element.id == widget.lockedQuestion?.id) {
                               return Theme.of(context)
                                   .colorScheme
@@ -450,7 +451,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
                             if (element == _selectedQuestion) {
                               return Colors.grey.withOpacity(0.3);
                             }
-                            return null;
+                            return Colors.transparent;
                           }),
                           cells: <DataCell>[
                             DataCell(
@@ -477,20 +478,19 @@ class _RightPanelTopState extends State<RightPanelTop> {
                                           child: TextButton(
                                             style: ButtonStyle(
                                               backgroundColor:
-                                                  MaterialStateProperty.all(
+                                                  WidgetStateProperty.all(
                                                       Colors.transparent),
                                               overlayColor:
-                                                  MaterialStateProperty.all(
+                                                  WidgetStateProperty.all(
                                                       Colors.black12),
-                                              shape: MaterialStateProperty.all(
+                                              shape: WidgetStateProperty.all(
                                                 CircleBorder(
                                                     side: BorderSide(
                                                         color: Colors
                                                             .transparent)),
                                               ),
-                                              padding:
-                                                  MaterialStateProperty.all(
-                                                      EdgeInsets.all(0)),
+                                              padding: WidgetStateProperty.all(
+                                                  EdgeInsets.all(0)),
                                             ),
                                             onPressed: widget
                                                     .settings
@@ -515,8 +515,8 @@ class _RightPanelTopState extends State<RightPanelTop> {
                             ),
                           ],
                           selected: element == _selectedQuestion,
-                          onSelectChanged: (bool value) {
-                            if (value) {
+                          onSelectChanged: (bool? value) {
+                            if (value == true) {
                               setSelectedQuestion(element);
                             }
                           },
@@ -541,7 +541,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
                     padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                     child: TextButton(
                       style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all(Size(
+                        fixedSize: WidgetStateProperty.all(Size(
                             (widget.settings.storeboardSettings.width - 30)
                                 .toDouble(),
                             100)),
@@ -572,7 +572,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
                     padding: EdgeInsets.all(10),
                     child: TextButton(
                       style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all(Size(
+                        fixedSize: WidgetStateProperty.all(Size(
                             (widget.settings.storeboardSettings.width - 30)
                                 .toDouble(),
                             100)),
@@ -660,7 +660,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
         .length;
 
     if (widget.settings.votingSettings.isCountNotVotingAsIndifferent) {
-      totalVotes = widget.selectedMeeting.group.groupUsers.length;
+      totalVotes = widget.selectedMeeting!.group!.groupUsers.length;
       indifferentCount = totalVotes - votedYes - votedNo;
     }
 
@@ -680,7 +680,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
         Padding(
           padding: EdgeInsets.fromLTRB(0, 9, 0, 0),
           child: getVotingResultLine('Для принятия решения необходимо',
-              '${_connection.getServerState.questionSession.usersCountForSuccessDisplay}',
+              '${_connection.getServerState.questionSession!.usersCountForSuccessDisplay}',
               fontSize: 16),
         ),
         Padding(
@@ -769,15 +769,13 @@ class _RightPanelTopState extends State<RightPanelTop> {
 
     // fixed voting mode without voting window
     if (widget.settings.votingSettings.isVotingFixed) {
-      var interval = AppState().getIntervals().firstWhere(
-          (element) =>
-              element.id ==
-              widget.settings.intervalsSettings.defaultVotingIntervalId,
-          orElse: () => null);
+      var interval = AppState().getIntervals().firstWhere((element) =>
+          element.id ==
+          widget.settings.intervalsSettings.defaultVotingIntervalId);
       _connection.getWsChannel.sink.add(json.encode({
         'systemState': EnumToString.convertToString(SystemState.QuestionVoting),
         'params': json.encode({
-          'question_id': widget.lockedQuestion.id,
+          'question_id': widget.lockedQuestion!.id,
           'voting_interval': interval.duration,
           'startSignal': json.encode(interval.startSignal),
           'endSignal': json.encode(interval.endSignal),
@@ -786,7 +784,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
           'voting_decision': _selectedDecision,
           'success_count': DecisionModeHelper.getSuccuessValue(
               DecisionModeHelper.getEnumValue(_selectedDecision),
-              _selectedMeeting.group,
+              _selectedMeeting!.group!,
               _connection.getServerState.usersRegistered,
               false)
         }),
@@ -798,16 +796,15 @@ class _RightPanelTopState extends State<RightPanelTop> {
     setState(() {});
 
     VotingDialog(
-      context,
-      widget.settings,
-      _selectedMeeting,
-      widget.lockedQuestion,
-      widget.votingModes,
-      _selectedVotingMode,
-      DecisionModeHelper.getEnumValue(_selectedDecision),
-      widget.timeOffset,
-      widget.users,
-    ).openDialog().then((value) {
+            context,
+            widget.settings,
+            _selectedMeeting,
+            widget.lockedQuestion!,
+            widget.votingModes,
+            _selectedVotingMode,
+            DecisionModeHelper.getEnumValue(_selectedDecision))
+        .openDialog()
+        .then((value) {
       AppState().refreshDialog = null;
     });
   }
@@ -816,7 +813,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
     _connection.setSystemStatus(
         SystemState.QuestionVotingComplete,
         json.encode({
-          'question_id': widget.lockedQuestion.id,
+          'question_id': widget.lockedQuestion!.id,
         }));
   }
 

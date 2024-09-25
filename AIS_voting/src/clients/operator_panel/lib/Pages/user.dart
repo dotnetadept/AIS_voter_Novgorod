@@ -8,14 +8,15 @@ import 'package:global_configuration/global_configuration.dart';
 class UserPage extends StatefulWidget {
   final User user;
   final List<User> users;
-  UserPage({Key key, this.user, this.users}) : super(key: key);
+  UserPage({Key? key, required this.user, required this.users})
+      : super(key: key);
 
   @override
   _UserPageState createState() => _UserPageState();
 }
 
 class _UserPageState extends State<UserPage> {
-  User _originalUser;
+  late User _originalUser;
   final _formKey = GlobalKey<FormState>();
   var _tecFirstName = TextEditingController();
   var _tecSecondName = TextEditingController();
@@ -36,13 +37,10 @@ class _UserPageState extends State<UserPage> {
     _tecLogin.text = widget.user.login;
     _tecPassword.text = widget.user.password;
     _tecCardId.text = widget.user.cardId;
-    if (widget.user.isVoter == null) {
-      widget.user.isVoter = false;
-    }
   }
 
   bool _save() {
-    if (!_formKey.currentState.validate()) {
+    if (_formKey.currentState?.validate() != true) {
       return false;
     }
 
@@ -141,7 +139,7 @@ class _UserPageState extends State<UserPage> {
                 message: 'Сохранить',
                 child: TextButton(
                   style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),
@@ -183,7 +181,7 @@ class _UserPageState extends State<UserPage> {
               labelText: 'Имя',
             ),
             validator: (value) {
-              if (value.isEmpty) {
+              if (value == null || value.isEmpty) {
                 return 'Введите имя';
               }
               return null;
@@ -199,7 +197,7 @@ class _UserPageState extends State<UserPage> {
               labelText: 'Фамилия',
             ),
             validator: (value) {
-              if (value.isEmpty) {
+              if (value == null || value.isEmpty) {
                 return 'Введите фамилию';
               }
               return null;
@@ -215,7 +213,7 @@ class _UserPageState extends State<UserPage> {
               labelText: 'Отчество',
             ),
             validator: (value) {
-              if (value.isEmpty) {
+              if (value == null || value.isEmpty) {
                 return 'Введите отчество';
               }
               return null;
@@ -231,7 +229,7 @@ class _UserPageState extends State<UserPage> {
               labelText: 'Логин',
             ),
             validator: (value) {
-              if (value.isEmpty) {
+              if (value == null || value.isEmpty) {
                 return 'Введите логин';
               }
               if (widget.users.any((element) =>
@@ -251,7 +249,7 @@ class _UserPageState extends State<UserPage> {
               labelText: 'Пароль',
             ),
             validator: (value) {
-              if (value.isEmpty) {
+              if (value == null || value.isEmpty) {
                 return 'Введите пароль';
               }
               if (widget.users.any((element) =>
@@ -272,7 +270,7 @@ class _UserPageState extends State<UserPage> {
               labelText: 'Ключ карты',
             ),
             validator: (value) {
-              if (!(value == null && value.isEmpty)) {
+              if (!(value == null || value.isEmpty)) {
                 if (widget.users.any((element) =>
                     element.id != _originalUser.id &&
                     element.cardId == value)) {

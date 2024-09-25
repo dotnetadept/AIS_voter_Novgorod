@@ -7,7 +7,7 @@ import 'package:global_configuration/global_configuration.dart';
 
 class QuestionDescriptionPage extends StatefulWidget {
   final Question question;
-  QuestionDescriptionPage({Key key, this.question}) : super(key: key);
+  QuestionDescriptionPage({Key? key, required this.question}) : super(key: key);
 
   @override
   _QuestionDescriptionPageState createState() =>
@@ -15,7 +15,7 @@ class QuestionDescriptionPage extends StatefulWidget {
 }
 
 class _QuestionDescriptionPageState extends State<QuestionDescriptionPage> {
-  Question _originalQuestion;
+  late Question _originalQuestion;
   final _formKey = GlobalKey<FormState>();
   var _captionControllers = <TextEditingController>[];
   var _textControllers = <TextEditingController>[];
@@ -29,7 +29,7 @@ class _QuestionDescriptionPageState extends State<QuestionDescriptionPage> {
   }
 
   bool _save() {
-    if (!_formKey.currentState.validate()) {
+    if (_formKey.currentState?.validate() != true) {
       return false;
     }
 
@@ -83,7 +83,7 @@ class _QuestionDescriptionPageState extends State<QuestionDescriptionPage> {
                   message: 'Переместить секцию вверх',
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -98,7 +98,7 @@ class _QuestionDescriptionPageState extends State<QuestionDescriptionPage> {
                   message: 'Переместить секцию вниз',
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -113,7 +113,7 @@ class _QuestionDescriptionPageState extends State<QuestionDescriptionPage> {
                   message: 'Удалить',
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -162,7 +162,8 @@ class _QuestionDescriptionPageState extends State<QuestionDescriptionPage> {
               ),
               validator: (value) {
                 Scrollable.ensureVisible(context);
-                if (value.isEmpty && textController.text.isEmpty) {
+                if (value == null ||
+                    value.isEmpty && textController.text.isEmpty) {
                   return 'Введите заголовок и/или текст';
                 }
 
@@ -184,7 +185,8 @@ class _QuestionDescriptionPageState extends State<QuestionDescriptionPage> {
                 labelText: 'Текст',
               ),
               validator: (value) {
-                if (value.isEmpty && captionController.text.isEmpty) {
+                if (value == null ||
+                    value.isEmpty && captionController.text.isEmpty) {
                   return 'Введите заголовок и/или текст';
                 }
                 return null;
@@ -233,7 +235,12 @@ class _QuestionDescriptionPageState extends State<QuestionDescriptionPage> {
 
   void add() {
     setState(() {
-      widget.question.descriptions.add(QuestionDescriptionItem());
+      widget.question.descriptions.add(QuestionDescriptionItem(
+        caption: '',
+        text: '',
+        showInReports: false,
+        showOnStoreboard: false,
+      ));
     });
   }
 
@@ -293,7 +300,7 @@ class _QuestionDescriptionPageState extends State<QuestionDescriptionPage> {
                 message: 'Сохранить',
                 child: TextButton(
                   style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),

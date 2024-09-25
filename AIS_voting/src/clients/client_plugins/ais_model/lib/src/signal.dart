@@ -1,20 +1,20 @@
 class Signal {
-  late int id;
-  late int orderNum;
-  late String name = '';
-  late int duration = 10;
-  late String soundPath = '';
-  late double volume = 100;
-  late int color = 0x00000000;
+  int? id;
+  int orderNum;
+  String name;
+  int duration;
+  String soundPath;
+  double volume;
+  int color;
 
   Signal({
-    required this.id,
-    required this.orderNum,
-    required this.name,
-    required this.duration,
-    required this.soundPath,
-    required this.volume,
-    required this.color,
+    this.id,
+    this.orderNum = 0,
+    this.name = '',
+    this.duration = 10,
+    this.soundPath = '',
+    this.volume = 100,
+    this.color = 0x00000000,
   });
 
   Map toJson() => {

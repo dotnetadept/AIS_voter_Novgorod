@@ -13,7 +13,7 @@ class StreamDialog {
 
   BuildContext _context;
   Settings _settings;
-  WebSocketConnection _connection;
+  late WebSocketConnection _connection;
   bool _isOperatorControl = false;
   bool _isUserControl = false;
   bool _showToManager = false;
@@ -146,9 +146,9 @@ class StreamDialog {
                     title: Text('Оператора'),
                     value: true,
                     groupValue: _isOperatorControl,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setStateForDialog(() {
-                        _isOperatorControl = value;
+                        _isOperatorControl = value == true;
                         _isUserControl = false;
                       });
                     },
@@ -160,10 +160,10 @@ class StreamDialog {
                     title: Text('Пользователя'),
                     value: true,
                     groupValue: _isUserControl,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setStateForDialog(() {
                         _isOperatorControl = false;
-                        _isUserControl = value;
+                        _isUserControl = value == true;
                       });
                     },
                   ),
@@ -177,7 +177,7 @@ class StreamDialog {
                         value: _showToManager,
                         onChanged: (value) {
                           setStateForDialog(() {
-                            _showToManager = value;
+                            _showToManager = value == true;
                           });
                         }),
                     Text('Показывать стрим на рабочем месте Председателя')
@@ -192,7 +192,7 @@ class StreamDialog {
                         value: _showAskWordButton,
                         onChanged: (value) {
                           setStateForDialog(() {
-                            _showAskWordButton = value;
+                            _showAskWordButton = value == true;
                           });
                         }),
                     Text('Отображать кнопку прошу слово')
@@ -233,7 +233,7 @@ class StreamDialog {
                   Icon(Icons.stop)
                 ]),
                 onPressed: () {
-                  if (!_formKey.currentState.validate()) {
+                  if (_formKey.currentState?.validate() != true) {
                     return;
                   }
                   _connection.getWsChannel.sink.add(json.encode({
@@ -258,7 +258,7 @@ class StreamDialog {
                   Icon(Icons.refresh)
                 ]),
                 onPressed: () {
-                  if (!_formKey.currentState.validate()) {
+                  if (_formKey.currentState?.validate() != true) {
                     return;
                   }
                   _connection.getWsChannel.sink.add(json.encode({
@@ -289,7 +289,7 @@ class StreamDialog {
                   Icon(Icons.play_arrow)
                 ]),
                 onPressed: () {
-                  if (!_formKey.currentState.validate()) {
+                  if (_formKey.currentState?.validate() != true) {
                     return;
                   }
                   _connection.getWsChannel.sink.add(json.encode({

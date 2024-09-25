@@ -1,12 +1,13 @@
 name: services
 description: Http/Websocket server for ais voter system
 version: 1.05.14
+publish_to: none
 
 environment:
   sdk: ">=2.12.0 <4.0.0"
 
 dependencies:
-  conduit: any
+  conduit: ^5.1.0
   uuid: any
   mime: any
   intl: any
@@ -17,8 +18,8 @@ dependencies:
   mutex: ^3.0.0
   path: ^1.8.0
   #threading: any
-  pedantic: any
-  package_info_plus: any
+  #pedantic: any
+  #package_info_plus: any
   yaml: any
   collection: ^1.18.0
 

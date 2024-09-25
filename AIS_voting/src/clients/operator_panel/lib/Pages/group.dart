@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ais_model/ais_model.dart';
@@ -9,7 +10,8 @@ import 'package:global_configuration/global_configuration.dart';
 class GroupPage extends StatefulWidget {
   final Group group;
   final bool isReadOnly;
-  GroupPage({Key key, this.group, this.isReadOnly}) : super(key: key);
+  GroupPage({Key? key, required this.group, required this.isReadOnly})
+      : super(key: key);
 
   @override
   _GroupPageState createState() => _GroupPageState();
@@ -17,9 +19,14 @@ class GroupPage extends StatefulWidget {
 
 class _GroupPageState extends State<GroupPage>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  late TabController _tabController;
 
-  Group _originalGroup;
+  final dropDownKeyManager = GlobalKey<DropdownSearchState>();
+  final dropDownKeyDeputy = GlobalKey<DropdownSearchState>();
+  final dropDownKeyWorkplacesUser = GlobalKey<DropdownSearchState>();
+  final dropDownKeyManagementUser = GlobalKey<DropdownSearchState>();
+
+  late Group _originalGroup;
 
   var _users = <User>[];
   final _formKey = GlobalKey<FormState>();
@@ -143,21 +150,21 @@ class _GroupPageState extends State<GroupPage>
   }
 
   // Flutter form validation not propely working with tabs
-  String _vmName;
-  String _vmIsLawUsersCount;
-  String _vmQuorumCount;
-  String _vmMajorityCount;
-  String _vmOneThirdsCount;
-  String _vmTwoThirdsCount;
-  String _vmChosenCount;
-  String _vmMajorityChosenCount;
-  String _vmOneThirdsChosenCount;
-  String _vmTwoThirdsChosenCount;
-  String _vmManagementCount;
-  String _vmTribuneCount;
-  String _vmUnblockedMics;
-  String _vmMicsNotActiveFrom;
-  String _vmManagerTerminal;
+  String? _vmName;
+  String? _vmIsLawUsersCount;
+  String? _vmQuorumCount;
+  String? _vmMajorityCount;
+  String? _vmOneThirdsCount;
+  String? _vmTwoThirdsCount;
+  String? _vmChosenCount;
+  String? _vmMajorityChosenCount;
+  String? _vmOneThirdsChosenCount;
+  String? _vmTwoThirdsChosenCount;
+  String? _vmManagementCount;
+  String? _vmTribuneCount;
+  String? _vmUnblockedMics;
+  String? _vmMicsNotActiveFrom;
+  String? _vmManagerTerminal;
 
   bool validateWithErrors() {
     _vmName = null;
@@ -188,7 +195,7 @@ class _GroupPageState extends State<GroupPage>
     }
     if (int.tryParse(_tecLawUsersCount.text) == null) {
       _vmIsLawUsersCount = 'Введите целое число больше 0';
-    } else if (int.tryParse(_tecLawUsersCount.text) < 1) {
+    } else if ((int.tryParse(_tecLawUsersCount.text) ?? 0) < 1) {
       _vmIsLawUsersCount = 'Введите целое число больше 0';
     }
 
@@ -497,7 +504,7 @@ class _GroupPageState extends State<GroupPage>
                         message: 'Сохранить',
                         child: TextButton(
                           style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -568,9 +575,9 @@ class _GroupPageState extends State<GroupPage>
       ),
       onChanged: widget.isReadOnly
           ? null
-          : (String newValue) {
+          : (String? newValue) {
               setState(() {
-                widget.group.managerRoule = newValue;
+                widget.group.managerRoule = newValue!;
               });
             },
       items: <String>[
@@ -601,9 +608,9 @@ class _GroupPageState extends State<GroupPage>
       ),
       onChanged: widget.isReadOnly
           ? null
-          : (String newValue) {
+          : (String? newValue) {
               setState(() {
-                widget.group.roundingRoule = newValue;
+                widget.group.roundingRoule = newValue!;
               });
             },
       items: <String>[
@@ -1006,7 +1013,7 @@ class _GroupPageState extends State<GroupPage>
                   message: 'Добавить',
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -1059,7 +1066,7 @@ class _GroupPageState extends State<GroupPage>
                   message: 'Добавить',
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -1083,7 +1090,7 @@ class _GroupPageState extends State<GroupPage>
   }
 
   Widget getManagerSelector() {
-    User manager;
+    User? manager;
 
     for (int i = 0; i < _users.length; i++) {
       if (isManager(_users[i])) {
@@ -1095,21 +1102,22 @@ class _GroupPageState extends State<GroupPage>
     var groupUsers = _users.where((element) => isInGroup(element)).toList();
 
     return DropdownSearch<User>(
-      mode: Mode.DIALOG,
-      showSearchBox: true,
-      showClearButton: true,
+      key: dropDownKeyManager,
+      // mode: Mode.DIALOG,
+      // showSearchBox: true,
+      // showClearButton: true,
       items: groupUsers,
-      label: 'Председатель',
-      popupTitle: Container(
-          alignment: Alignment.center,
-          color: Colors.blueAccent,
-          padding: EdgeInsets.all(10),
-          child: Text(
-            'Председатель',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
-          )),
-      hint: 'Выберите Председателя',
+      // label: 'Председатель',
+      // popupTitle: Container(
+      //     alignment: Alignment.center,
+      //     color: Colors.blueAccent,
+      //     padding: EdgeInsets.all(10),
+      //     child: Text(
+      //       'Председатель',
+      //       style: TextStyle(
+      //           fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+      //     )),
+      // hint: 'Выберите Председателя',
       selectedItem: manager,
       onChanged: (element) {
         setState(() {
@@ -1118,7 +1126,7 @@ class _GroupPageState extends State<GroupPage>
           }
 
           var groupUser = widget.group.groupUsers
-              .firstWhere((x) => x.user.id == element.id, orElse: () => null);
+              .firstWhereOrNull((x) => x.user.id == element!.id);
           if (groupUser != null) {
             groupUser.isManager = true;
           }
@@ -1131,8 +1139,8 @@ class _GroupPageState extends State<GroupPage>
         return null;
       },
       dropdownBuilder: userDropDownItemBuilder,
-      popupItemBuilder: userItemBuilder,
-      emptyBuilder: emptyBuilder,
+      // popupItemBuilder: userItemBuilder,
+      // emptyBuilder: emptyBuilder,
     );
   }
 
@@ -1146,8 +1154,8 @@ class _GroupPageState extends State<GroupPage>
         Expanded(
           child: DataTable(
             showCheckboxColumn: false,
-            dataRowColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
+            dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
               return Colors.white;
             }),
             headingRowHeight: 0,
@@ -1173,15 +1181,13 @@ class _GroupPageState extends State<GroupPage>
                                   message: 'Удалить гостя',
                                   child: TextButton(
                                     style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.transparent),
+                                      backgroundColor: WidgetStateProperty.all(
+                                          Colors.transparent),
                                       foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
-                                      overlayColor: MaterialStateProperty.all(
+                                          WidgetStateProperty.all(Colors.black),
+                                      overlayColor: WidgetStateProperty.all(
                                           Colors.black12),
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                         CircleBorder(
                                             side: BorderSide(
                                                 color: Colors.transparent)),
@@ -1291,8 +1297,8 @@ class _GroupPageState extends State<GroupPage>
         Expanded(
           child: DataTable(
             showCheckboxColumn: false,
-            dataRowColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
+            dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
               return Colors.white;
             }),
             headingRowHeight: 0,
@@ -1318,15 +1324,13 @@ class _GroupPageState extends State<GroupPage>
                                   message: 'Удалить депутата',
                                   child: TextButton(
                                     style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.transparent),
+                                      backgroundColor: WidgetStateProperty.all(
+                                          Colors.transparent),
                                       foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
-                                      overlayColor: MaterialStateProperty.all(
+                                          WidgetStateProperty.all(Colors.black),
+                                      overlayColor: WidgetStateProperty.all(
                                           Colors.black12),
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                         CircleBorder(
                                             side: BorderSide(
                                                 color: Colors.transparent)),
@@ -1363,7 +1367,7 @@ class _GroupPageState extends State<GroupPage>
   Future<void> addSubject() async {
     // show select user dialog
     final formKey = GlobalKey<FormState>();
-    User selectedUser;
+    User? selectedUser;
 
     return showDialog<void>(
       context: context,
@@ -1396,18 +1400,19 @@ class _GroupPageState extends State<GroupPage>
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
 
                 setState(() {
                   var isContains = widget.group.groupUsers
-                      .any((x) => x.user.id == selectedUser.id);
+                      .any((x) => x.user.id == selectedUser!.id);
                   if (!isContains) {
-                    var newGroupUser = GroupUser(
-                        groupId: widget.group.id,
-                        user: selectedUser,
-                        isManager: false);
+                    var newGroupUser = GroupUser();
+
+                    newGroupUser.groupId = widget.group.id;
+                    newGroupUser.user = selectedUser!;
+                    newGroupUser.isManager = false;
                     widget.group.groupUsers.add(newGroupUser);
                   }
                 });
@@ -1421,25 +1426,26 @@ class _GroupPageState extends State<GroupPage>
     );
   }
 
-  Widget getDeputySelector(void onChanged(User value)) {
+  Widget getDeputySelector(void onChanged(User? value)) {
     var groupUsers = _users.where((element) => isInGroup(element)).toList();
 
     return DropdownSearch<User>(
-      mode: Mode.DIALOG,
-      showSearchBox: true,
-      showClearButton: true,
+      key: dropDownKeyDeputy,
+      // mode: Mode.DIALOG,
+      // showSearchBox: true,
+      // showClearButton: true,
       items: _users.where((element) => !groupUsers.contains(element)).toList(),
-      label: 'Депутат',
-      popupTitle: Container(
-          alignment: Alignment.center,
-          color: Colors.blueAccent,
-          padding: EdgeInsets.all(10),
-          child: Text(
-            'Депутат',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
-          )),
-      hint: 'Выберите Депутата',
+      // label: 'Депутат',
+      // popupTitle: Container(
+      //     alignment: Alignment.center,
+      //     color: Colors.blueAccent,
+      //     padding: EdgeInsets.all(10),
+      //     child: Text(
+      //       'Депутат',
+      //       style: TextStyle(
+      //           fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+      //     )),
+      // hint: 'Выберите Депутата',
       selectedItem: null,
       onChanged: onChanged,
       validator: (value) {
@@ -1449,15 +1455,14 @@ class _GroupPageState extends State<GroupPage>
         return null;
       },
       dropdownBuilder: userDropDownItemBuilder,
-      popupItemBuilder: userItemBuilder,
-      emptyBuilder: emptyBuilder,
+      //popupItemBuilder: userItemBuilder,
+      //emptyBuilder: emptyBuilder,
     );
   }
 
   Widget userDropDownItemBuilder(
     BuildContext context,
-    User item,
-    String itemDesignation,
+    User? item,
   ) {
     return item == null
         ? Container(
@@ -1490,14 +1495,13 @@ class _GroupPageState extends State<GroupPage>
     );
   }
 
-  Widget emptyBuilder(BuildContext context, String text) {
+  Widget emptyBuilder(BuildContext context, String? text) {
     return Center(child: Text('Нет данных'));
   }
 
   Widget proxyDropDownItemBuilder(
     BuildContext context,
-    User item,
-    String itemDesignation,
+    User? item,
   ) {
     return item == null
         ? Container(
@@ -1812,12 +1816,12 @@ class _GroupPageState extends State<GroupPage>
     var oldManagementTerminalIds =
         widget.group.workplaces.managementTerminalIds;
 
-    widget.group.workplaces.schemeManagement = <int>[];
-    widget.group.workplaces.managementTerminalIds = <String>[];
+    widget.group.workplaces.schemeManagement = <int?>[];
+    widget.group.workplaces.managementTerminalIds = <String?>[];
 
     for (int i = 0; i < widget.group.workplaces.managementPlacesCount; i++) {
-      int userId;
-      String terminalId;
+      int? userId;
+      String? terminalId;
       if (oldManagementScheme.length > i) {
         userId = oldManagementScheme[i];
       }
@@ -1900,11 +1904,11 @@ class _GroupPageState extends State<GroupPage>
 
     var rowIndex = 0;
     widget.group.workplaces.rows.forEach((element) {
-      var rowUserIds = <int>[];
-      var rowTerminalIds = <String>[];
+      var rowUserIds = <int?>[];
+      var rowTerminalIds = <String?>[];
       for (int i = 0; i < element; i++) {
-        int userId;
-        String terminalId;
+        int? userId;
+        String? terminalId;
         if (oldWorkplacesScheme.length > rowIndex) {
           if (oldWorkplacesScheme[rowIndex].length > i) {
             userId = oldWorkplacesScheme[rowIndex][i];
@@ -2031,32 +2035,31 @@ class _GroupPageState extends State<GroupPage>
             },
           ),
           DropdownSearch<User>(
-            mode: Mode.DIALOG,
-            showSearchBox: !widget.isReadOnly,
-            showClearButton: !widget.isReadOnly,
+            key: dropDownKeyWorkplacesUser,
+            // mode: Mode.DIALOG,
+            // showSearchBox: !widget.isReadOnly,
+            // showClearButton: !widget.isReadOnly,
             items: usersForAdd,
             enabled: !widget.isReadOnly,
-            dropDownButton: !widget.isReadOnly ? null : Container(),
-            popupTitle: Container(
-                alignment: Alignment.center,
-                color: Colors.blueAccent,
-                padding: EdgeInsets.all(10),
-                child: Text(
-                  'Пользователи',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20),
-                )),
-            hint: 'Выберите пользователя',
+            // dropDownButton: !widget.isReadOnly ? null : Container(),
+            // popupTitle: Container(
+            //     alignment: Alignment.center,
+            //     color: Colors.blueAccent,
+            //     padding: EdgeInsets.all(10),
+            //     child: Text(
+            //       'Пользователи',
+            //       style: TextStyle(
+            //           fontWeight: FontWeight.bold,
+            //           color: Colors.white,
+            //           fontSize: 20),
+            //     )),
+            // hint: 'Выберите пользователя',
             selectedItem: widget.group.groupUsers
-                .firstWhere(
-                    (element) =>
-                        element.user.id != null &&
-                        element.user.id ==
-                            widget.group.workplaces.schemeWorkplaces[rowIndex]
-                                [columnIndex],
-                    orElse: () => null)
+                .firstWhereOrNull((element) =>
+                    element.user.id != null &&
+                    element.user.id ==
+                        widget.group.workplaces.schemeWorkplaces[rowIndex]
+                            [columnIndex])
                 ?.user,
             onChanged: widget.isReadOnly
                 ? null
@@ -2073,7 +2076,10 @@ class _GroupPageState extends State<GroupPage>
 
                     setState(() {});
                   },
-            popupItemBuilder: userPopupItemBuilder,
+
+            popupProps: PopupProps.menu(
+              itemBuilder: userPopupItemBuilder,
+            ),
           ),
         ],
       ),
@@ -2098,30 +2104,29 @@ class _GroupPageState extends State<GroupPage>
             },
           ),
           DropdownSearch<User>(
-            mode: Mode.DIALOG,
-            showSearchBox: !widget.isReadOnly,
-            showClearButton: !widget.isReadOnly,
+            key: dropDownKeyWorkplacesUser,
+            // mode: Mode.DIALOG,
+            // showSearchBox: !widget.isReadOnly,
+            // showClearButton: !widget.isReadOnly,
             items: usersForAdd,
             enabled: !widget.isReadOnly,
-            popupTitle: Container(
-                alignment: Alignment.center,
-                color: Colors.blueAccent,
-                padding: EdgeInsets.all(10),
-                child: Text(
-                  'Пользователи',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20),
-                )),
-            hint: 'Выберите пользователя',
+            // popupTitle: Container(
+            //     alignment: Alignment.center,
+            //     color: Colors.blueAccent,
+            //     padding: EdgeInsets.all(10),
+            //     child: Text(
+            //       'Пользователи',
+            //       style: TextStyle(
+            //           fontWeight: FontWeight.bold,
+            //           color: Colors.white,
+            //           fontSize: 20),
+            //     )),
+            // hint: 'Выберите пользователя',
             selectedItem: widget.group.groupUsers
-                .firstWhere(
-                    (element) =>
-                        element.user.id != null &&
-                        element.user.id ==
-                            widget.group.workplaces.schemeManagement[index],
-                    orElse: () => null)
+                .firstWhereOrNull((element) =>
+                    element.user.id != null &&
+                    element.user.id ==
+                        widget.group.workplaces.schemeManagement[index])
                 ?.user,
             onChanged: (value) {
               if (value != null) {
@@ -2134,7 +2139,9 @@ class _GroupPageState extends State<GroupPage>
 
               setState(() {});
             },
-            popupItemBuilder: userPopupItemBuilder,
+            popupProps: PopupProps.menu(
+              itemBuilder: userPopupItemBuilder,
+            ),
           ),
         ],
       ),
@@ -2252,10 +2259,10 @@ class _GroupPageState extends State<GroupPage>
       ),
       onChanged: widget.isReadOnly
           ? null
-          : (int newValue) {
+          : (int? newValue) {
               setState(() {
                 if (widget.group.workplaces.rowsCount != newValue) {
-                  widget.group.workplaces.rowsCount = newValue;
+                  widget.group.workplaces.rowsCount = newValue!;
                 }
               });
             },

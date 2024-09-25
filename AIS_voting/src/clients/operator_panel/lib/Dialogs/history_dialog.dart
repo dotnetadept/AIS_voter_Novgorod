@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:ais_model/ais_model.dart';
@@ -11,15 +12,15 @@ import '../Providers/WebSocketConnection.dart';
 class HistoryDialog {
   BuildContext _context;
 
-  List<Meeting> _meetings;
-  List<MeetingSession> _meetingSessions;
-  List<QuestionSession> _questionSessions;
+  late List<Meeting> _meetings;
+  late List<MeetingSession> _meetingSessions;
+  late List<QuestionSession> _questionSessions;
 
-  MeetingSession _selectedMeetingSession;
+  MeetingSession? _selectedMeetingSession;
   int _timeOffset;
 
-  ScrollController _historyMeetingTableScrollController;
-  ScrollController _historySessionTableScrollController;
+  late ScrollController _historyMeetingTableScrollController;
+  late ScrollController _historySessionTableScrollController;
 
   var _tecSearch = TextEditingController();
   var _fnSearch = FocusNode();
@@ -31,7 +32,7 @@ class HistoryDialog {
   bool _isDataLoadStarted = false;
   bool _isDataLoadCompleted = false;
 
-  void processSearch(String value, Function setStateForDialog) {
+  void processSearch(String value, Function? setStateForDialog) {
     _searchExpression = value.trim();
 
     _filteredMeetingSessions = _meetingSessions.where((ms) {
@@ -43,10 +44,10 @@ class HistoryDialog {
     if (_selectedMeetingSession != null) {
       _filteredQuestionSessions = _questionSessions.where((qs) {
         var meeting = _meetings.firstWhere(
-            (element) => element.id == _selectedMeetingSession.meetingId);
+            (element) => element.id == _selectedMeetingSession!.meetingId);
 
-        var question = meeting.agenda.questions
-            .firstWhere((q) => q.id == qs.questionId, orElse: () => null);
+        var question = meeting.agenda!.questions
+            .firstWhereOrNull((q) => q.id == qs.questionId);
 
         return question
                 .toString()
@@ -87,8 +88,9 @@ class HistoryDialog {
                   .toList();
               _meetingSessions.sort((a, b) =>
                   -1 *
-                  a.startDate.compareTo(
-                      b.startDate ?? TimeUtil.getDateTimeNow(_timeOffset)));
+                  (a.startDate ?? TimeUtil.getDateTimeNow(_timeOffset))
+                      .compareTo(
+                          b.startDate ?? TimeUtil.getDateTimeNow(_timeOffset)));
 
               processSearch(_tecSearch.text, null);
 
@@ -170,8 +172,7 @@ class HistoryDialog {
                                           ? Container()
                                           : TextButton(
                                               style: ButtonStyle(
-                                                shape:
-                                                    MaterialStateProperty.all(
+                                                shape: WidgetStateProperty.all(
                                                   CircleBorder(
                                                       side: BorderSide(
                                                           color: Colors
@@ -198,7 +199,7 @@ class HistoryDialog {
                                                 ? 'Сессии заседаний'
                                                 : 'Сессия: ' +
                                                     getMeetingSessionText(
-                                                        _selectedMeetingSession),
+                                                        _selectedMeetingSession!),
                                           ),
                                         ),
                                       ),
@@ -417,7 +418,7 @@ class HistoryDialog {
                           message: 'Установить общие результаты',
                           child: TextButton(
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 CircleBorder(
                                     side:
                                         BorderSide(color: Colors.transparent)),
@@ -427,7 +428,7 @@ class HistoryDialog {
                               Icons.monitor,
                             ),
                             onPressed: () {
-                              setHistory(_selectedMeetingSession,
+                              setHistory(_selectedMeetingSession!,
                                   _filteredQuestionSessions[index], false);
                               setStateForDialog(() {});
                             },
@@ -440,7 +441,7 @@ class HistoryDialog {
                           message: 'Установить поименно',
                           child: TextButton(
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 CircleBorder(
                                     side:
                                         BorderSide(color: Colors.transparent)),
@@ -450,7 +451,7 @@ class HistoryDialog {
                               Icons.list,
                             ),
                             onPressed: () {
-                              setHistory(_selectedMeetingSession,
+                              setHistory(_selectedMeetingSession!,
                                   _filteredQuestionSessions[index], true);
                               setStateForDialog(() {});
                             },
@@ -471,12 +472,10 @@ class HistoryDialog {
 
   void setHistory(MeetingSession meetingSession,
       QuestionSession questionSession, bool isDetailed) async {
-    var meeting = _meetings.firstWhere(
-        (element) => element.id == meetingSession.meetingId,
-        orElse: () => null);
-    var question = meeting.agenda.questions.firstWhere(
-        (element) => element.id == questionSession.questionId,
-        orElse: () => null);
+    var meeting = _meetings
+        .firstWhereOrNull((element) => element.id == meetingSession.meetingId);
+    var question = meeting!.agenda!.questions.firstWhereOrNull(
+        (element) => element.id == questionSession.questionId);
     var decisions = <String, String>{};
 
     // find current registration session
@@ -491,18 +490,25 @@ class HistoryDialog {
 
     var currentRegistrationSessions = <RegistrationSession>[];
     for (var j = 0; j < registrationSessions.length; j++) {
-      if (registrationSessions[j].startDate.microsecondsSinceEpoch >
-              meetingSession.startDate.microsecondsSinceEpoch &&
-          registrationSessions[j].endDate.microsecondsSinceEpoch <
+      if ((registrationSessions[j].startDate?.microsecondsSinceEpoch ??
+                  TimeUtil.getDateTimeNow(_timeOffset)
+                      .microsecondsSinceEpoch) >=
+              (meetingSession.startDate?.microsecondsSinceEpoch ??
+                  TimeUtil.getDateTimeNow(_timeOffset)
+                      .microsecondsSinceEpoch) &&
+          (registrationSessions[j].endDate?.microsecondsSinceEpoch ??
+                  TimeUtil.getDateTimeNow(_timeOffset)
+                      .microsecondsSinceEpoch) <=
               (meetingSession.endDate?.microsecondsSinceEpoch ??
                   TimeUtil.getDateTimeNow(_timeOffset).microsecondsSinceEpoch))
         currentRegistrationSessions.add(registrationSessions[j]);
     }
-    var registrationSession = currentRegistrationSessions.firstWhere(
+    var registrationSession = currentRegistrationSessions.firstWhereOrNull(
         (element) =>
-            element.endDate.microsecondsSinceEpoch <
-            questionSession.endDate.microsecondsSinceEpoch,
-        orElse: () => null);
+            (element.endDate?.microsecondsSinceEpoch ??
+                TimeUtil.getDateTimeNow(_timeOffset).microsecondsSinceEpoch) <=
+            (questionSession.endDate?.microsecondsSinceEpoch ??
+                TimeUtil.getDateTimeNow(_timeOffset).microsecondsSinceEpoch));
 
     var resultResponce = await http.get(Uri.http(
         ServerConnection.getHttpServerUrl(GlobalConfiguration()),
@@ -511,15 +517,13 @@ class HistoryDialog {
         .map((data) => Result.fromJson(data))
         .toList();
 
-    var voters = meeting.group.groupUsers
+    var voters = meeting.group!.groupUsers
         .map<User>((row) => row.user)
         .toList(growable: false);
 
     for (var voter in voters) {
-      var decision = questionSessionResults.firstWhere(
-        (element) => element.userId == voter.id,
-        orElse: () => null,
-      );
+      var decision = questionSessionResults
+          .firstWhereOrNull((element) => element.userId == voter.id);
       decisions.putIfAbsent(
         voter.getShortName(),
         () => decision == null ? 'н/д' : decision.result,
@@ -527,23 +531,22 @@ class HistoryDialog {
     }
 
     var isQuorumSuccess =
-        questionSession.usersCountRegistred >= meeting.group.quorumCount;
+        questionSession.usersCountRegistred >= meeting.group!.quorumCount;
     var isVotingSuccess = questionSession.usersCountVotedYes >=
         questionSession.usersCountForSuccess;
 
     var isManagerDecides = false;
 
     // check is manager vote was casting vote
-    if (meeting.group.isManagerCastingVote &&
+    if (meeting.group!.isManagerCastingVote &&
         (DecisionModeHelper.getEnumValue(questionSession.decision) ==
             DecisionMode.MajorityOfRegistredMembers) &&
         (questionSession.usersCountVotedYes ==
             questionSession.usersCountVotedNo) &&
         (questionSession.usersCountVotedYes ==
             questionSession.usersCountForSuccess)) {
-      var managerDecision = questionSessionResults.firstWhere(
-          (element) => element.userId == questionSession.managerId,
-          orElse: () => null);
+      var managerDecision = questionSessionResults.firstWhereOrNull(
+          (element) => element.userId == questionSession.managerId);
 
       if (managerDecision != null && managerDecision.result == 'ПРОТИВ') {
         isVotingSuccess = false;
@@ -557,13 +560,17 @@ class HistoryDialog {
 
     var questionName = meeting.toString() +
         ' ' +
-        DateFormat('dd.MM.yy').format(meetingSession.startDate.toLocal()) +
+        DateFormat('dd.MM.yy').format(
+            (meetingSession.startDate ?? TimeUtil.getDateTimeNow(_timeOffset))
+                .toLocal()) +
         ' ' +
         question.toString() +
         ' ' +
         DateFormat('HH:mm').format(questionSession.startDate.toLocal()) +
         '-' +
-        DateFormat('HH:mm').format(questionSession.endDate.toLocal());
+        DateFormat('HH:mm').format(
+            (questionSession.endDate ?? TimeUtil.getDateTimeNow(_timeOffset))
+                .toLocal());
 
     VotingHistory votingHistory = VotingHistory(
         questionName,
@@ -583,8 +590,8 @@ class HistoryDialog {
   }
 
   String getMeetingSessionText(MeetingSession session) {
-    var meeting =
-        _meetings.firstWhere((element) => element.id == session.meetingId);
+    var meeting = _meetings
+        .firstWhereOrNull((element) => element.id == session.meetingId);
 
     if (session.endDate == null && session.startDate == null) {
       return meeting.toString();
@@ -593,27 +600,32 @@ class HistoryDialog {
     if (session.endDate == null) {
       return meeting.toString() +
           ' (' +
-          DateFormat('dd.MM.yyyy HH:mm').format(session.startDate.toLocal()) +
+          DateFormat('dd.MM.yyyy HH:mm').format(
+              (session.startDate ?? TimeUtil.getDateTimeNow(_timeOffset))
+                  .toLocal()) +
           ')';
     }
 
     return meeting.toString() +
         ' (' +
-        DateFormat('dd.MM.yyyy HH:mm').format(session.startDate.toLocal()) +
+        DateFormat('dd.MM.yyyy HH:mm').format(
+            (session.startDate ?? TimeUtil.getDateTimeNow(_timeOffset))
+                .toLocal()) +
         ' - ' +
-        DateFormat('dd.MM.yyyy HH:mm').format(session.endDate.toLocal()) +
+        DateFormat('dd.MM.yyyy HH:mm').format(
+            (session.endDate ?? TimeUtil.getDateTimeNow(_timeOffset))
+                .toLocal()) +
         ')';
   }
 
   String getQuestionSessionText(QuestionSession questionSession) {
-    var meetingSession = _meetingSessions.firstWhere(
+    var meetingSession = _meetingSessions.firstWhereOrNull(
         (element) => element.id == questionSession.meetingSessionId);
     var meeting = _meetings
-        .firstWhere((element) => element.id == meetingSession.meetingId);
+        .firstWhereOrNull((element) => element.id == meetingSession?.meetingId);
 
-    var question = meeting.agenda.questions.firstWhere(
-        (element) => element.id == questionSession.questionId,
-        orElse: () => null);
+    var question = meeting!.agenda!.questions.firstWhereOrNull(
+        (element) => element.id == questionSession.questionId);
 
     if (question == null) {
       return '';
@@ -624,8 +636,9 @@ class HistoryDialog {
         DateFormat('dd.MM.yyyy HH:mm')
             .format(questionSession.startDate.toLocal()) +
         ' - ' +
-        DateFormat('dd.MM.yyyy HH:mm')
-            .format(questionSession.endDate.toLocal()) +
+        DateFormat('dd.MM.yyyy HH:mm').format(
+            (questionSession.endDate ?? TimeUtil.getDateTimeNow(_timeOffset))
+                .toLocal()) +
         ')';
   }
 }

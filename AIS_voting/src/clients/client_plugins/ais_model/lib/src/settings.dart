@@ -982,17 +982,12 @@ class SignalsSettings {
 }
 
 class IntervalsSettings {
-  late int defaultRegistrationIntervalId;
-  late int defaultVotingIntervalId;
-  late int defaultSpeakerIntervalId;
-  late int defaultAskWordQueueIntervalId;
+  int? defaultRegistrationIntervalId;
+  int? defaultVotingIntervalId;
+  int? defaultSpeakerIntervalId;
+  int? defaultAskWordQueueIntervalId;
 
-  IntervalsSettings() {
-    defaultRegistrationIntervalId = 0;
-    defaultVotingIntervalId = 0;
-    defaultSpeakerIntervalId = 0;
-    defaultAskWordQueueIntervalId = 0;
-  }
+  IntervalsSettings() {}
 
   Map toJson() => {
         'defaultRegistrationIntervalId': defaultRegistrationIntervalId,

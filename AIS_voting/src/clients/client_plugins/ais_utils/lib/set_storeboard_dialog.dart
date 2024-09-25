@@ -27,8 +27,8 @@ class SetStoreboardDialog {
   ais.Interval? _selectedInterval;
   bool? _autoEnd;
 
-  String _terminalId;
-  String _name;
+  String? _terminalId;
+  String? _name;
   late List<StoreboardTemplate> _storeboardTemplates;
   StoreboardTemplate? _selectedStoreboardTemplate;
   StoreboardTemplate? _editStoreboardTemplate;
@@ -256,7 +256,7 @@ class SetStoreboardDialog {
     return null;
   }
 
-  String? getTribuneNameByTerminalId(String terminalId) {
+  String? getTribuneNameByTerminalId(String? terminalId) {
     for (var i = 0; i < _group.workplaces.tribuneTerminalIds.length; i++) {
       if (_group.workplaces.tribuneTerminalIds[i] == terminalId) {
         return _group.workplaces.tribuneNames[i];
@@ -911,7 +911,7 @@ class SetStoreboardDialog {
                                       ? null
                                       : () {
                                           _setSpeaker(
-                                              terminalId, !_isMicActive);
+                                              terminalId!, !_isMicActive);
                                           setStateForDialog(() {
                                             _isBlockMicButton = true;
                                           });

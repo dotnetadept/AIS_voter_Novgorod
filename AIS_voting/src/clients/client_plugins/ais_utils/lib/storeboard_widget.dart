@@ -143,7 +143,7 @@ class _StoreboardStateWidgetState extends State<StoreboardWidget>
       DateTime startTime;
       if (widget.serverState.storeboardState == StoreboardState.Speaker) {
         startTime = widget.serverState.speakerSession!.startDate!;
-        _intervalValue = widget.serverState.speakerSession!.interval;
+        _intervalValue = widget.serverState.speakerSession!.interval ?? 0;
 
         updateIndicatorInterval(startTime, _intervalValue);
         _intervalTimer = Timer.periodic(Duration(seconds: 1),

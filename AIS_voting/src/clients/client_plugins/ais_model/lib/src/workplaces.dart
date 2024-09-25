@@ -7,8 +7,8 @@ class Workplaces {
   late int rowsCount;
   late List<int> rows;
   late List<bool> isDisplayEmptyCell;
-  late List<int> schemeManagement;
-  late List<String> managementTerminalIds;
+  late List<int?> schemeManagement;
+  late List<String?> managementTerminalIds;
   late List<String> tribuneTerminalIds;
   late List<String> tribuneNames;
   late List<List<int?>> schemeWorkplaces;
@@ -23,12 +23,12 @@ class Workplaces {
     rowsCount = 0;
     rows = <int>[];
     isDisplayEmptyCell = <bool>[];
-    schemeManagement = <int>[];
-    managementTerminalIds = <String>[];
+    schemeManagement = <int?>[];
+    managementTerminalIds = <String?>[];
     tribuneTerminalIds = <String>[];
     tribuneNames = <String>[];
-    schemeWorkplaces = <List<int>>[];
-    workplacesTerminalIds = <List<String>>[];
+    schemeWorkplaces = <List<int?>>[];
+    workplacesTerminalIds = <List<String?>>[];
   }
 
   int getTotalPlacesCount() {
@@ -97,9 +97,9 @@ class Workplaces {
         rowsCount = json['rowsCount'],
         rows = json['rows'].toList().cast<int>(),
         isDisplayEmptyCell = json['isDisplayEmptyCell'].toList().cast<bool>(),
-        schemeManagement = json['schemeManagement'].toList().cast<int>(),
+        schemeManagement = json['schemeManagement'].toList().cast<int?>(),
         managementTerminalIds =
-            json['managementTerminalIds'].toList().cast<String>(),
+            json['managementTerminalIds'].toList().cast<String?>(),
         tribuneTerminalIds = json['tribuneTerminalIds'].toList().cast<String>(),
         tribuneNames = json['tribuneNames'].toList().cast<String>(),
         schemeWorkplaces = json['schemeWorkplaces'].map<List<int?>>((i) {

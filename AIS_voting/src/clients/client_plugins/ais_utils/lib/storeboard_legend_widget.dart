@@ -5,7 +5,7 @@ import 'package:ais_model/ais_model.dart';
 class SchemeLegendWidget extends StatefulWidget {
   final Settings settings;
   final ServerState serverState;
-  final Group group;
+  final Group? group;
   final bool isOperatorView;
   final bool isSmallView;
 
@@ -153,7 +153,7 @@ class _SchemeLegendWidgetState extends State<SchemeLegendWidget> {
                     width: 15,
                   ),
                   AutoSizeText(
-                    'Установлено: ${widget.group.lawUsersCount.toString()}',
+                    'Установлено: ${(widget.group?.lawUsersCount ?? 0).toString()}',
                     maxLines: 1,
                     group: _autoSizeGroup,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
@@ -162,7 +162,7 @@ class _SchemeLegendWidgetState extends State<SchemeLegendWidget> {
                     child: Container(),
                   ),
                   AutoSizeText(
-                    'Избрано: ${widget.group.chosenCount.toString()}',
+                    'Избрано: ${(widget.group?.chosenCount ?? 0).toString()}',
                     maxLines: 1,
                     group: _autoSizeGroup,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
@@ -171,7 +171,7 @@ class _SchemeLegendWidgetState extends State<SchemeLegendWidget> {
                     child: Container(),
                   ),
                   AutoSizeText(
-                    'Кворум: ${widget.group.quorumCount.toString()}',
+                    'Кворум: ${(widget.group?.quorumCount ?? 0).toString()}',
                     maxLines: 1,
                     group: _autoSizeGroup,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
@@ -189,7 +189,7 @@ class _SchemeLegendWidgetState extends State<SchemeLegendWidget> {
                     child: Container(),
                   ),
                   AutoSizeText(
-                    'Отсутствуют: ${widget.group.chosenCount - widget.serverState.usersRegistered.length}',
+                    'Отсутствуют: ${widget.group?.chosenCount == null ? 0 : widget.group!.chosenCount - widget.serverState.usersRegistered.length}',
                     maxLines: 1,
                     group: _autoSizeGroup,
                     style:

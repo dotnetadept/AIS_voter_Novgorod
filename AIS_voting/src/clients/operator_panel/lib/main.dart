@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:collection/collection.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:ntp/ntp.dart';
 import 'dart:convert' show json;
@@ -79,14 +80,14 @@ class _MyAppState extends State<MyApp> {
                 primarySwatch: Colors.blue,
                 visualDensity: VisualDensity.adaptivePlatformDensity,
                 scrollbarTheme: ScrollbarThemeData(
-                  thickness: MaterialStateProperty.all(12),
+                  thickness: WidgetStateProperty.all(12),
                 ),
                 textButtonTheme: TextButtonThemeData(
                     style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  foregroundColor: MaterialStateProperty.all(Colors.white),
-                  overlayColor: MaterialStateProperty.all(Colors.blueAccent),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(20)),
+                  backgroundColor: WidgetStateProperty.all(Colors.blue),
+                  foregroundColor: WidgetStateProperty.all(Colors.white),
+                  overlayColor: WidgetStateProperty.all(Colors.blueAccent),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(20)),
                 )),
                 textTheme: GoogleFonts.ubuntuTextTheme(
                   Theme.of(context).textTheme,
@@ -108,11 +109,7 @@ class _MyAppState extends State<MyApp> {
       return _buildRoute(settings, ReconnectPage());
     }
 
-    if (settings.name == '/main') {
-      return _buildRoute(settings, OperatorPage());
-    }
-
-    return null;
+    return _buildRoute(settings, OperatorPage());
   }
 
   MaterialPageRoute _buildRoute(RouteSettings settings, Widget builder) {
@@ -124,29 +121,29 @@ class _MyAppState extends State<MyApp> {
 }
 
 class OperatorPage extends StatefulWidget {
-  OperatorPage({Key key}) : super(key: key);
+  OperatorPage({Key? key}) : super(key: key);
 
   @override
   _OperatorPageState createState() => _OperatorPageState();
 }
 
 class _OperatorPageState extends State<OperatorPage> {
-  Settings _settings;
-  int _timeOffset;
+  late Settings _settings;
+  late int _timeOffset;
 
-  List<Meeting> _meetings = <Meeting>[];
-  List<MeetingSession> _meetingSessions = <MeetingSession>[];
-  List<VotingMode> _votingModes;
-  List<User> _users = <User>[];
+  late List<Meeting> _meetings;
+  late List<MeetingSession> _meetingSessions;
+  late List<VotingMode> _votingModes;
+  late List<User> _users;
 
-  Meeting _selectedMeeting;
-  Question _selectedQuestion;
-  Question _lockedQuestion;
+  Meeting? _selectedMeeting;
+  Question? _selectedQuestion;
+  Question? _lockedQuestion;
 
-  WebSocketConnection _connection;
+  late WebSocketConnection _connection;
   var _setStoreboardDialog;
 
-  SystemState _prevSystemState;
+  SystemState? _prevSystemState;
 
   ScrollController _schemeScrollControllerVertical = ScrollController();
   ScrollController _schemeScrollControllerHorisontal = ScrollController();
@@ -189,9 +186,9 @@ class _OperatorPageState extends State<OperatorPage> {
                     .map((data) => Meeting.fromJson(data))
                     .toList();
 
-                if (_connection.getServerState != null) {
-                  setServerState(_connection.getServerState);
-                }
+                // if (_connection.getServerState != null) {
+                //   setServerState(_connection.getServerState);
+                // }
               })
             })
         .then((value) => http
@@ -227,8 +224,7 @@ class _OperatorPageState extends State<OperatorPage> {
                     _settings = (json.decode(response.body) as List)
                         .map((data) => Settings.fromJson(data))
                         .toList()
-                        .firstWhere((element) => element.isSelected,
-                            orElse: () => null);
+                        .firstWhere((element) => element.isSelected);
 
                     SoundPlayer.setOperatorIsActive(
                         _settings.signalsSettings.isOperatorPlaySound);
@@ -269,11 +265,9 @@ class _OperatorPageState extends State<OperatorPage> {
                 AppState().setIntervals(intervals);
 
                 var selectedInterval = AppState().getIntervals().firstWhere(
-                      (element) =>
-                          element.id ==
-                          _settings.intervalsSettings.defaultSpeakerIntervalId,
-                      orElse: () => null,
-                    );
+                    (element) =>
+                        element.id ==
+                        _settings.intervalsSettings.defaultSpeakerIntervalId);
 
                 AppState().setInterval(selectedInterval);
               })
@@ -295,37 +289,8 @@ class _OperatorPageState extends State<OperatorPage> {
           .onError((error, stackTrace) {
         print(
             'Отсутствует синхронизация с сервером времени. ${error.toString()} ${stackTrace.toString()}');
-        return null;
+        return 0;
       }).then((value) async {
-        if (value == null) {
-          var noButtonPressed = false;
-          var title = 'Отсутствует синхронизация с сервером времени.';
-
-          await Utility().showYesNoDialog(
-            context,
-            title: title,
-            message: TextSpan(
-              text:
-                  'Вы уверены, что хотите продолжить без синхронизации с сервером времени?',
-            ),
-            yesButtonText: 'Да',
-            yesCallBack: () {
-              Navigator.of(context).pop();
-            },
-            noButtonText: 'Нет',
-            noCallBack: () {
-              noButtonPressed = true;
-              Navigator.of(context).pop();
-            },
-          );
-
-          if (noButtonPressed) {
-            exit(0);
-          }
-
-          value = 0;
-        }
-
         setState(() {
           _timeOffset = value;
         });
@@ -342,45 +307,45 @@ class _OperatorPageState extends State<OperatorPage> {
     _setStoreboardDialog?.update(
         serverState.activeMics, serverState.waitingMics);
 
-    int selectedMeetingId = json.decode(serverState.params)['selectedMeeting'];
-    int selectedQuestionId =
+    int? selectedMeetingId = json.decode(serverState.params)['selectedMeeting'];
+    int? selectedQuestionId =
         json.decode(serverState.params)['selectedQuestion'];
-    String status = json.decode(serverState.params)['status'];
-    DateTime lastUpdated =
+    String? status = json.decode(serverState.params)['status'];
+    DateTime? lastUpdated =
         json.decode(serverState.params)['lastUpdated'] == null
             ? null
             : DateTime.parse(json.decode(serverState.params)['lastUpdated']);
 
-    if (_connection.getServerState != null &&
+    if (
+        //_connection.getServerState != null &&
         selectedMeetingId == null &&
-        _prevSystemState != serverState.systemState) {
+            _prevSystemState != serverState.systemState) {
       _selectedMeeting = null;
       _selectedQuestion = null;
       _lockedQuestion = null;
     }
 
-    if (_connection.getServerState != null &&
-        _meetings != null &&
-        selectedMeetingId != null) {
+    if (
+        //_connection.getServerState != null &&
+        _meetings != null && selectedMeetingId != null) {
       // refresh selected meeting if changed
       if (_selectedMeeting?.id != selectedMeetingId && _meetings.isNotEmpty) {
-        _selectedMeeting = _meetings.firstWhere(
-            (element) => element.id == selectedMeetingId,
-            orElse: () => null);
-        _selectedMeeting.agenda.questions
+        _selectedMeeting = _meetings
+            .firstWhereOrNull((element) => element.id == selectedMeetingId);
+        _selectedMeeting!.agenda!.questions
             .sort((a, b) => a.orderNum.compareTo(b.orderNum));
       }
 
       // refresh status, lastUpdated, selected and locked question if changed
       if (_selectedMeeting != null) {
-        _selectedMeeting.status = status;
-        _selectedMeeting.lastUpdated = lastUpdated;
+        _selectedMeeting!.status = status!;
+        _selectedMeeting!.lastUpdated = lastUpdated!;
 
         if (selectedQuestionId != null) {
           if (_lockedQuestion?.id != selectedQuestionId) {
-            _lockedQuestion = _selectedMeeting.agenda.questions.firstWhere(
-                (element) => element.id == selectedQuestionId,
-                orElse: () => null);
+            _lockedQuestion = _selectedMeeting!.agenda!.questions
+                .firstWhereOrNull(
+                    (element) => element.id == selectedQuestionId);
           }
         } else {
           _lockedQuestion = null;
@@ -388,7 +353,7 @@ class _OperatorPageState extends State<OperatorPage> {
           //fix locked question on fixed voting mode
           if (_settings?.votingSettings?.isVotingFixed == true &&
               SystemStateHelper.isStarted(serverState.systemState)) {
-            lockQuestion(_selectedMeeting.agenda.questions.first);
+            lockQuestion(_selectedMeeting!.agenda!.questions.first);
           }
         }
 
@@ -424,16 +389,14 @@ class _OperatorPageState extends State<OperatorPage> {
 
   void setAgenda(Agenda agenda) {
     setState(() {
-      _selectedMeeting.agenda.questions = agenda.questions;
+      _selectedMeeting!.agenda!.questions = agenda.questions;
 
-      _lockedQuestion = _selectedMeeting.agenda.questions.firstWhere(
-          (element) => element.id == _lockedQuestion?.id,
-          orElse: () => null);
-      _selectedQuestion = _selectedMeeting.agenda.questions.firstWhere(
-          (element) => element.id == _selectedQuestion?.id,
-          orElse: () => null);
+      _lockedQuestion = _selectedMeeting!.agenda!.questions
+          .firstWhereOrNull((element) => element.id == _lockedQuestion?.id);
+      _selectedQuestion = _selectedMeeting!.agenda!.questions
+          .firstWhereOrNull((element) => element.id == _selectedQuestion?.id);
 
-      _selectedMeeting.agenda.questions
+      _selectedMeeting!.agenda!.questions
           .sort((a, b) => a.orderNum.compareTo(b.orderNum));
     });
   }
@@ -448,8 +411,8 @@ class _OperatorPageState extends State<OperatorPage> {
       _connection.getServerState,
       _timeOffset,
       _settings,
-      _selectedMeeting,
-      _selectedMeeting.group,
+      _selectedMeeting!,
+      _selectedMeeting!.group!,
       AppState().getIntervals().where((element) => element.isActive).toList(),
       AppState().getSelectedInterval(),
       AppState().getAutoEnd(),
@@ -461,12 +424,12 @@ class _OperatorPageState extends State<OperatorPage> {
       _connection.setFlushNavigation,
       onFlushStoreboard,
       _connection.setStoreboardStatus,
-      (ais.Interval interval) {
+      (ais.Interval? interval) {
         setState(() {
           AppState().setInterval(interval);
         });
       },
-      (bool autoEnd) {
+      (bool? autoEnd) {
         setState(() {
           AppState().setAutoEnd(autoEnd);
         });
@@ -485,16 +448,15 @@ class _OperatorPageState extends State<OperatorPage> {
     var speakerSession = SpeakerSession();
 
     var guestName = _connection.getServerState.guestsPlaces
-            .firstWhere((element) => element.terminalId == terminalId,
-                orElse: () => null)
+            .firstWhereOrNull((element) => element.terminalId == terminalId)
             ?.name ??
         'Гость[$terminalId]';
     speakerSession.type = 'Выступление:';
 
     speakerSession.name = guestName;
     speakerSession.terminalId = terminalId;
-    speakerSession.interval = selectedInterval.duration;
-    speakerSession.autoEnd = selectedInterval.isAutoEnd;
+    speakerSession.interval = selectedInterval?.duration;
+    speakerSession.autoEnd = selectedInterval?.isAutoEnd;
     _connection.setCurrentSpeaker(speakerSession, selectedInterval?.startSignal,
         selectedInterval?.endSignal);
   }
@@ -511,7 +473,7 @@ class _OperatorPageState extends State<OperatorPage> {
       _connection.setSystemStatus(
           SystemState.QuestionLocked,
           json.encode({
-            'question_id': _lockedQuestion.id,
+            'question_id': _lockedQuestion!.id,
           }));
     } else if (_selectedMeeting != null &&
         SystemStateHelper.isStarted(_connection.getServerState.systemState)) {
@@ -521,11 +483,11 @@ class _OperatorPageState extends State<OperatorPage> {
     }
   }
 
-  void _onSetRegistration(int deputyId) {
+  void _onSetRegistration(int? deputyId) {
     _connection.setUserRegistration(deputyId);
   }
 
-  void _onUndoRegistration(int deputyId) {
+  void _onUndoRegistration(int? deputyId) {
     _connection.undoUserRegistration(deputyId);
   }
 
@@ -533,7 +495,7 @@ class _OperatorPageState extends State<OperatorPage> {
     _connection.removeUserAskWord(userId);
   }
 
-  void _onSetUser(String terminalId, int userId) async {
+  void _onSetUser(String? terminalId, int? userId) async {
     if (terminalId == null || terminalId.isEmpty) {
       return;
     }
@@ -548,7 +510,7 @@ class _OperatorPageState extends State<OperatorPage> {
     TextEditingController _tecTerminalId = new TextEditingController();
     _tecTerminalId.text = terminalId;
     final formKey = GlobalKey<FormState>();
-    int _userId = userId;
+    int? _userId = userId;
 
     return showDialog<void>(
       context: context,
@@ -571,7 +533,7 @@ class _OperatorPageState extends State<OperatorPage> {
                         labelText: 'ИД терминала',
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'ИД терминала не должен быть пустым';
                         }
                         return null;
@@ -582,44 +544,43 @@ class _OperatorPageState extends State<OperatorPage> {
                     height: 10,
                   ),
                   DropdownSearch<User>(
-                    mode: Mode.DIALOG,
-                    showSearchBox: true,
+                    // mode: Mode.DIALOG,
+                    // showSearchBox: true,
                     items: UsersFilterUtil.getAbsentUserList(_users,
-                        _selectedMeeting.group, _connection.getServerState),
+                        _selectedMeeting!.group!, _connection.getServerState),
                     enabled: true,
-                    popupTitle: Container(
-                        alignment: Alignment.center,
-                        color: Colors.blueAccent,
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          'Неактивные пользователи группы',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 20),
-                        )),
+                    // popupTitle: Container(
+                    //     alignment: Alignment.center,
+                    //     color: Colors.blueAccent,
+                    //     padding: EdgeInsets.all(10),
+                    //     child: Text(
+                    //       'Неактивные пользователи группы',
+                    //       style: TextStyle(
+                    //           fontWeight: FontWeight.bold,
+                    //           color: Colors.white,
+                    //           fontSize: 20),
+                    //     )),
                     validator: (value) {
                       if (value == null) {
                         return 'Выберите пользователя';
                       }
                       return null;
                     },
-                    hint: 'Выберите пользователя',
-                    selectedItem: _selectedMeeting.group.groupUsers
+                    //hint: 'Выберите пользователя',
+                    selectedItem: _selectedMeeting!.group!.groupUsers
                         .map((e) => e.user)
                         .where((element) => !_connection
                             .getServerState.usersTerminals.keys
                             .contains(element.id))
-                        .firstWhere(
-                            (element) =>
-                                element.id != null && element.id == _userId,
-                            orElse: () => null),
+                        .firstWhereOrNull((element) => element.id == _userId),
                     onChanged: (value) {
                       setState(() {
                         _userId = value?.id;
                       });
                     },
-                    popupItemBuilder: userPopupItemBuilder,
+                    popupProps: PopupProps.menu(
+                      itemBuilder: userPopupItemBuilder,
+                    ),
                   ),
                 ],
               ),
@@ -638,7 +599,7 @@ class _OperatorPageState extends State<OperatorPage> {
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
 
@@ -667,11 +628,11 @@ class _OperatorPageState extends State<OperatorPage> {
     http
         .put(
             Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
-                '/groups/${_selectedMeeting.group.id}'),
+                '/groups/${_selectedMeeting!.group!.id}'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
-            body: json.encode(_selectedMeeting.group.toJson()))
+            body: json.encode(_selectedMeeting!.group!.toJson()))
         .then((value) => Navigator.pop(context));
 
     setState(() {});
@@ -748,7 +709,7 @@ class _OperatorPageState extends State<OperatorPage> {
   }
 
   void onLoadDocuments() {
-    DocumentsDialog(context, _settings, _selectedMeeting, _users).openDialog();
+    DocumentsDialog(context, _settings, _selectedMeeting!, _users).openDialog();
   }
 
   void navigateLicenseTab() {
@@ -865,91 +826,107 @@ class _OperatorPageState extends State<OperatorPage> {
                   group: _selectedMeeting?.group,
                   isOperatorView: true,
                   isSmallView: isSmallView),
-          _settings.operatorSchemeSettings.useTableView
-              ? TableSchemeWidget(
-                  settings: _settings,
-                  serverState: _connection.getServerState,
-                  group: _selectedMeeting?.group,
-                  interval: AppState().getSelectedInterval(),
-                  timeOffset: _timeOffset,
-                  users: _users,
-                  setRegistration: _onSetRegistration,
-                  undoRegistration: _onUndoRegistration,
-                  setSpeaker: _onSetSpeaker,
-                  setGuestSpeaker: _onSetGuestSpeaker,
-                  removeAskWord: _onRemoveAskWord,
-                  removeGuestAskWord: removeGuestAskWord,
-                  setCurrentSpeaker: _onSetCurrentSpeaker,
-                  setTribuneSpeaker: _onSetCurrentSpeaker,
-                  setUser: _onSetUser,
-                  setUserExit: _onSetUserExit,
-                  setTerminalReset: _onSetTerminalReset,
-                  setTerminalShutdown: _onSetTerminalShutdown,
-                  setTerminalScreenOn: _onSetTerminalScreenOn,
-                  setTerminalScreenOff: _onSetTerminalScreenOff,
-                  setRefreshStreamAll: _onSetRefreshStreamAll,
-                  setResetAll: _onSetResetAll,
-                  setShutdownAll: _onSetShutdownAll,
-                  addUserAskWord: addUserAskWord,
-                  isOperatorView: true,
-                )
-              : Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      color: Color(
-                          _settings.palletteSettings.schemeBackgroundColor),
-                      child: Scrollbar(
-                        thumbVisibility: false,
-                        controller: _schemeScrollControllerVertical,
-                        child: SingleChildScrollView(
-                          controller: _schemeScrollControllerVertical,
-                          scrollDirection: Axis.vertical,
+          (_selectedMeeting?.group == null ||
+                  _connection.getServerState == null)
+              ? Container()
+              : _settings.operatorSchemeSettings.useTableView
+                  ? TableSchemeWidget(
+                      settings: _settings,
+                      serverState: _connection.getServerState,
+                      group: _selectedMeeting!.group!,
+                      interval: AppState().getSelectedInterval(),
+                      timeOffset: _timeOffset,
+                      users: _users,
+                      setRegistration: _onSetRegistration,
+                      undoRegistration: _onUndoRegistration,
+                      setSpeaker: _onSetSpeaker,
+                      setGuestSpeaker: _onSetGuestSpeaker,
+                      removeAskWord: _onRemoveAskWord,
+                      removeGuestAskWord: removeGuestAskWord,
+                      setCurrentSpeaker: _onSetCurrentSpeaker,
+                      setTribuneSpeaker: _onSetCurrentSpeaker,
+                      setUser: _onSetUser,
+                      setUserExit: _onSetUserExit,
+                      setTerminalReset: _onSetTerminalReset,
+                      setTerminalShutdown: _onSetTerminalShutdown,
+                      setTerminalScreenOn: _onSetTerminalScreenOn,
+                      setTerminalScreenOff: _onSetTerminalScreenOff,
+                      setRefreshStreamAll: _onSetRefreshStreamAll,
+                      setResetAll: _onSetResetAll,
+                      setShutdownAll: _onSetShutdownAll,
+                      addUserAskWord: addUserAskWord,
+                      isOperatorView: true,
+                    )
+                  : Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          color: Color(
+                              _settings.palletteSettings.schemeBackgroundColor),
                           child: Scrollbar(
-                            thumbVisibility: true,
-                            controller: _schemeScrollControllerHorisontal,
+                            thumbVisibility: false,
+                            controller: _schemeScrollControllerVertical,
                             child: SingleChildScrollView(
-                              controller: _schemeScrollControllerHorisontal,
-                              scrollDirection: Axis.horizontal,
-                              child: WorkplacesSchemeWidget(
-                                settings: _settings,
-                                serverState: _connection.getServerState,
-                                group: _selectedMeeting?.group,
-                                interval: AppState().getSelectedInterval(),
-                                setRegistration: _onSetRegistration,
-                                undoRegistration: _onUndoRegistration,
-                                setSpeaker: _onSetSpeaker,
-                                setCurrentSpeaker: _onSetCurrentSpeaker,
-                                setTribuneSpeaker: _onSetCurrentSpeaker,
-                                setUser: _onSetUser,
-                                setUserExit: _onSetUserExit,
-                                setTerminalReset: _onSetTerminalReset,
-                                setTerminalShutdown: _onSetTerminalShutdown,
-                                setTerminalScreenOn: _onSetTerminalScreenOn,
-                                setTerminalScreenOff: _onSetTerminalScreenOff,
-                                setRefreshStreamAll: _onSetRefreshStreamAll,
-                                setResetAll: _onSetResetAll,
-                                setShutdownAll: _onSetShutdownAll,
-                                isOperatorView: true,
-                                saveGroup: saveGroup,
-                                addGuest: addGuest,
-                                removeGuest: removeGuest,
-                                addGuestAskWord: addGuestAskWord,
-                                removeGuestAskWord: removeGuestAskWord,
-                                addUserAskWord: addUserAskWord,
-                                reconnectToVissonic:
-                                    _connection.reconnectToVissonic,
-                                closeVissonic: _connection.closeVissonic,
-                                setMicsMode: _connection.setMicsMode,
-                                setMicsOff: _connection.setMicsOff,
+                              controller: _schemeScrollControllerVertical,
+                              scrollDirection: Axis.vertical,
+                              child: Scrollbar(
+                                thumbVisibility: true,
+                                controller: _schemeScrollControllerHorisontal,
+                                child: _selectedMeeting?.group == null
+                                    ? Container()
+                                    : SingleChildScrollView(
+                                        controller:
+                                            _schemeScrollControllerHorisontal,
+                                        scrollDirection: Axis.horizontal,
+                                        child: WorkplacesSchemeWidget(
+                                          settings: _settings,
+                                          serverState:
+                                              _connection.getServerState,
+                                          group: _selectedMeeting!.group!,
+                                          interval:
+                                              AppState().getSelectedInterval(),
+                                          setRegistration: _onSetRegistration,
+                                          undoRegistration: _onUndoRegistration,
+                                          setSpeaker: _onSetSpeaker,
+                                          setCurrentSpeaker:
+                                              _onSetCurrentSpeaker,
+                                          setTribuneSpeaker:
+                                              _onSetCurrentSpeaker,
+                                          setUser: _onSetUser,
+                                          setUserExit: _onSetUserExit,
+                                          setTerminalReset: _onSetTerminalReset,
+                                          setTerminalShutdown:
+                                              _onSetTerminalShutdown,
+                                          setTerminalScreenOn:
+                                              _onSetTerminalScreenOn,
+                                          setTerminalScreenOff:
+                                              _onSetTerminalScreenOff,
+                                          setRefreshStreamAll:
+                                              _onSetRefreshStreamAll,
+                                          setResetAll: _onSetResetAll,
+                                          setShutdownAll: _onSetShutdownAll,
+                                          isOperatorView: true,
+                                          saveGroup: saveGroup,
+                                          addGuest: addGuest,
+                                          removeGuest: removeGuest,
+                                          addGuestAskWord: addGuestAskWord,
+                                          removeGuestAskWord:
+                                              removeGuestAskWord,
+                                          addUserAskWord: addUserAskWord,
+                                          reconnectToVissonic:
+                                              _connection.reconnectToVissonic,
+                                          closeVissonic:
+                                              _connection.closeVissonic,
+                                          setMicsMode: _connection.setMicsMode,
+                                          setMicsOff: _connection.setMicsOff,
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
           !_settings.operatorSchemeSettings.showStatePanel
               ? Container()
               : StatePanelWidget(
@@ -964,12 +941,12 @@ class _OperatorPageState extends State<OperatorPage> {
                   autoEnd: AppState().getAutoEnd(),
                   volume: AppState().getVolume(),
                   setStoreboardStatus: _connection.setStoreboardStatus,
-                  setInterval: (ais.Interval interval) {
+                  setInterval: (ais.Interval? interval) {
                     setState(() {
                       AppState().setInterval(interval);
                     });
                   },
-                  setAutoEnd: (bool autoEnd) {
+                  setAutoEnd: (bool? autoEnd) {
                     setState(() {
                       AppState().setAutoEnd(autoEnd);
                     });
@@ -1010,12 +987,12 @@ class _OperatorPageState extends State<OperatorPage> {
           votingModes: _votingModes,
           changeSelectedMeeting: changeSelectedMeeting,
           timeOffset: _timeOffset,
-          setInterval: (ais.Interval interval) {
+          setInterval: (ais.Interval? interval) {
             setState(() {
               AppState().setInterval(interval);
             });
           },
-          setAutoEnd: (bool autoEnd) {
+          setAutoEnd: (bool? autoEnd) {
             setState(() {
               AppState().setAutoEnd(autoEnd);
             });

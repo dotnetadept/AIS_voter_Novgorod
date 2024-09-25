@@ -16,8 +16,8 @@ class Proxy {
     required this.proxy,
     required this.subjects,
     required this.isActive,
-    required this.createdDate,
-    required this.lastUpdated,
+    this.createdDate,
+    this.lastUpdated,
   });
 
   Map toJson() => {

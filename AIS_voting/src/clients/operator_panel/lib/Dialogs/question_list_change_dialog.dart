@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:ais_utils/ais_utils.dart';
+import 'package:collection/collection.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:file_selector/file_selector.dart';
@@ -14,9 +15,10 @@ import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
 
 class QuestionListChangeDialog {
-  ScrollController _questionsScrollController;
+  late ScrollController _questionsScrollController;
   ScrollController _addQuestionScrollContoller = ScrollController();
   ScrollController _questionsDescriptionsScrollController = ScrollController();
+  final dropDownKey = GlobalKey<DropdownSearchState>();
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _tecQuestionName = TextEditingController();
@@ -31,33 +33,38 @@ class QuestionListChangeDialog {
   BuildContext _context;
   Settings _settings;
   Meeting _selectedMeeting;
-  List<Question> _questions;
-  List<Question> _questionsBase;
-  Question _selectedQuestion;
-  Question _editedQuestion;
-  List<int> _accessRights;
-  List<QuestionFile> _files;
-  List<QuestionDescriptionItem> _questionDescriptions;
-  String _filesFolder;
-  WebSocketConnection _connection;
+  late List<Question> _questions;
+  late List<Question> _questionsBase;
+  Question? _selectedQuestion;
+  Question? _editedQuestion;
+  List<int> _accessRights = <int>[];
+  List<QuestionFile> _files = <QuestionFile>[];
+  late List<QuestionDescriptionItem> _questionDescriptions;
+  String _filesFolder = Uuid().v4();
+  late WebSocketConnection _connection;
   List<User> _users;
 
-  Question _newQuestionStub;
+  late Question _newQuestionStub;
 
   QuestionListChangeDialog(this._context, this._selectedMeeting,
       this._selectedQuestion, this._settings, this._users) {
     _connection = Provider.of<WebSocketConnection>(_context, listen: false);
 
-    _questions = copyQuestions(_selectedMeeting.agenda.questions);
+    _questions = copyQuestions(_selectedMeeting.agenda!.questions);
 
     _questionsScrollController = ScrollController(
-        initialScrollOffset: 87.0 * _questions.indexOf(_selectedQuestion));
-
-    _accessRights = <int>[];
-    _files = <QuestionFile>[];
-    _filesFolder = Uuid().v4();
+        initialScrollOffset: 87.0 *
+            (_selectedQuestion == null
+                ? 0
+                : _questions.indexOf(_selectedQuestion!)));
 
     _newQuestionStub = Question(
+        id: 0,
+        orderNum: 0,
+        accessRights: _accessRights,
+        files: _files,
+        folder: _filesFolder,
+        agendaId: _selectedMeeting.agenda!.id,
         name: 'Новый вопрос',
         descriptions: createQuestionDescription(
             _settings.questionListSettings.mainQuestion));
@@ -65,6 +72,7 @@ class QuestionListChangeDialog {
 
   List<Question> copyQuestions(List<Question> questions) {
     List<Question> copiedQuestions = <Question>[];
+
     for (int i = 0; i < questions.length; i++) {
       copiedQuestions
           .add(Question.fromJson(jsonDecode(jsonEncode(questions[i]))));
@@ -217,13 +225,12 @@ class QuestionListChangeDialog {
                     message: 'Добавить вопрос',
                     child: TextButton(
                       style: ButtonStyle(
-                        padding: MaterialStateProperty.all(EdgeInsets.all(15)),
+                        padding: WidgetStateProperty.all(EdgeInsets.all(15)),
                         backgroundColor:
-                            MaterialStateProperty.all(Colors.transparent),
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.black),
-                        overlayColor: MaterialStateProperty.all(Colors.black12),
-                        shape: MaterialStateProperty.all(
+                            WidgetStateProperty.all(Colors.transparent),
+                        foregroundColor: WidgetStateProperty.all(Colors.black),
+                        overlayColor: WidgetStateProperty.all(Colors.black12),
+                        shape: WidgetStateProperty.all(
                           CircleBorder(side: BorderSide(color: Colors.black)),
                         ),
                       ),
@@ -333,19 +340,18 @@ class QuestionListChangeDialog {
                                             child: TextButton(
                                               style: ButtonStyle(
                                                 padding:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         EdgeInsets.all(15)),
                                                 backgroundColor:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         Colors.transparent),
                                                 foregroundColor:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         Colors.black),
                                                 overlayColor:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         Colors.black12),
-                                                shape:
-                                                    MaterialStateProperty.all(
+                                                shape: WidgetStateProperty.all(
                                                   CircleBorder(
                                                       side: BorderSide(
                                                           color: Colors
@@ -357,9 +363,9 @@ class QuestionListChangeDialog {
                                                   _editedQuestion = element;
 
                                                   _tecQuestionName.text =
-                                                      _editedQuestion.name;
+                                                      _editedQuestion!.name;
                                                   _tecQuestionPosition.text =
-                                                      _editedQuestion.orderNum
+                                                      _editedQuestion!.orderNum
                                                           .toString();
 
                                                   _tecDescriptionCaptions =
@@ -372,7 +378,7 @@ class QuestionListChangeDialog {
                                                       <bool>[];
 
                                                   _questionDescriptions =
-                                                      _editedQuestion
+                                                      _editedQuestion!
                                                           .descriptions;
 
                                                   for (var description
@@ -395,15 +401,15 @@ class QuestionListChangeDialog {
 
                                                   _accessRights =
                                                       List<int>.from(
-                                                          _editedQuestion
+                                                          _editedQuestion!
                                                               .accessRights);
 
                                                   _files =
                                                       List<QuestionFile>.from(
-                                                          _editedQuestion
+                                                          _editedQuestion!
                                                               .files);
                                                   _filesFolder =
-                                                      _editedQuestion.folder;
+                                                      _editedQuestion!.folder;
 
                                                   _questionsBase =
                                                       copyQuestions(_questions);
@@ -417,19 +423,18 @@ class QuestionListChangeDialog {
                                             child: TextButton(
                                               style: ButtonStyle(
                                                 padding:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         EdgeInsets.all(15)),
                                                 backgroundColor:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         Colors.transparent),
                                                 foregroundColor:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         Colors.black),
                                                 overlayColor:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         Colors.black12),
-                                                shape:
-                                                    MaterialStateProperty.all(
+                                                shape: WidgetStateProperty.all(
                                                   CircleBorder(
                                                       side: BorderSide(
                                                           color: Colors
@@ -509,17 +514,17 @@ class QuestionListChangeDialog {
                                         child: TextButton(
                                           style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all(
+                                                WidgetStateProperty.all(
                                                     Colors.transparent),
-                                            padding: MaterialStateProperty.all(
+                                            padding: WidgetStateProperty.all(
                                                 EdgeInsets.all(15)),
                                             foregroundColor:
-                                                MaterialStateProperty.all(
+                                                WidgetStateProperty.all(
                                                     Colors.black),
                                             overlayColor:
-                                                MaterialStateProperty.all(
+                                                WidgetStateProperty.all(
                                                     Colors.black12),
-                                            shape: MaterialStateProperty.all(
+                                            shape: WidgetStateProperty.all(
                                               CircleBorder(
                                                   side: BorderSide(
                                                       color: Colors.black)),
@@ -612,15 +617,22 @@ class QuestionListChangeDialog {
       settingsGroup = new QuestionGroupSettings();
     }
 
-    _editedQuestion = new Question();
-    _editedQuestion.name = settingsGroup.defaultGroupName;
-    _editedQuestion.orderNum = itemIndex;
+    _editedQuestion = new Question(
+      id: 0,
+      name: settingsGroup.defaultGroupName,
+      orderNum: itemIndex,
+      accessRights: <int>[],
+      agendaId: 0,
+      files: <QuestionFile>[],
+      folder: '',
+      descriptions: <QuestionDescriptionItem>[],
+    );
 
-    QuestionListUtil.insert(_settings, _questions, _editedQuestion, itemIndex);
+    QuestionListUtil.insert(_settings, _questions, _editedQuestion!, itemIndex);
 
     setStateForDialog(() {
       _tecQuestionName.text = _editedQuestion.toString();
-      _tecQuestionPosition.text = _editedQuestion.orderNum.toString();
+      _tecQuestionPosition.text = _editedQuestion!.orderNum.toString();
       _files = <QuestionFile>[];
       _accessRights = <int>[];
       _filesFolder = Uuid().v4();
@@ -644,18 +656,22 @@ class QuestionListChangeDialog {
     return <QuestionDescriptionItem>[
       QuestionDescriptionItem(
           caption: group.descriptionCaption1,
+          text: '',
           showOnStoreboard: group.showCaption1OnStoreboard,
           showInReports: group.showCaption1InReports),
       QuestionDescriptionItem(
           caption: group.descriptionCaption2,
+          text: '',
           showOnStoreboard: group.showCaption2OnStoreboard,
           showInReports: group.showCaption2InReports),
       QuestionDescriptionItem(
           caption: group.descriptionCaption3,
+          text: '',
           showOnStoreboard: group.showCaption3OnStoreboard,
           showInReports: group.showCaption3InReports),
       QuestionDescriptionItem(
           caption: group.descriptionCaption4,
+          text: '',
           showOnStoreboard: group.showCaption4OnStoreboard,
           showInReports: group.showCaption4InReports)
     ];
@@ -672,16 +688,16 @@ class QuestionListChangeDialog {
   }
 
   bool onAddQuestion() {
-    if (!_formKey.currentState.validate()) {
+    if (_formKey.currentState?.validate() != true) {
       return false;
     }
 
-    _editedQuestion.name = _tecQuestionName.text;
-    _editedQuestion.agendaId = _selectedMeeting.agenda.id;
+    _editedQuestion!.name = _tecQuestionName.text;
+    _editedQuestion!.agendaId = _selectedMeeting.agenda!.id;
 
-    _editedQuestion.descriptions = <QuestionDescriptionItem>[];
+    _editedQuestion!.descriptions = <QuestionDescriptionItem>[];
     for (int i = 0; i < _questionDescriptions.length; i++) {
-      _editedQuestion.descriptions.add(QuestionDescriptionItem(
+      _editedQuestion!.descriptions.add(QuestionDescriptionItem(
         caption: _tecDescriptionCaptions[i].text,
         text: _tecDescriptionTexts[i].text,
         showOnStoreboard: _cbDescriptionShowOnStroreboard[i],
@@ -689,10 +705,10 @@ class QuestionListChangeDialog {
       ));
     }
 
-    _editedQuestion.orderNum = int.parse(_tecQuestionPosition.text);
-    _editedQuestion.folder = _filesFolder;
-    _editedQuestion.files = _files;
-    _editedQuestion.accessRights = _accessRights;
+    _editedQuestion!.orderNum = int.parse(_tecQuestionPosition.text);
+    _editedQuestion!.folder = _filesFolder;
+    _editedQuestion!.files = _files;
+    _editedQuestion!.accessRights = _accessRights;
 
     return true;
   }
@@ -760,10 +776,10 @@ class QuestionListChangeDialog {
                           children: [
                             Checkbox(
                               value: _cbDescriptionShowOnStroreboard[index],
-                              onChanged: (bool value) {
+                              onChanged: (bool? value) {
                                 setStateForDialog(() {
                                   _cbDescriptionShowOnStroreboard[index] =
-                                      value;
+                                      value == true;
                                 });
                               },
                             ),
@@ -777,9 +793,10 @@ class QuestionListChangeDialog {
                           children: [
                             Checkbox(
                               value: _cbDescriptionShowInReports[index],
-                              onChanged: (bool value) {
+                              onChanged: (bool? value) {
                                 setStateForDialog(() {
-                                  _cbDescriptionShowInReports[index] = value;
+                                  _cbDescriptionShowInReports[index] =
+                                      value == true;
                                 });
                               },
                             ),
@@ -880,7 +897,7 @@ class QuestionListChangeDialog {
                     labelText: 'Наименование вопроса',
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Введите наименование вопроса';
                     }
                     return null;
@@ -920,7 +937,7 @@ class QuestionListChangeDialog {
                           message: 'Добавить вопрос в список вопросов',
                           child: TextButton(
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 CircleBorder(
                                     side:
                                         BorderSide(color: Colors.transparent)),
@@ -959,7 +976,7 @@ class QuestionListChangeDialog {
                           message: 'Добавить файл',
                           child: TextButton(
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 CircleBorder(
                                     side:
                                         BorderSide(color: Colors.transparent)),
@@ -998,7 +1015,7 @@ class QuestionListChangeDialog {
                           message: 'Добавить права доступа',
                           child: TextButton(
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 CircleBorder(
                                     side:
                                         BorderSide(color: Colors.transparent)),
@@ -1033,8 +1050,8 @@ class QuestionListChangeDialog {
         Expanded(
           child: DataTable(
             showCheckboxColumn: false,
-            dataRowColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
+            dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
               return Colors.black12;
             }),
             columns: [
@@ -1066,15 +1083,13 @@ class QuestionListChangeDialog {
                                   message: 'Изменить описание',
                                   child: TextButton(
                                     style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.transparent),
+                                      backgroundColor: WidgetStateProperty.all(
+                                          Colors.transparent),
                                       foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
-                                      overlayColor: MaterialStateProperty.all(
+                                          WidgetStateProperty.all(Colors.black),
+                                      overlayColor: WidgetStateProperty.all(
                                           Colors.black12),
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                         CircleBorder(
                                             side: BorderSide(
                                                 color: Colors.transparent)),
@@ -1091,15 +1106,13 @@ class QuestionListChangeDialog {
                                   message: 'Удалить файл',
                                   child: TextButton(
                                     style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.transparent),
+                                      backgroundColor: WidgetStateProperty.all(
+                                          Colors.transparent),
                                       foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
-                                      overlayColor: MaterialStateProperty.all(
+                                          WidgetStateProperty.all(Colors.black),
+                                      overlayColor: WidgetStateProperty.all(
                                           Colors.black12),
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                         CircleBorder(
                                             side: BorderSide(
                                                 color: Colors.transparent)),
@@ -1136,8 +1149,8 @@ class QuestionListChangeDialog {
         Expanded(
           child: DataTable(
             showCheckboxColumn: false,
-            dataRowColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
+            dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
               return Colors.black12;
             }),
             columns: [
@@ -1149,10 +1162,7 @@ class QuestionListChangeDialog {
             ],
             rows: _accessRights.map(
               ((element) {
-                var foundUser = _users.firstWhere(
-                  (u) => u.id == element,
-                  orElse: () => null,
-                );
+                var foundUser = _users.firstWhere((u) => u.id == element);
 
                 return DataRow(
                   cells: <DataCell>[
@@ -1168,13 +1178,13 @@ class QuestionListChangeDialog {
                             message: 'Удалить права доступа',
                             child: TextButton(
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    Colors.transparent),
+                                backgroundColor:
+                                    WidgetStateProperty.all(Colors.transparent),
                                 foregroundColor:
-                                    MaterialStateProperty.all(Colors.black),
+                                    WidgetStateProperty.all(Colors.black),
                                 overlayColor:
-                                    MaterialStateProperty.all(Colors.black12),
-                                shape: MaterialStateProperty.all(
+                                    WidgetStateProperty.all(Colors.black12),
+                                shape: WidgetStateProperty.all(
                                   CircleBorder(
                                       side: BorderSide(
                                           color: Colors.transparent)),
@@ -1202,8 +1212,13 @@ class QuestionListChangeDialog {
 
   void addQuestionDescription(Function setStateForDialog) {
     setStateForDialog(() {
-      _questionDescriptions.add(QuestionDescriptionItem(
-          showInReports: false, showOnStoreboard: false));
+      _questionDescriptions.add(
+        QuestionDescriptionItem(
+            caption: '',
+            text: '',
+            showInReports: false,
+            showOnStoreboard: false),
+      );
       _tecDescriptionCaptions.add(TextEditingController());
       _tecDescriptionTexts.add(TextEditingController());
       _cbDescriptionShowOnStroreboard.add(false);
@@ -1215,7 +1230,7 @@ class QuestionListChangeDialog {
       BuildContext context, Function setStateForDialog) async {
     // show select user dialog
     final formKey = GlobalKey<FormState>();
-    User selectedUser;
+    User? selectedUser;
 
     return showDialog<void>(
       context: context,
@@ -1248,15 +1263,15 @@ class QuestionListChangeDialog {
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
 
                 setStateForDialog(() {
                   var isContains =
-                      _accessRights.any((x) => x == selectedUser.id);
+                      _accessRights.any((x) => x == selectedUser!.id);
                   if (!isContains) {
-                    _accessRights.add(selectedUser.id);
+                    _accessRights.add(selectedUser!.id);
                   }
                 });
 
@@ -1269,25 +1284,26 @@ class QuestionListChangeDialog {
     );
   }
 
-  Widget getDeputySelector(void onChanged(User value)) {
+  Widget getDeputySelector(void onChanged(User? value)) {
     var groupUsers = _users.where((element) => isHaveRights(element)).toList();
 
     return DropdownSearch<User>(
-      mode: Mode.DIALOG,
-      showSearchBox: true,
-      showClearButton: true,
+      key: dropDownKey,
+      // mode: Mode.DIALOG,
+      // showSearchBox: true,
+      // showClearButton: true,
       items: _users.where((element) => !groupUsers.contains(element)).toList(),
-      label: 'Депутат',
-      popupTitle: Container(
-          alignment: Alignment.center,
-          color: Colors.blueAccent,
-          padding: EdgeInsets.all(10),
-          child: Text(
-            'Депутат',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
-          )),
-      hint: 'Выберите Депутата',
+      //label: 'Депутат',
+      //popupTitle: Container(
+      // alignment: Alignment.center,
+      // color: Colors.blueAccent,
+      // padding: EdgeInsets.all(10),
+      // child: Text(
+      //   'Депутат',
+      //   style: TextStyle(
+      //       fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+      // )),
+      //hint: 'Выберите Депутата',
       selectedItem: null,
       onChanged: onChanged,
       validator: (value) {
@@ -1297,8 +1313,8 @@ class QuestionListChangeDialog {
         return null;
       },
       dropdownBuilder: userDropDownItemBuilder,
-      popupItemBuilder: userItemBuilder,
-      emptyBuilder: emptyBuilder,
+      //popupItemBuilder: userItemBuilder,
+      //emptyBuilder: emptyBuilder,
     );
   }
 
@@ -1308,8 +1324,7 @@ class QuestionListChangeDialog {
 
   Widget userDropDownItemBuilder(
     BuildContext context,
-    User item,
-    String itemDesignation,
+    User? item,
   ) {
     return item == null
         ? Container(
@@ -1342,7 +1357,7 @@ class QuestionListChangeDialog {
     );
   }
 
-  Widget emptyBuilder(BuildContext context, String text) {
+  Widget emptyBuilder(BuildContext context, String? text) {
     return Center(child: Text('Нет данных'));
   }
 
@@ -1353,7 +1368,7 @@ class QuestionListChangeDialog {
     );
     final String initialDirectory =
         (await getApplicationDocumentsDirectory()).path;
-    final XFile result = await openFile(
+    final XFile? result = await openFile(
       acceptedTypeGroups: <XTypeGroup>[typeGroup],
       initialDirectory: initialDirectory,
     );
@@ -1391,7 +1406,7 @@ class QuestionListChangeDialog {
         });
 
     var folderUploadName = _filesFolder;
-    var agendaFolderName = _selectedMeeting.agenda.folder;
+    var agendaFolderName = _selectedMeeting.agenda!.folder;
 
     var request = http.MultipartRequest(
         'POST', Uri.parse(ServerConnection.getFileServerUploadUrl(_settings)));
@@ -1407,11 +1422,13 @@ class QuestionListChangeDialog {
           : result.name;
 
       var questionFile = QuestionFile(
+          id: 0,
+          realPath: '',
           fileName: result.name,
           version: Uuid().v4(),
           description: formattedDescription,
           relativePath: agendaFolderName + '/' + _filesFolder,
-          questionId: null);
+          questionId: 0);
 
       setStateForDialog(() {
         _files.add(questionFile);
@@ -1460,7 +1477,7 @@ class QuestionListChangeDialog {
                       labelText: 'Описание файла',
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return 'Введите описание файла';
                       }
                       return null;
@@ -1483,7 +1500,7 @@ class QuestionListChangeDialog {
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
 

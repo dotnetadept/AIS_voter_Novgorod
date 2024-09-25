@@ -12,7 +12,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 
 class WebSocketConnection with ChangeNotifier {
-  static WebSocketConnection _singleton;
+  static late WebSocketConnection _singleton;
 
   static WebSocketConnection getInstance() {
     return _singleton;
@@ -27,16 +27,16 @@ class WebSocketConnection with ChangeNotifier {
   }
 
   var _isOnline = false;
-  WebSocket _webSocket;
-  WebSocketChannel _channel;
-  ServerState _serverState;
-  static void Function() onConnect;
-  static void Function(String) onFail;
-  static void Function(Agenda) updateAgendaCallback;
-  static void Function(List<int>) swapQuestionsCallBack;
-  static void Function(List<int>) removeQuestionsCallBack;
-  static void Function(ServerState) updateServerState;
-  static void Function() stopSound;
+  late WebSocket _webSocket;
+  late WebSocketChannel _channel;
+  late ServerState _serverState;
+  static void Function()? onConnect;
+  static void Function(String)? onFail;
+  static void Function(Agenda)? updateAgendaCallback;
+  static void Function(List<int>)? swapQuestionsCallBack;
+  static void Function(List<int>)? removeQuestionsCallBack;
+  static void Function(ServerState)? updateServerState;
+  static void Function()? stopSound;
   GlobalKey<NavigatorState> navigatorKey;
 
   void setIsOnline(bool isOnline) {
@@ -48,8 +48,6 @@ class WebSocketConnection with ChangeNotifier {
 
   WebSocketChannel get getWsChannel => _channel;
 
-  void setWsChannel(WebSocketChannel channel) => _channel = channel;
-
   void setServerState(ServerState state) {
     _serverState = state;
     notifyListeners();
@@ -57,7 +55,7 @@ class WebSocketConnection with ChangeNotifier {
 
   ServerState get getServerState => _serverState;
 
-  WebSocketConnection({this.navigatorKey});
+  WebSocketConnection({required this.navigatorKey});
 
   Future<void> initNewChannel() async {
     try {
@@ -81,8 +79,8 @@ class WebSocketConnection with ChangeNotifier {
           cancelOnError: true);
     } catch (exc) {
       if (onFail != null) {
-        onFail(exc.toString());
-        await _webSocket?.close();
+        onFail!(exc.toString());
+        await _webSocket.close();
       } else {
         setOffline();
       }
@@ -93,22 +91,22 @@ class WebSocketConnection with ChangeNotifier {
     setIsOnline(true);
 
     if (onConnect != null) {
-      onConnect();
+      onConnect!();
     }
 
     if (json.decode(data)['update_agenda'] != null) {
       if (updateAgendaCallback != null) {
-        updateAgendaCallback(
+        updateAgendaCallback!(
             Agenda.fromJson(json.decode(json.decode(data)['update_agenda'])));
       }
     } else {
       if (updateServerState != null) {
-        updateServerState(ServerState.fromJson(json.decode(data)));
+        updateServerState!(ServerState.fromJson(json.decode(data)));
       }
     }
 
     if (AppState().refreshDialog != null) {
-      AppState().refreshDialog(() {});
+      AppState().refreshDialog!(() {});
     }
   }
 
@@ -120,7 +118,7 @@ class WebSocketConnection with ChangeNotifier {
   }
 
   void setStoreboardStatus(
-      StoreboardState storeboardState, String storeboardParams) {
+      StoreboardState storeboardState, String? storeboardParams) {
     _channel.sink.add(json.encode({
       'storeboardState': EnumToString.convertToString(storeboardState),
       'storeboardParams': storeboardParams,
@@ -179,7 +177,7 @@ class WebSocketConnection with ChangeNotifier {
   }
 
   void setCurrentSpeaker(
-      SpeakerSession speakerSession, Signal startSignal, Signal endSignal) {
+      SpeakerSession speakerSession, Signal? startSignal, Signal? endSignal) {
     _channel.sink.add(json.encode({
       'speakerSession': json.encode(speakerSession.toJson()),
       'startSignal': json.encode(startSignal?.toJson()),
@@ -188,21 +186,21 @@ class WebSocketConnection with ChangeNotifier {
     }));
   }
 
-  void setUserRegistration(int userId) {
+  void setUserRegistration(int? userId) {
     _channel.sink.add(json.encode({
       'userId': userId,
       'setRegistration': true,
     }));
   }
 
-  void undoUserRegistration(int userId) {
+  void undoUserRegistration(int? userId) {
     _channel.sink.add(json.encode({
       'userId': userId,
       'undoRegistration': true,
     }));
   }
 
-  void setUser(String terminalId, int userId) {
+  void setUser(String terminalId, int? userId) {
     _channel.sink.add(json.encode({
       'terminalId': terminalId,
       'userId': json.encode(userId),
@@ -327,10 +325,12 @@ class WebSocketConnection with ChangeNotifier {
   }
 
   setOffline() async {
-    await _webSocket?.close();
+    await _webSocket.close();
     setIsOnline(false);
-    stopSound();
+    if (stopSound != null) {
+      stopSound!();
+    }
 
-    navigatorKey.currentState.pushNamed('/reconnect');
+    navigatorKey.currentState?.pushNamed('/reconnect');
   }
 }

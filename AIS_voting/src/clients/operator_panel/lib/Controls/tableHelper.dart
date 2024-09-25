@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TableHelper {
-  Widget getTitleItemWidget(String label, int relativeWidth,
+  Widget getTitleItemWidget(String label, int? relativeWidth,
       {aligment = Alignment.centerLeft}) {
     if (relativeWidth == null) {
       return Container(

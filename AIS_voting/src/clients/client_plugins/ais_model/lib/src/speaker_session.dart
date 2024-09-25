@@ -5,8 +5,8 @@ class SpeakerSession {
   late String terminalId;
   late String name;
   late String type;
-  late int interval;
-  late bool autoEnd;
+  late int? interval;
+  late bool? autoEnd;
   late DateTime startDate;
   late DateTime? endDate;
 

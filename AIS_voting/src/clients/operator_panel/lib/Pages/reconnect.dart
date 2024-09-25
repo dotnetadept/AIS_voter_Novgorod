@@ -4,7 +4,7 @@ import '../Providers/WebSocketConnection.dart';
 import '../Providers/AppState.dart';
 
 class ReconnectPage extends StatefulWidget {
-  ReconnectPage({Key key}) : super(key: key);
+  ReconnectPage({Key? key}) : super(key: key);
 
   @override
   _ReconnectPageState createState() => _ReconnectPageState();
@@ -50,7 +50,7 @@ class _ReconnectPageState extends State<ReconnectPage> {
                   )
                 : TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -64,7 +64,7 @@ class _ReconnectPageState extends State<ReconnectPage> {
                               listen: false)
                           .initNewChannel();
                       if (AppState().refreshDialog != null) {
-                        AppState().refreshDialog(() {});
+                        AppState().refreshDialog!(() {});
                       }
                     },
                     child: Icon(Icons.replay_rounded),

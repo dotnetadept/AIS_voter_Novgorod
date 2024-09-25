@@ -64,7 +64,7 @@ packages:
     source: hosted
     version: "1.1.1"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       sha256: ee67cb0715911d28db6bf4af1026078bd6f0128b07a5f66fb2ed94ec6783c09a
@@ -122,25 +122,27 @@ packages:
   drag_and_drop_lists:
     dependency: "direct main"
     description:
-      path: "../client_plugins/DragAndDropLists-master"
-      relative: true
-    source: path
-    version: "0.3.3"
+      name: drag_and_drop_lists
+      sha256: "83fab4a9d4d99d9c683858ac5e1975028d87aa796bf68bfd654b19154004b6bb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
   dropdown_search:
     dependency: "direct main"
     description:
-      path: "../client_plugins/dropdown_search-0.6.3"
-      relative: true
-    source: path
-    version: "0.6.3"
+      name: dropdown_search
+      sha256: "55106e8290acaa97ed15bea1fdad82c3cf0c248dd410e651f5a8ac6870f783ab"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.6"
   enum_to_string:
     dependency: "direct main"
     description:
       name: enum_to_string
-      sha256: "07121761dcbd61893a777028d6bc13a4748d366bacf3223b997f9a1f1c90bf34"
+      sha256: bd9e83a33b754cb43a75b36a9af2a0b92a757bfd9847d2621ca0b1bed45f8e7a
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.14"
+    version: "2.0.1"
   ffi:
     dependency: transitive
     description:
@@ -222,10 +224,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_colorpicker
-      sha256: "5e16e01b4dc80b21cf09092b96e0286528cc7c0feb313e5183b2eeddfa0c8d33"
+      sha256: "969de5f6f9e2a570ac660fb7b501551451ea2a1ab9e2097e89475f60e07816ea"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.5"
+    version: "1.1.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -234,10 +236,11 @@ packages:
   global_configuration:
     dependency: "direct main"
     description:
-      path: "../client_plugins/global_configuration-1.6.0"
-      relative: true
-    source: path
-    version: "1.6.0"
+      name: global_configuration
+      sha256: "63fdee759d2bdde498804061bd44860b2025b27b5661c60a5fb39663df88261f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0-nullsafety.1"
   google_fonts:
     dependency: "direct main"
     description:
@@ -298,18 +301,18 @@ packages:
     dependency: transitive
     description:
       name: json_annotation
-      sha256: "6cec7404b25d6338c8cb7b30131cd6c760079a4ec1fa7846c55bdda91f9d2819"
+      sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "4.9.0"
   material_color_utilities:
     dependency: transitive
     description:
       name: material_color_utilities
-      sha256: d92141dc6fe1dad30722f9aa826c7fbc896d021d792f80678280601aff8cf724
+      sha256: "0e0a020085b65b6083975e499759762399b4475f766c21668c4ecca34ea74e5a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0"
+    version: "0.8.0"
   media_kit:
     dependency: "direct main"
     description:
@@ -518,15 +521,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
-  searchable_dropdown:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: bad9412c3c27d007ca901813138bbd7cfb4cc90b
-      url: "https://github.com/matheusfajardo/searchable_dropdown"
-    source: git
-    version: "1.1.4"
   select2dot1:
     dependency: "direct main"
     description:
@@ -640,17 +634,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: "5a751eddf9db89b3e5f9d50c20ab8612296e4e8db69009788d6c8b060a84191c"
+      sha256: f2add6fa510d3ae152903412227bda57d0d5a8da61d2c39c1fb022c9429a41c0
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.4"
-  window_size:
-    dependency: transitive
-    description:
-      path: "../client_plugins/window_size"
-      relative: true
-    source: path
-    version: "0.1.0"
+    version: "5.0.6"
   xdg_directories:
     dependency: transitive
     description:
@@ -668,5 +655,5 @@ packages:
     source: hosted
     version: "6.2.2"
 sdks:
-  dart: ">=2.19.0 <3.0.0"
+  dart: ">=3.3.0-0 <4.0.0"
   flutter: ">=3.7.0"

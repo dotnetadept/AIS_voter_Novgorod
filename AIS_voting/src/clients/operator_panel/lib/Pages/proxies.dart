@@ -9,7 +9,7 @@ import 'package:horizontal_data_table/horizontal_data_table.dart';
 import '../Controls/controls.dart';
 
 class ProxiesPage extends StatefulWidget {
-  ProxiesPage({Key key}) : super(key: key);
+  ProxiesPage({Key? key}) : super(key: key);
 
   @override
   _ProxiesPageState createState() => _ProxiesPageState();
@@ -31,7 +31,7 @@ class _ProxiesPageState extends State<ProxiesPage> {
 
   void _navigateProxyPage(int index) {
     var proxy = index == -1
-        ? Proxy(id: 0, subjects: <ProxyUser>[], isActive: false)
+        ? Proxy(id: 0, proxy: null, subjects: <ProxyUser>[], isActive: false)
         : _filteredProxies[index];
     Navigator.push(
         context,
@@ -111,7 +111,7 @@ class _ProxiesPageState extends State<ProxiesPage> {
               message: "Добавить",
               child: TextButton(
                 style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
+                  shape: WidgetStateProperty.all(
                     CircleBorder(side: BorderSide(color: Colors.transparent)),
                   ),
                 ),
@@ -234,11 +234,10 @@ class _ProxiesPageState extends State<ProxiesPage> {
               flex: 10,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  overlayColor: MaterialStateProperty.all(Colors.black12),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  overlayColor: WidgetStateProperty.all(Colors.black12),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                 ),
                 child: Container(
                   child: TableHelper().getTitleItemWidget(
@@ -308,73 +307,77 @@ class _ProxiesPageState extends State<ProxiesPage> {
             height: 52,
             padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
             alignment: Alignment.centerLeft,
-            child: Row(mainAxisAlignment: MainAxisAlignment.start, children: <
-                Widget>[
-              Expanded(
-                child: Container(),
-              ),
-              Tooltip(
-                message: 'Редактировать',
-                child: TextButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.transparent),
-                    overlayColor: MaterialStateProperty.all(Colors.black12),
-                    shape: MaterialStateProperty.all(
-                      CircleBorder(side: BorderSide(color: Colors.transparent)),
-                    ),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(),
                   ),
-                  child: Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () {
-                    _navigateProxyPage(index);
-                  },
-                ),
-              ),
-              Tooltip(
-                message: 'Удалить',
-                child: TextButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.transparent),
-                    overlayColor: MaterialStateProperty.all(Colors.black12),
-                    shape: MaterialStateProperty.all(
-                      CircleBorder(side: BorderSide(color: Colors.transparent)),
-                    ),
-                  ),
-                  child: Icon(Icons.delete, color: Colors.black87),
-                  onPressed: () async {
-                    var noButtonPressed = false;
-                    var title = 'Удалить группу';
-
-                    await Utility().showYesNoDialog(
-                      context,
-                      title: title,
-                      message: TextSpan(
-                        text: 'Вы уверены, что хотите ${title.toLowerCase()}?',
+                  Tooltip(
+                    message: 'Редактировать',
+                    child: TextButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStateProperty.all(Colors.transparent),
+                        overlayColor: WidgetStateProperty.all(Colors.black12),
+                        shape: WidgetStateProperty.all(
+                          CircleBorder(
+                              side: BorderSide(color: Colors.transparent)),
+                        ),
                       ),
-                      yesButtonText: 'Да',
-                      yesCallBack: () {
-                        Navigator.of(context).pop();
+                      child: Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () {
+                        _navigateProxyPage(index);
                       },
-                      noButtonText: 'Нет',
-                      noCallBack: () {
-                        noButtonPressed = true;
-                        Navigator.of(context).pop();
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'Удалить',
+                    child: TextButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStateProperty.all(Colors.transparent),
+                        overlayColor: WidgetStateProperty.all(Colors.black12),
+                        shape: WidgetStateProperty.all(
+                          CircleBorder(
+                              side: BorderSide(color: Colors.transparent)),
+                        ),
+                      ),
+                      child: Icon(Icons.delete, color: Colors.black87),
+                      onPressed: () async {
+                        var noButtonPressed = false;
+                        var title = 'Удалить группу';
+
+                        await Utility().showYesNoDialog(
+                          context,
+                          title: title,
+                          message: TextSpan(
+                            text:
+                                'Вы уверены, что хотите ${title.toLowerCase()}?',
+                          ),
+                          yesButtonText: 'Да',
+                          yesCallBack: () {
+                            Navigator.of(context).pop();
+                          },
+                          noButtonText: 'Нет',
+                          noCallBack: () {
+                            noButtonPressed = true;
+                            Navigator.of(context).pop();
+                          },
+                        );
+
+                        if (noButtonPressed) {
+                          return;
+                        }
+
+                        removeProxy(index);
                       },
-                    );
-
-                    if (noButtonPressed) {
-                      return;
-                    }
-
-                    removeProxy(index);
-                  },
-                ),
-              ),
-              Container(
-                width: 20,
-              ),
-            ])),
+                    ),
+                  ),
+                  Container(
+                    width: 20,
+                  ),
+                ])),
       ],
     );
   }

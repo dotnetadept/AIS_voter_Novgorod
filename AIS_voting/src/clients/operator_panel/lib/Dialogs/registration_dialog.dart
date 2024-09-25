@@ -9,20 +9,21 @@ import 'package:ais_model/ais_model.dart' as ais;
 
 class RegistrationDialog {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _tecInterval;
+  late TextEditingController _tecInterval;
 
   BuildContext _context;
   Settings _settings;
-  WebSocketConnection _connection;
-  ais.Interval _interval;
+  late WebSocketConnection _connection;
+  late ais.Interval _interval;
 
-  RegistrationDialog(this._context, this._settings) {
+  RegistrationDialog(
+    this._context,
+    this._settings,
+  ) {
     _connection = Provider.of<WebSocketConnection>(_context, listen: false);
-    _interval = AppState().getIntervals().firstWhere(
-        (element) =>
-            element.id ==
-            _settings.intervalsSettings.defaultRegistrationIntervalId,
-        orElse: () => null);
+    _interval = AppState().getIntervals().firstWhere((element) =>
+        element.id ==
+        _settings.intervalsSettings.defaultRegistrationIntervalId);
     _tecInterval = TextEditingController(text: _interval.duration.toString());
   }
 
@@ -62,7 +63,7 @@ class RegistrationDialog {
                       labelText: 'Время регистрации, с:',
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return 'Введите время регистрации';
                       }
                       if (int.tryParse(value) == null) {
@@ -91,7 +92,7 @@ class RegistrationDialog {
                 child:
                     Text('Начать регистрацию', style: TextStyle(fontSize: 20)),
                 onPressed: () async {
-                  if (!_formKey.currentState.validate()) {
+                  if (_formKey.currentState?.validate() != true) {
                     return;
                   }
 

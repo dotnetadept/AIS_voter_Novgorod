@@ -11,15 +11,19 @@ import '../Controls/controls.dart';
 class AgendasPage extends StatefulWidget {
   final Settings settings;
   final int timeOffset;
-  AgendasPage({Key key, this.settings, this.timeOffset}) : super(key: key);
+  AgendasPage({
+    Key? key,
+    required this.settings,
+    required this.timeOffset,
+  }) : super(key: key);
 
   @override
   _AgendasPageState createState() => _AgendasPageState();
 }
 
 class _AgendasPageState extends State<AgendasPage> {
-  List<Agenda> _agendas;
-  List<Meeting> _meetings;
+  late List<Agenda> _agendas;
+  late List<Meeting> _meetings;
   bool _isLoadingComplete = false;
   var _tecNewAgendaName = TextEditingController();
 
@@ -213,12 +217,13 @@ class _AgendasPageState extends State<AgendasPage> {
                         labelText: 'Наименование повестки',
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Введите наименование повестки';
                         }
 
                         //check agenda folderName
                         var agenda = Agenda(
+                            id: 0,
                             name: _tecNewAgendaName.text,
                             folder: _tecNewAgendaName.text +
                                 '_' +
@@ -255,19 +260,21 @@ class _AgendasPageState extends State<AgendasPage> {
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
 
                 var agenda = Agenda(
-                    name: _tecNewAgendaName.text,
-                    folder: _tecNewAgendaName.text +
-                        '_' +
-                        DateFormat('dd.MM.yyyy')
-                            .format(TimeUtil.getDateTimeNow(widget.timeOffset)),
-                    createdDate: TimeUtil.getDateTimeNow(widget.timeOffset),
-                    lastUpdated: TimeUtil.getDateTimeNow(widget.timeOffset),
-                    questions: <Question>[]);
+                  id: 0,
+                  name: _tecNewAgendaName.text,
+                  folder: _tecNewAgendaName.text +
+                      '_' +
+                      DateFormat('dd.MM.yyyy')
+                          .format(TimeUtil.getDateTimeNow(widget.timeOffset)),
+                  createdDate: TimeUtil.getDateTimeNow(widget.timeOffset),
+                  lastUpdated: TimeUtil.getDateTimeNow(widget.timeOffset),
+                  questions: <Question>[],
+                );
 
                 http
                     .post(
@@ -347,12 +354,11 @@ class _AgendasPageState extends State<AgendasPage> {
               flex: 10,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  overlayColor: MaterialStateProperty.all(Colors.black12),
-                  padding: MaterialStateProperty.all(
-                      EdgeInsets.fromLTRB(20, 0, 0, 0)),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  overlayColor: WidgetStateProperty.all(Colors.black12),
+                  padding:
+                      WidgetStateProperty.all(EdgeInsets.fromLTRB(20, 0, 0, 0)),
                 ),
                 child: TableHelper().getTitleItemWidget(
                     (_sortType == sortName ? (_isAscending ? '↓' : '↑') : '') +
@@ -367,11 +373,10 @@ class _AgendasPageState extends State<AgendasPage> {
               flex: 5,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  overlayColor: MaterialStateProperty.all(Colors.black12),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  overlayColor: WidgetStateProperty.all(Colors.black12),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                 ),
                 child: TableHelper().getTitleItemWidget(
                     (_sortType == sortUploadDate
@@ -471,10 +476,9 @@ class _AgendasPageState extends State<AgendasPage> {
                       child: TextButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.black12),
-                          shape: MaterialStateProperty.all(
+                              WidgetStateProperty.all(Colors.transparent),
+                          overlayColor: WidgetStateProperty.all(Colors.black12),
+                          shape: WidgetStateProperty.all(
                             CircleBorder(
                                 side: BorderSide(color: Colors.transparent)),
                           ),
@@ -515,10 +519,9 @@ class _AgendasPageState extends State<AgendasPage> {
                       child: TextButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.black12),
-                          shape: MaterialStateProperty.all(
+                              WidgetStateProperty.all(Colors.transparent),
+                          overlayColor: WidgetStateProperty.all(Colors.black12),
+                          shape: WidgetStateProperty.all(
                             CircleBorder(
                                 side: BorderSide(color: Colors.transparent)),
                           ),

@@ -1,21 +1,16 @@
 import '../ais_model.dart';
 
 class Interval {
-  late int id;
-  late int orderNum;
-  late String name = '';
-  late int duration = 0;
-  late Signal? startSignal;
-  late Signal? endSignal;
-  late bool isAutoEnd = false;
-  late bool isActive = true;
+  int? id;
+  int orderNum = 0;
+  String name = '';
+  int duration = 0;
+  Signal? startSignal;
+  Signal? endSignal;
+  bool isAutoEnd = false;
+  bool isActive = true;
 
-  Interval() {
-    name = '';
-    duration = 0;
-    isActive = true;
-    isAutoEnd = false;
-  }
+  Interval() {}
 
   Map toJson() => {
         'id': id,

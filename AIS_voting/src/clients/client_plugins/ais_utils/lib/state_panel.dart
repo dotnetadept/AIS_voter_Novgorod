@@ -12,17 +12,17 @@ import 'license_widget.dart';
 class StatePanelWidget extends StatefulWidget {
   final Settings settings;
   final ServerState serverState;
-  final Meeting meeting;
+  final Meeting? meeting;
   final List<ais.Interval> intervals;
   final ais.Interval? selectedInterval;
-  final bool autoEnd;
+  final bool? autoEnd;
   final double volume;
   final bool isOperatorView;
 
   final void Function(StoreboardState storeboardState, String? storeboardParams)
       setStoreboardStatus;
   final void Function(ais.Interval? interval) setInterval;
-  final void Function(bool autoEnd) setAutoEnd;
+  final void Function(bool? autoEnd) setAutoEnd;
   final void Function(double value)? setVolume;
   final void Function() navigateLicenseTab;
   final void Function() changeView;
@@ -65,8 +65,8 @@ class _StatePanelWidgetState extends State<StatePanelWidget> {
     String lastUpdatedInfo = '';
 
     if (widget.meeting != null) {
-      lastUpdatedInfo = '\r\nСтатус заседания: ${widget.meeting.status}' +
-          ' от ${DateFormat('dd.MM.yyyy HH:mm:ss').format(widget.meeting.lastUpdated)}';
+      lastUpdatedInfo = '\r\nСтатус заседания: ${widget.meeting!.status}' +
+          ' от ${DateFormat('dd.MM.yyyy HH:mm:ss').format(widget.meeting!.lastUpdated)}';
     }
     if (widget.serverState != null) {
       lastUpdatedInfo = '\r\nПоследнее изменение состояния системы: ' +

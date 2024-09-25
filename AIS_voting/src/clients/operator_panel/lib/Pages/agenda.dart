@@ -12,8 +12,12 @@ class AgendaPage extends StatefulWidget {
   final Agenda agenda;
   final bool isReadOnly;
   final Settings settings;
-  AgendaPage({Key key, this.agenda, this.isReadOnly, this.settings})
-      : super(key: key);
+  AgendaPage({
+    Key? key,
+    required this.agenda,
+    required this.isReadOnly,
+    required this.settings,
+  }) : super(key: key);
 
   @override
   _AgendaPageState createState() => _AgendaPageState();
@@ -27,7 +31,7 @@ class _AgendaPageState extends State<AgendaPage> {
   var _tecEditQuestionName = TextEditingController();
   var _tecEditAgendaName = TextEditingController();
   var _tecEditFileDescription = TextEditingController();
-  Question _selectedQuestion;
+  Question? _selectedQuestion;
 
   @override
   void initState() {
@@ -109,7 +113,7 @@ class _AgendaPageState extends State<AgendaPage> {
                         message: 'Изменить наименование повестки',
                         child: TextButton(
                           style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -187,7 +191,7 @@ class _AgendaPageState extends State<AgendaPage> {
                       labelText: 'Наименование повестки',
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return 'Введите наименование повестки';
                       }
                       return null;
@@ -210,7 +214,7 @@ class _AgendaPageState extends State<AgendaPage> {
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
 
@@ -283,7 +287,7 @@ class _AgendaPageState extends State<AgendaPage> {
                         hintStyle: TextStyle(fontStyle: FontStyle.italic),
                       ),
                       controller: TextEditingController(
-                        text: _selectedQuestion.name,
+                        text: _selectedQuestion!.name,
                       ),
                       style: TextStyle(color: Colors.black45),
                     ),
@@ -297,7 +301,7 @@ class _AgendaPageState extends State<AgendaPage> {
                           message: 'Изменить наименование вопроса',
                           child: TextButton(
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 CircleBorder(
                                     side:
                                         BorderSide(color: Colors.transparent)),
@@ -326,7 +330,7 @@ class _AgendaPageState extends State<AgendaPage> {
               controller: TextEditingController(
                 text: _tecDocumentsDirectory.text +
                     '/' +
-                    _selectedQuestion.folder,
+                    _selectedQuestion!.folder,
               ),
               style: TextStyle(color: Colors.black45),
             ),
@@ -359,7 +363,7 @@ class _AgendaPageState extends State<AgendaPage> {
                                   message: 'Изменить',
                                   child: TextButton(
                                     style: ButtonStyle(
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                         CircleBorder(
                                             side: BorderSide(
                                                 color: Colors.transparent)),
@@ -377,8 +381,7 @@ class _AgendaPageState extends State<AgendaPage> {
               ],
             ),
           ),
-          (_selectedQuestion.descriptions == null ||
-                  _selectedQuestion.descriptions.length == 0)
+          (_selectedQuestion!.descriptions.length == 0)
               ? Container()
               : Container(
                   color: Colors.black12,
@@ -424,7 +427,7 @@ class _AgendaPageState extends State<AgendaPage> {
                                   message: 'Добавить',
                                   child: TextButton(
                                     style: ButtonStyle(
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                         CircleBorder(
                                             side: BorderSide(
                                                 color: Colors.transparent)),
@@ -452,7 +455,7 @@ class _AgendaPageState extends State<AgendaPage> {
   }
 
   Future<void> showQuestionNameDialog(bool isNew) async {
-    _tecEditQuestionName.text = isNew ? 'Вопрос' : _selectedQuestion.name;
+    _tecEditQuestionName.text = isNew ? 'Вопрос' : _selectedQuestion!.name;
     final formKey = GlobalKey<FormState>();
 
     return showDialog<void>(
@@ -474,7 +477,7 @@ class _AgendaPageState extends State<AgendaPage> {
                       labelText: 'Наименование вопроса',
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return 'Введите наименование вопроса';
                       }
                       if (widget.agenda.questions
@@ -501,7 +504,7 @@ class _AgendaPageState extends State<AgendaPage> {
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
 
@@ -510,12 +513,12 @@ class _AgendaPageState extends State<AgendaPage> {
                 if (isNew) {
                   if (_selectedQuestion != null) {
                     widget.agenda.questions.forEach((element) {
-                      if (element.orderNum > _selectedQuestion.orderNum) {
+                      if (element.orderNum > _selectedQuestion!.orderNum) {
                         element.orderNum += 1;
                       }
                     });
 
-                    orderNum = _selectedQuestion.orderNum + 1;
+                    orderNum = _selectedQuestion!.orderNum + 1;
                   } else {
                     if (widget.agenda.questions.length > 0) {
                       orderNum = widget.agenda.questions.last.orderNum + 1;
@@ -524,12 +527,14 @@ class _AgendaPageState extends State<AgendaPage> {
 
                   setState(() {
                     var newQuestion = Question(
-                      name: _tecEditQuestionName.text,
-                      orderNum: orderNum,
-                      folder: Uuid().v4(),
-                      descriptions: <QuestionDescriptionItem>[],
-                      agendaId: widget.agenda.id,
-                    );
+                        id: 0,
+                        name: _tecEditQuestionName.text,
+                        orderNum: orderNum,
+                        folder: Uuid().v4(),
+                        descriptions: <QuestionDescriptionItem>[],
+                        agendaId: widget.agenda.id,
+                        files: <QuestionFile>[],
+                        accessRights: <int>[]);
 
                     http
                         .post(
@@ -585,18 +590,18 @@ class _AgendaPageState extends State<AgendaPage> {
                   });
                 } else {
                   setState(() {
-                    _selectedQuestion.name = _tecEditQuestionName.text;
+                    _selectedQuestion!.name = _tecEditQuestionName.text;
                   });
                   http
                       .put(
                           Uri.http(
                               ServerConnection.getHttpServerUrl(
                                   GlobalConfiguration()),
-                              '/questions/${_selectedQuestion.id}'),
+                              '/questions/${_selectedQuestion!.id}'),
                           headers: <String, String>{
                             'Content-Type': 'application/json; charset=UTF-8',
                           },
-                          body: jsonEncode(_selectedQuestion.toJson()))
+                          body: jsonEncode(_selectedQuestion!.toJson()))
                       .then((response) {});
 
                   widget.agenda.lastUpdated = DateTime.now();
@@ -720,8 +725,8 @@ class _AgendaPageState extends State<AgendaPage> {
   }
 
   Widget getFilesTable() {
-    if (_selectedQuestion.files == null ||
-        _selectedQuestion.files.length == 0) {
+    if (_selectedQuestion!.files == null ||
+        _selectedQuestion!.files.length == 0) {
       return Container();
     }
 
@@ -730,8 +735,8 @@ class _AgendaPageState extends State<AgendaPage> {
         Expanded(
           child: DataTable(
             showCheckboxColumn: false,
-            dataRowColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
+            dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
               return Colors.black12;
             }),
             columns: [
@@ -746,7 +751,7 @@ class _AgendaPageState extends State<AgendaPage> {
                 ),
               ),
             ],
-            rows: _selectedQuestion.files
+            rows: _selectedQuestion!.files
                 .map(
                   ((element) => DataRow(
                         cells: <DataCell>[
@@ -774,15 +779,15 @@ class _AgendaPageState extends State<AgendaPage> {
                                         child: TextButton(
                                           style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all(
+                                                WidgetStateProperty.all(
                                                     Colors.transparent),
                                             foregroundColor:
-                                                MaterialStateProperty.all(
+                                                WidgetStateProperty.all(
                                                     Colors.black),
                                             overlayColor:
-                                                MaterialStateProperty.all(
+                                                WidgetStateProperty.all(
                                                     Colors.black12),
-                                            shape: MaterialStateProperty.all(
+                                            shape: WidgetStateProperty.all(
                                               CircleBorder(
                                                   side: BorderSide(
                                                       color:
@@ -802,15 +807,15 @@ class _AgendaPageState extends State<AgendaPage> {
                                         child: TextButton(
                                           style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all(
+                                                WidgetStateProperty.all(
                                                     Colors.transparent),
                                             foregroundColor:
-                                                MaterialStateProperty.all(
+                                                WidgetStateProperty.all(
                                                     Colors.black),
                                             overlayColor:
-                                                MaterialStateProperty.all(
+                                                WidgetStateProperty.all(
                                                     Colors.black12),
-                                            shape: MaterialStateProperty.all(
+                                            shape: WidgetStateProperty.all(
                                               CircleBorder(
                                                   side: BorderSide(
                                                       color:
@@ -858,7 +863,7 @@ class _AgendaPageState extends State<AgendaPage> {
                       labelText: 'Описание файла',
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return 'Введите описание файла';
                       }
                       return null;
@@ -881,14 +886,15 @@ class _AgendaPageState extends State<AgendaPage> {
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
                 file.description = _tecEditFileDescription.text;
 
                 http
                     .put(
-                        Uri.http(ServerConnection.getHttpServerUrl(
+                        Uri.http(
+                            ServerConnection.getHttpServerUrl(
                                 GlobalConfiguration()),
                             '/questionfiles/${file.id}'),
                         headers: <String, String>{
@@ -901,7 +907,8 @@ class _AgendaPageState extends State<AgendaPage> {
                 widget.agenda.lastUpdated = DateTime.now();
                 http
                     .put(
-                        Uri.http(ServerConnection.getHttpServerUrl(
+                        Uri.http(
+                            ServerConnection.getHttpServerUrl(
                                 GlobalConfiguration()),
                             '/agendas/${widget.agenda.id}'),
                         headers: <String, String>{
@@ -931,7 +938,7 @@ class _AgendaPageState extends State<AgendaPage> {
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         }).then((response) {
-      _selectedQuestion.files.remove(file);
+      _selectedQuestion!.files.remove(file);
       setState(() {});
     }).catchError((e) {
       Utility().showMessageOkDialog(context,
@@ -950,7 +957,7 @@ class _AgendaPageState extends State<AgendaPage> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      QuestionDescriptionPage(question: _selectedQuestion)))
+                      QuestionDescriptionPage(question: _selectedQuestion!)))
           .then((value) {
         setState(() {
           _selectedQuestion = _selectedQuestion;
@@ -990,7 +997,7 @@ class _AgendaPageState extends State<AgendaPage> {
                                 message: 'Переместить выбранный вопрос вверх',
                                 child: TextButton(
                                   style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -1008,7 +1015,7 @@ class _AgendaPageState extends State<AgendaPage> {
                                 message: 'Переместить выбранный вопрос вниз',
                                 child: TextButton(
                                   style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -1024,7 +1031,7 @@ class _AgendaPageState extends State<AgendaPage> {
                           message: 'Добавить',
                           child: TextButton(
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 CircleBorder(
                                     side:
                                         BorderSide(color: Colors.transparent)),
@@ -1053,14 +1060,14 @@ class _AgendaPageState extends State<AgendaPage> {
               child: DataTable(
                 showCheckboxColumn: false,
                 headingRowHeight: 0,
-                dataRowColor: MaterialStateProperty.resolveWith<Color>(
-                    (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.selected))
+                dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                    (Set<WidgetState> states) {
+                  if (states.contains(WidgetState.selected))
                     return Theme.of(context)
                         .colorScheme
                         .primary
                         .withOpacity(0.3);
-                  return null;
+                  return Colors.transparent;
                 }),
                 columns: [
                   DataColumn(label: Container()),
@@ -1082,16 +1089,15 @@ class _AgendaPageState extends State<AgendaPage> {
                                             child: TextButton(
                                               style: ButtonStyle(
                                                 backgroundColor:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         Colors.transparent),
                                                 foregroundColor:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         Colors.black),
                                                 overlayColor:
-                                                    MaterialStateProperty.all(
+                                                    WidgetStateProperty.all(
                                                         Colors.black12),
-                                                shape:
-                                                    MaterialStateProperty.all(
+                                                shape: WidgetStateProperty.all(
                                                   CircleBorder(
                                                       side: BorderSide(
                                                           color: Colors
@@ -1109,9 +1115,9 @@ class _AgendaPageState extends State<AgendaPage> {
                               ),
                             ],
                             selected: element == _selectedQuestion,
-                            onSelectChanged: (bool value) {
+                            onSelectChanged: (bool? value) {
                               setState(() {
-                                if (value) {
+                                if (value == true) {
                                   // _selectedQuestion = element;
                                   if (_selectedQuestion != element) {
                                     _selectedQuestion = element;
@@ -1134,11 +1140,11 @@ class _AgendaPageState extends State<AgendaPage> {
   }
 
   void upQuestion() {
-    var index = widget.agenda.questions.indexOf(_selectedQuestion);
+    var index = widget.agenda.questions.indexOf(_selectedQuestion!);
 
     if (index >= 1) {
       widget.agenda.questions[index - 1].orderNum += 1;
-      _selectedQuestion.orderNum -= 1;
+      _selectedQuestion!.orderNum -= 1;
     }
 
     widget.agenda.questions.sort((a, b) => a.orderNum.compareTo(b.orderNum));
@@ -1161,11 +1167,11 @@ class _AgendaPageState extends State<AgendaPage> {
   }
 
   void downQuestion() {
-    var index = widget.agenda.questions.indexOf(_selectedQuestion);
+    var index = widget.agenda.questions.indexOf(_selectedQuestion!);
 
     if (index < widget.agenda.questions.length) {
       widget.agenda.questions[index + 1].orderNum -= 1;
-      _selectedQuestion.orderNum += 1;
+      _selectedQuestion!.orderNum += 1;
     }
 
     widget.agenda.questions.sort((a, b) => a.orderNum.compareTo(b.orderNum));

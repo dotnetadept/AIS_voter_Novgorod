@@ -6,25 +6,26 @@ import 'package:operator_panel/Providers/SoundPlayer.dart';
 import 'WebSocketConnection.dart';
 
 class AppState with ChangeNotifier {
-  GlobalKey<NavigatorState> navigatorKey;
+  GlobalKey<NavigatorState>? navigatorKey;
 
-  void Function() navigateUsersPage;
-  void Function() navigateGroupsPage;
-  void Function() navigateProxiesPage;
-  void Function() navigateAgendasPage;
-  void Function() navigateSettingsPage;
-  void Function() navigateMeetingsPage;
-  void Function() navigateHistoryPage;
+  late void Function() navigateUsersPage;
+  late void Function() navigateGroupsPage;
+  late void Function() navigateProxiesPage;
+  late void Function() navigateAgendasPage;
+  late void Function() navigateSettingsPage;
+  late void Function() navigateMeetingsPage;
+  late void Function() navigateHistoryPage;
 
-  void Function(void Function() f) refreshDialog;
+  void Function(void Function() f)? refreshDialog;
 
-  void Function() onStartStream;
-  void Function() onLoadDocuments;
+  late void Function() onStartStream;
+  late void Function() onLoadDocuments;
 
-  List<Signal> _signals;
-  List<ais.Interval> _intervals;
-  ais.Interval _selectedInterval;
-  bool _autoEnd = false;
+  late List<Signal> _signals;
+  late List<ais.Interval> _intervals;
+
+  ais.Interval? _selectedInterval;
+  bool? _autoEnd = false;
   double _volume = 100.0;
 
   void setSignals(List<Signal> signals) {
@@ -43,7 +44,7 @@ class AppState with ChangeNotifier {
     return _intervals;
   }
 
-  void setInterval(ais.Interval selectedInterval) {
+  void setInterval(ais.Interval? selectedInterval) {
     _selectedInterval = selectedInterval;
     if (selectedInterval != null) {
       setAutoEnd(selectedInterval.isAutoEnd);
@@ -52,17 +53,17 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  ais.Interval getSelectedInterval() {
+  ais.Interval? getSelectedInterval() {
     return _selectedInterval;
   }
 
-  void setAutoEnd(bool autoEnd) {
+  void setAutoEnd(bool? autoEnd) {
     _autoEnd = autoEnd;
 
     notifyListeners();
   }
 
-  bool getAutoEnd() {
+  bool? getAutoEnd() {
     return _autoEnd;
   }
 
@@ -101,6 +102,6 @@ class AppState with ChangeNotifier {
   AppState._internal({this.navigatorKey});
 
   navigateMainPage() async {
-    navigatorKey.currentState.pushNamed('/main');
+    navigatorKey?.currentState?.pushNamed('/main');
   }
 }

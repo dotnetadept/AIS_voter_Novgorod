@@ -12,7 +12,7 @@ class SpeakerSession extends ManagedObject<_SpeakerSession>
     terminalId = session.terminalId;
     name = session.name;
     type = session.type;
-    interval = session.interval;
+    interval = session.interval ?? 0;
     startDate = session.startDate;
     endDate = session.endDate;
   }

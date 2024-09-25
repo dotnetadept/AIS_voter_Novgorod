@@ -87,9 +87,6 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.group == null || widget.serverState == null) {
-      return Container();
-    }
     if (widget.isOperatorView) {
       _isControlSound = widget.settings.operatorSchemeSettings.controlSound;
       _isSchemeInversed = widget.settings.operatorSchemeSettings.inverseScheme;
@@ -107,15 +104,15 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
     // return Column(children: schemeParts);
 
     // sort users in group by name
-    for (int i = 0; i < widget.group.groupUsers.length; i++) {
+    for (int i = 0; i < widget.group!.groupUsers.length; i++) {
       var user = widget.users.firstWhereOrNull(
-          (element) => element.id == widget.group.groupUsers[i].user.id);
+          (element) => element.id == widget.group!.groupUsers[i].user.id);
 
       if (user != null) {
-        widget.group.groupUsers[i].user = user;
+        widget.group!.groupUsers[i].user = user;
       }
 
-      widget.group.groupUsers
+      widget.group!.groupUsers
           .sort((a, b) => a.user.getFullName().compareTo(b.user.getFullName()));
     }
 
@@ -141,21 +138,21 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                           getUnregistredTable(
                             'Незарегистрированные',
                             'Онлайн и карта не вставлена',
-                            UsersFilterUtil.getUnregisterUserList(
-                                widget.users, widget.group, widget.serverState),
+                            UsersFilterUtil.getUnregisterUserList(widget.users,
+                                widget.group!, widget.serverState),
                           ),
                           getTable(
                             'Отсутствуют',
                             'Отсутствуют, карта не вставлена',
-                            UsersFilterUtil.getAbsentUserList(
-                                widget.users, widget.group, widget.serverState),
+                            UsersFilterUtil.getAbsentUserList(widget.users,
+                                widget.group!, widget.serverState),
                             Container(),
                           ),
                           getTable(
                             'Не голосовали',
                             'Не голосовали',
-                            UsersFilterUtil.getNotVotedUserList(
-                                widget.users, widget.group, widget.serverState),
+                            UsersFilterUtil.getNotVotedUserList(widget.users,
+                                widget.group!, widget.serverState),
                             Container(),
                           ),
                         ],
@@ -167,7 +164,7 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
                     Expanded(
                       flex: 3,
                       child: getGroupTable(
-                        widget.group,
+                        widget.group!,
                       ),
                     ),
                   ],
@@ -259,7 +256,7 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
 
       var userId = widget.serverState.usersTerminals[currentMic.key];
       var tribuneIndex =
-          widget.group.workplaces.tribuneTerminalIds.indexOf(currentMic.key);
+          widget.group!.workplaces.tribuneTerminalIds.indexOf(currentMic.key);
       var guestPlace = widget.serverState.guestsPlaces
           .firstWhereOrNull((element) => element.terminalId == currentMic.key);
 
@@ -273,7 +270,7 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
       } else if (tribuneIndex != -1) {
         usersMicEnabled.putIfAbsent(
           currentMic.key,
-          () => widget.group.workplaces.tribuneNames[tribuneIndex],
+          () => widget.group!.workplaces.tribuneNames[tribuneIndex],
         );
       } else if (guestPlace != null && guestPlace.name.isNotEmpty) {
         usersMicEnabled.putIfAbsent(
@@ -709,7 +706,7 @@ class _TableSchemeStateWidgetState extends State<TableSchemeWidget> {
     ScrollController controller = new ScrollController();
 
     List<User> registredUsers = UsersFilterUtil.getRegisteredUserList(
-        widget.users, widget.group, widget.serverState);
+        widget.users, widget.group!, widget.serverState);
 
     var remainder =
         registredUsers.length % widget.settings.tableViewSettings.columnsCount;

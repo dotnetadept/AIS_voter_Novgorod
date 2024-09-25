@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ais_model/ais_model.dart';
@@ -9,7 +10,8 @@ import 'package:global_configuration/global_configuration.dart';
 class ProxyPage extends StatefulWidget {
   final List<Proxy> proxies;
   final Proxy proxy;
-  ProxyPage({Key key, this.proxy, this.proxies}) : super(key: key);
+  ProxyPage({Key? key, required this.proxy, required this.proxies})
+      : super(key: key);
 
   @override
   _ProxyPageState createState() => _ProxyPageState();
@@ -18,7 +20,7 @@ class ProxyPage extends StatefulWidget {
 class _ProxyPageState extends State<ProxyPage>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  Proxy _originalProxy;
+  late Proxy _originalProxy;
   var _users = <User>[];
   bool _isLoadingComplete = false;
 
@@ -101,7 +103,7 @@ class _ProxyPageState extends State<ProxyPage>
               message: 'Сохранить',
               child: TextButton(
                 style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
+                  shape: WidgetStateProperty.all(
                     CircleBorder(side: BorderSide(color: Colors.transparent)),
                   ),
                 ),
@@ -174,7 +176,7 @@ class _ProxyPageState extends State<ProxyPage>
                   message: 'Добавить',
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -207,8 +209,8 @@ class _ProxyPageState extends State<ProxyPage>
         Expanded(
           child: DataTable(
             showCheckboxColumn: false,
-            dataRowColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
+            dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
               return Colors.white;
             }),
             headingRowHeight: 0,
@@ -234,15 +236,13 @@ class _ProxyPageState extends State<ProxyPage>
                                   message: 'Удалить доверителя',
                                   child: TextButton(
                                     style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.transparent),
+                                      backgroundColor: WidgetStateProperty.all(
+                                          Colors.transparent),
                                       foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
-                                      overlayColor: MaterialStateProperty.all(
+                                          WidgetStateProperty.all(Colors.black),
+                                      overlayColor: WidgetStateProperty.all(
                                           Colors.black12),
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                         CircleBorder(
                                             side: BorderSide(
                                                 color: Colors.transparent)),
@@ -270,7 +270,7 @@ class _ProxyPageState extends State<ProxyPage>
   Future<void> addSubject() async {
     // show select user dialog
     final formKey = GlobalKey<FormState>();
-    User selectedUser;
+    User? selectedUser;
 
     return showDialog<void>(
       context: context,
@@ -303,13 +303,13 @@ class _ProxyPageState extends State<ProxyPage>
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
 
                 setState(() {
                   widget.proxy.subjects.add(
-                      ProxyUser(proxyId: widget.proxy.id, user: selectedUser));
+                      ProxyUser(proxyId: widget.proxy.id, user: selectedUser!));
                 });
 
                 Navigator.of(context).pop();
@@ -327,14 +327,13 @@ class _ProxyPageState extends State<ProxyPage>
     });
   }
 
-  Widget getUserSelector(bool isProxy, void onChanged(User value)) {
+  Widget getUserSelector(bool isProxy, void onChanged(User? value)) {
     List<User> filteredUsers = <User>[];
-    User selectedUser;
+    User? selectedUser;
 
     if (isProxy) {
-      selectedUser = _users.firstWhere(
-          (element) => element.id == widget.proxy.proxy?.id,
-          orElse: () => null);
+      selectedUser = _users
+          .firstWhereOrNull((element) => element.id == widget.proxy.proxy?.id);
       filteredUsers = _users
           .where((element) =>
               element.id != widget.proxy.proxy?.id &&
@@ -350,21 +349,21 @@ class _ProxyPageState extends State<ProxyPage>
     }
 
     return DropdownSearch<User>(
-      mode: Mode.DIALOG,
-      showSearchBox: true,
-      showClearButton: true,
+      // mode: Mode.DIALOG,
+      // showSearchBox: true,
+      // showClearButton: true,
       items: filteredUsers,
-      label: isProxy ? 'Доверенное лицо' : 'Доверитель',
-      popupTitle: Container(
-          alignment: Alignment.center,
-          color: Colors.blueAccent,
-          padding: EdgeInsets.all(10),
-          child: Text(
-            isProxy ? 'Доверенное лицо' : 'Доверитель',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
-          )),
-      hint: isProxy ? 'Выберите Доверенное лицо' : 'Выберите Доверителя',
+      // label: isProxy ? 'Доверенное лицо' : 'Доверитель',
+      // popupTitle: Container(
+      //     alignment: Alignment.center,
+      //     color: Colors.blueAccent,
+      //     padding: EdgeInsets.all(10),
+      //     child: Text(
+      //       isProxy ? 'Доверенное лицо' : 'Доверитель',
+      //       style: TextStyle(
+      //           fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+      //     )),
+      // hint: isProxy ? 'Выберите Доверенное лицо' : 'Выберите Доверителя',
       selectedItem: selectedUser,
       onChanged: onChanged,
       validator: (value) {
@@ -375,15 +374,16 @@ class _ProxyPageState extends State<ProxyPage>
       },
       dropdownBuilder:
           isProxy ? userDropDownItemBuilder : proxyDropDownItemBuilder,
-      popupItemBuilder: userItemBuilder,
-      emptyBuilder: emptyBuilder,
+      popupProps: PopupProps.menu(
+        itemBuilder: userItemBuilder,
+      ),
+      //emptyBuilder: emptyBuilder,
     );
   }
 
   Widget userDropDownItemBuilder(
     BuildContext context,
-    User item,
-    String itemDesignation,
+    User? item,
   ) {
     return item == null
         ? Container(
@@ -399,8 +399,7 @@ class _ProxyPageState extends State<ProxyPage>
 
   Widget proxyDropDownItemBuilder(
     BuildContext context,
-    User item,
-    String itemDesignation,
+    User? item,
   ) {
     return item == null
         ? Container(
@@ -418,7 +417,7 @@ class _ProxyPageState extends State<ProxyPage>
     var alreadyUsed = false;
 
     for (int index = 0; index < widget.proxies.length; index++) {
-      if (widget.proxies[index].proxy.id == item.id) {
+      if (widget.proxies[index].proxy?.id == item.id) {
         alreadyUsed = true;
         break;
       }
@@ -455,7 +454,7 @@ class _ProxyPageState extends State<ProxyPage>
     );
   }
 
-  Widget emptyBuilder(BuildContext context, String text) {
+  Widget emptyBuilder(BuildContext context, String? text) {
     return Center(child: Text('Нет данных'));
   }
 

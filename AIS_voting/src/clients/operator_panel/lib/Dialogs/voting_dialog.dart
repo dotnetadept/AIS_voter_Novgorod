@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:aligned_dialog/aligned_dialog.dart';
+import 'package:collection/collection.dart';
 
 import 'package:flutter/material.dart';
 import 'package:ais_model/ais_model.dart';
@@ -15,8 +16,8 @@ import '../Utility/report_helper.dart';
 
 class VotingDialog {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _tecInterval;
-  TextEditingController _tecTempAskWordQueueInterval;
+  late TextEditingController _tecInterval;
+  late TextEditingController _tecTempAskWordQueueInterval;
 
   ScrollController _votingOptionsScrollController = ScrollController();
   ScrollController _votingDecisionsScrollController = ScrollController();
@@ -24,20 +25,18 @@ class VotingDialog {
   BuildContext _context;
   Settings _settings;
 
-  Meeting _selectedMeeting;
-  Question _lockedQuestion;
+  Meeting? _selectedMeeting;
+  late Question _lockedQuestion;
   List<VotingMode> _votingModes;
   VotingMode _selectedVotingMode;
   DecisionMode _selectedDecisionMode;
-  int _selectedSuccessValue;
-  WebSocketConnection _connection;
-  int _timeOffset;
-  List<User> _users;
+  late int _selectedSuccessValue;
+  late WebSocketConnection _connection;
 
   bool _isVotingStarted = false;
   bool _isAskQueueStarted = false;
-  ais.Interval _interval;
-  ais.Interval _tempAskWordQueueInterval;
+  late ais.Interval _interval;
+  late ais.Interval _tempAskWordQueueInterval;
 
   VotingDialog(
     this._context,
@@ -47,22 +46,17 @@ class VotingDialog {
     this._votingModes,
     this._selectedVotingMode,
     this._selectedDecisionMode,
-    this._timeOffset,
-    this._users,
   ) {
     _connection = Provider.of<WebSocketConnection>(_context, listen: false);
     var serverState = Provider.of<WebSocketConnection>(_context, listen: false)
         .getServerState;
 
-    _interval = AppState().getIntervals().firstWhere(
-        (element) =>
-            element.id == _settings.intervalsSettings.defaultVotingIntervalId,
-        orElse: () => null);
+    _interval = AppState().getIntervals().firstWhere((element) =>
+        element.id == _settings.intervalsSettings.defaultVotingIntervalId);
     _tempAskWordQueueInterval = AppState().getIntervals().firstWhere(
         (element) =>
             element.id ==
-            _settings.intervalsSettings.defaultAskWordQueueIntervalId,
-        orElse: () => null);
+            _settings.intervalsSettings.defaultAskWordQueueIntervalId);
     _isAskQueueStarted = serverState.systemState == SystemState.AskWordQueue;
     _tecInterval = TextEditingController(text: _interval.duration.toString());
     _tecTempAskWordQueueInterval = TextEditingController(
@@ -89,13 +83,12 @@ class VotingDialog {
                     serverState.systemState == SystemState.AskWordQueue;
                 int selectedQuestionId =
                     json.decode(serverState.params)['selectedQuestion'];
-                _lockedQuestion = _selectedMeeting.agenda.questions.firstWhere(
-                    (element) => element.id == selectedQuestionId,
-                    orElse: () => null);
+                _lockedQuestion = _selectedMeeting!.agenda!.questions
+                    .firstWhere((element) => element.id == selectedQuestionId);
                 setStateForDialog(f);
               });
 
-              bool isQuestionNavigationDisabled = _lockedQuestion == null ||
+              bool isQuestionNavigationDisabled =
                   _connection.getServerState.systemState ==
                       SystemState.QuestionVoting;
 
@@ -126,11 +119,11 @@ class VotingDialog {
                                   style: ButtonStyle(
                                     backgroundColor:
                                         isQuestionNavigationDisabled
-                                            ? MaterialStateProperty.all(
+                                            ? WidgetStateProperty.all(
                                                 Colors.black26)
-                                            : MaterialStateProperty.all(
+                                            : WidgetStateProperty.all(
                                                 Colors.blueAccent),
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -141,7 +134,8 @@ class VotingDialog {
                                       ? null
                                       : () {
                                           var nextQuestionIndex =
-                                              _selectedMeeting.agenda.questions
+                                              _selectedMeeting!
+                                                      .agenda!.questions
                                                       .indexOf(
                                                           _lockedQuestion) -
                                                   1;
@@ -151,8 +145,8 @@ class VotingDialog {
                                                 SystemState.QuestionLocked,
                                                 json.encode({
                                                   'question_id':
-                                                      _selectedMeeting
-                                                          .agenda
+                                                      _selectedMeeting!
+                                                          .agenda!
                                                           .questions[
                                                               nextQuestionIndex]
                                                           .id,
@@ -177,11 +171,11 @@ class VotingDialog {
                                   style: ButtonStyle(
                                     backgroundColor:
                                         isQuestionNavigationDisabled
-                                            ? MaterialStateProperty.all(
+                                            ? WidgetStateProperty.all(
                                                 Colors.black26)
-                                            : MaterialStateProperty.all(
+                                            : WidgetStateProperty.all(
                                                 Colors.blueAccent),
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -207,11 +201,11 @@ class VotingDialog {
                                     backgroundColor: _connection
                                                 .getServerState.systemState !=
                                             SystemState.QuestionVotingComplete
-                                        ? MaterialStateProperty.all(
+                                        ? WidgetStateProperty.all(
                                             Colors.black26)
-                                        : MaterialStateProperty.all(
+                                        : WidgetStateProperty.all(
                                             Colors.blueAccent),
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -243,11 +237,11 @@ class VotingDialog {
                                   style: ButtonStyle(
                                     backgroundColor:
                                         isQuestionNavigationDisabled
-                                            ? MaterialStateProperty.all(
+                                            ? WidgetStateProperty.all(
                                                 Colors.black26)
-                                            : MaterialStateProperty.all(
+                                            : WidgetStateProperty.all(
                                                 Colors.blueAccent),
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -258,20 +252,21 @@ class VotingDialog {
                                       ? null
                                       : () {
                                           var nextQuestionIndex =
-                                              _selectedMeeting.agenda.questions
+                                              _selectedMeeting!
+                                                      .agenda!.questions
                                                       .indexOf(
                                                           _lockedQuestion) +
                                                   1;
 
                                           if (nextQuestionIndex <
-                                              _selectedMeeting
-                                                  .agenda.questions.length) {
+                                              _selectedMeeting!
+                                                  .agenda!.questions.length) {
                                             _connection.setSystemStatus(
                                                 SystemState.QuestionLocked,
                                                 json.encode({
                                                   'question_id':
-                                                      _selectedMeeting
-                                                          .agenda
+                                                      _selectedMeeting!
+                                                          .agenda!
                                                           .questions[
                                                               nextQuestionIndex]
                                                           .id,
@@ -312,7 +307,7 @@ class VotingDialog {
                                     labelText: 'Время голосования, с:',
                                   ),
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value == null || value.isEmpty) {
                                       return 'Введите время голосования';
                                     }
                                     if (int.tryParse(value) == null) {
@@ -333,7 +328,7 @@ class VotingDialog {
                                     labelText: 'Время записи в очередь, с:',
                                   ),
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value == null || value.isEmpty) {
                                       return 'Введите время записи в очередь';
                                     }
                                     if (int.tryParse(value) == null) {
@@ -417,8 +412,9 @@ class VotingDialog {
                                               ],
                                             ),
                                             onPressed: () {
-                                              if (!_formKey.currentState
-                                                  .validate()) {
+                                              if (_formKey.currentState
+                                                      ?.validate() !=
+                                                  true) {
                                                 return;
                                               }
 
@@ -433,7 +429,7 @@ class VotingDialog {
                                                         .AskWordQueue),
                                                 'params': json.encode({
                                                   'question_id':
-                                                      _lockedQuestion.id,
+                                                      _lockedQuestion!.id,
                                                   'askwordqueue_interval':
                                                       interval,
                                                   'voting_mode_id':
@@ -481,7 +477,7 @@ class VotingDialog {
                                                       .AskWordQueueCompleted,
                                                   json.encode({
                                                     'question_id':
-                                                        _lockedQuestion.id,
+                                                        _lockedQuestion!.id,
                                                   }));
 
                                               setStateForDialog(() {
@@ -513,7 +509,7 @@ class VotingDialog {
                                     _connection.setSystemStatus(
                                         SystemState.QuestionVotingComplete,
                                         json.encode({
-                                          'question_id': _lockedQuestion.id,
+                                          'question_id': _lockedQuestion!.id,
                                         }));
 
                                     setStateForDialog(() {
@@ -537,7 +533,8 @@ class VotingDialog {
                                     ],
                                   ),
                                   onPressed: () async {
-                                    if (!_formKey.currentState.validate()) {
+                                    if (_formKey.currentState?.validate() !=
+                                        true) {
                                       return;
                                     }
 
@@ -550,7 +547,7 @@ class VotingDialog {
                                           EnumToString.convertToString(
                                               SystemState.QuestionVoting),
                                       'params': json.encode({
-                                        'question_id': _lockedQuestion.id,
+                                        'question_id': _lockedQuestion!.id,
                                         'voting_interval': interval,
                                         'voting_mode_id':
                                             _selectedVotingMode.id,
@@ -607,10 +604,12 @@ class VotingDialog {
               height: 2,
               color: Colors.deepPurpleAccent,
             ),
-            onChanged: (String newValue) {
-              setState(() {
-                setValue(newValue);
-              });
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  setValue(newValue);
+                });
+              }
             },
             items: <String>['Поименное', 'Тайное']
                 .map<DropdownMenuItem<String>>((String value) {
@@ -670,15 +669,15 @@ class VotingDialog {
             rows: _votingModes
                 .map(
                   ((element) => DataRow(
-                        color: MaterialStateProperty.resolveWith<Color>(
-                            (Set<MaterialState> states) {
+                        color: WidgetStateProperty.resolveWith<Color>(
+                            (Set<WidgetState> states) {
                           if (element == _selectedVotingMode) {
                             return Theme.of(_context)
                                 .colorScheme
                                 .primary
                                 .withOpacity(0.3);
                           }
-                          return null;
+                          return Colors.transparent;
                         }),
                         cells: <DataCell>[
                           DataCell(
@@ -701,8 +700,8 @@ class VotingDialog {
                           ),
                         ],
                         selected: element == _selectedVotingMode,
-                        onSelectChanged: (bool value) {
-                          if (value) {
+                        onSelectChanged: (bool? value) {
+                          if (value == true) {
                             setStateForDialog(() {
                               _selectedVotingMode = element;
                               _selectedDecisionMode =
@@ -781,7 +780,7 @@ class VotingDialog {
 
     var successValue = DecisionModeHelper.getSuccuessValue(
         mode,
-        _selectedMeeting.group,
+        _selectedMeeting!.group!,
         _connection.getServerState.usersRegistered,
         false);
     if (mode == _selectedDecisionMode) {
@@ -794,11 +793,13 @@ class VotingDialog {
       title: Text('${DecisionModeHelper.getStringValue(mode)} ($successValue)'),
       value: mode,
       groupValue: _selectedDecisionMode,
-      onChanged: (DecisionMode value) {
-        setStateForVotingDialog(() {
-          _selectedDecisionMode = value;
-          _selectedSuccessValue = successValue;
-        });
+      onChanged: (DecisionMode? value) {
+        if (value != null) {
+          setStateForVotingDialog(() {
+            _selectedDecisionMode = value;
+            _selectedSuccessValue = successValue;
+          });
+        }
       },
     );
   }

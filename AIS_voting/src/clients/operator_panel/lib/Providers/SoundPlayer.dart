@@ -1,15 +1,16 @@
 import 'package:ais_model/ais_model.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:operator_panel/Providers/AppState.dart';
 import 'WebSocketConnection.dart';
 
 class SoundPlayer with ChangeNotifier {
-  static SoundPlayer _singleton;
+  static late SoundPlayer _singleton;
 
-  static Player _player;
-  static bool _isOperatorActive;
-  static bool _isStoreboardActive;
+  static late Player _player;
+  static late bool _isOperatorActive;
+  static late bool _isStoreboardActive;
   static var _medias = Map<String, Media>();
 
   static SoundPlayer getInstance() {
@@ -46,7 +47,7 @@ class SoundPlayer with ChangeNotifier {
 
   static Future<void> playSoundByPath(String path) async {
     var sound = _medias.entries
-        .firstWhere((element) => element.value.uri == path, orElse: () => null)
+        .firstWhereOrNull((element) => element.value.uri == path)
         ?.value;
     if (sound == null) {
       return;
@@ -90,13 +91,13 @@ class SoundPlayer with ChangeNotifier {
     WebSocketConnection.getInstance().setSound(sound.uri, volume);
   }
 
-  static void playSignal(Signal signal, {bool isInternal = true}) {
+  static void playSignal(Signal? signal, {bool isInternal = true}) {
     var media = _medias[signal?.id?.toString()];
     if (media == null) {
       return;
     }
 
-    var volume = (AppState().getVolume() * signal.volume) / 100;
+    var volume = (AppState().getVolume() * signal!.volume) / 100;
 
     if (_isOperatorActive) {
       cancelSound();

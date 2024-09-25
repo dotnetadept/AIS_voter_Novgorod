@@ -16,9 +16,9 @@ import '../Controls/controls.dart';
 class MeetingsPage extends StatefulWidget {
   final Settings settings;
   final int timeOffset;
-  final Meeting selectedMeeting;
+  final Meeting? selectedMeeting;
 
-  MeetingsPage(this.settings, this.timeOffset, this.selectedMeeting, {Key key})
+  MeetingsPage(this.settings, this.timeOffset, this.selectedMeeting, {Key? key})
       : super(key: key);
 
   @override
@@ -26,9 +26,9 @@ class MeetingsPage extends StatefulWidget {
 }
 
 class _MeetingsPageState extends State<MeetingsPage> {
-  List<Meeting> _meetings;
-  List<MeetingSession> _meetingSessions;
-  List<VotingMode> _votingModes;
+  late List<Meeting> _meetings;
+  late List<MeetingSession> _meetingSessions;
+  late List<VotingMode> _votingModes;
   bool _isLoadingComplete = false;
 
   static const int sortName = 0;
@@ -105,10 +105,12 @@ class _MeetingsPageState extends State<MeetingsPage> {
   void _navigateMeetingPage(int index) {
     var meeting = index == -1
         ? Meeting(
+            id: 0,
+            status: '',
             name: '',
             description:
                 widget.settings.storeboardSettings.meetingDescriptionTemplate,
-            lastUpdated: TimeUtil.getDateTimeNow(widget.timeOffset),
+            lastUpdated: DateTime.now(),
           )
         : _filteredMeetings[index];
     Navigator.push(
@@ -145,7 +147,7 @@ class _MeetingsPageState extends State<MeetingsPage> {
         if (shouldUpdate) {
           await http.put(
               Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
-                  '/meeting_sessions/${meeting.id}'),
+                  '/meeting_sessions/${session.id}'),
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },
@@ -195,7 +197,7 @@ class _MeetingsPageState extends State<MeetingsPage> {
         var meetingSessionsA = _meetingSessions
             .where((element) => element.meetingId == a.id)
             .toList();
-        MeetingSession lastSessionA;
+        MeetingSession? lastSessionA;
         if (meetingSessionsA.length > 0) {
           meetingSessionsA.sort((a, b) => a.id.compareTo(b.id));
           lastSessionA = meetingSessionsA.last;
@@ -204,7 +206,7 @@ class _MeetingsPageState extends State<MeetingsPage> {
         var meetingSessionsB = _meetingSessions
             .where((element) => element.meetingId == b.id)
             .toList();
-        MeetingSession lastSessionB;
+        MeetingSession? lastSessionB;
         if (meetingSessionsB.length > 0) {
           meetingSessionsB.sort((a, b) => a.id.compareTo(b.id));
           lastSessionB = meetingSessionsB.last;
@@ -222,7 +224,7 @@ class _MeetingsPageState extends State<MeetingsPage> {
         var meetingSessionsA = _meetingSessions
             .where((element) => element.meetingId == a.id)
             .toList();
-        MeetingSession lastSessionA;
+        MeetingSession? lastSessionA;
         if (meetingSessionsA.length > 0) {
           meetingSessionsA.sort((a, b) => a.id.compareTo(b.id));
           lastSessionA = meetingSessionsA.last;
@@ -231,7 +233,7 @@ class _MeetingsPageState extends State<MeetingsPage> {
         var meetingSessionsB = _meetingSessions
             .where((element) => element.meetingId == b.id)
             .toList();
-        MeetingSession lastSessionB;
+        MeetingSession? lastSessionB;
         if (meetingSessionsB.length > 0) {
           meetingSessionsB.sort((a, b) => a.id.compareTo(b.id));
           lastSessionB = meetingSessionsB.last;
@@ -279,7 +281,7 @@ class _MeetingsPageState extends State<MeetingsPage> {
             message: 'Добавить',
             child: TextButton(
               style: ButtonStyle(
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   CircleBorder(side: BorderSide(color: Colors.transparent)),
                 ),
               ),
@@ -402,11 +404,10 @@ class _MeetingsPageState extends State<MeetingsPage> {
               flex: 10,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  overlayColor: MaterialStateProperty.all(Colors.black12),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  overlayColor: WidgetStateProperty.all(Colors.black12),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                 ),
                 child: Container(
                   child: TableHelper().getTitleItemWidget(
@@ -430,11 +431,10 @@ class _MeetingsPageState extends State<MeetingsPage> {
               flex: 5,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  overlayColor: MaterialStateProperty.all(Colors.black12),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  overlayColor: WidgetStateProperty.all(Colors.black12),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                 ),
                 child: TableHelper().getTitleItemWidget(
                     (_sortType == sortStartDate
@@ -451,11 +451,10 @@ class _MeetingsPageState extends State<MeetingsPage> {
               flex: 5,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  overlayColor: MaterialStateProperty.all(Colors.black12),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  overlayColor: WidgetStateProperty.all(Colors.black12),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                 ),
                 child: TableHelper().getTitleItemWidget(
                     (_sortType == sortEndDate
@@ -575,9 +574,9 @@ class _MeetingsPageState extends State<MeetingsPage> {
                 child: TextButton(
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.transparent),
-                    overlayColor: MaterialStateProperty.all(Colors.black12),
-                    shape: MaterialStateProperty.all(
+                        WidgetStateProperty.all(Colors.transparent),
+                    overlayColor: WidgetStateProperty.all(Colors.black12),
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),
@@ -597,9 +596,9 @@ class _MeetingsPageState extends State<MeetingsPage> {
                 child: TextButton(
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.transparent),
-                    overlayColor: MaterialStateProperty.all(Colors.black12),
-                    shape: MaterialStateProperty.all(
+                        WidgetStateProperty.all(Colors.transparent),
+                    overlayColor: WidgetStateProperty.all(Colors.black12),
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),
@@ -621,10 +620,9 @@ class _MeetingsPageState extends State<MeetingsPage> {
                       child: TextButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.black12),
-                          shape: MaterialStateProperty.all(
+                              WidgetStateProperty.all(Colors.transparent),
+                          overlayColor: WidgetStateProperty.all(Colors.black12),
+                          shape: WidgetStateProperty.all(
                             CircleBorder(
                                 side: BorderSide(color: Colors.transparent)),
                           ),
@@ -644,10 +642,9 @@ class _MeetingsPageState extends State<MeetingsPage> {
                       child: TextButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.black12),
-                          shape: MaterialStateProperty.all(
+                              WidgetStateProperty.all(Colors.transparent),
+                          overlayColor: WidgetStateProperty.all(Colors.black12),
+                          shape: WidgetStateProperty.all(
                             CircleBorder(
                                 side: BorderSide(color: Colors.transparent)),
                           ),
@@ -668,10 +665,9 @@ class _MeetingsPageState extends State<MeetingsPage> {
                       child: TextButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.black12),
-                          shape: MaterialStateProperty.all(
+                              WidgetStateProperty.all(Colors.transparent),
+                          overlayColor: WidgetStateProperty.all(Colors.black12),
+                          shape: WidgetStateProperty.all(
                             CircleBorder(
                                 side: BorderSide(color: Colors.transparent)),
                           ),

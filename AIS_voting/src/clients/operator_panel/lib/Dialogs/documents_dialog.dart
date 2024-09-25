@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:ais_model/ais_model.dart';
 import 'package:provider/provider.dart';
@@ -12,13 +13,13 @@ class DocumentsDialog {
   List<User> _users;
 
   bool _isSelectAll = false;
-  WebSocketConnection _connection;
+  late WebSocketConnection _connection;
   Map<String, bool> _sendDocuments = {};
 
-  List<String> _filteredTerminals;
+  late List<String> _filteredTerminals;
   String _filter = 'online';
 
-  ScrollController _documentsTableScrollController;
+  late ScrollController _documentsTableScrollController;
 
   DocumentsDialog(
     this._context,
@@ -180,14 +181,14 @@ class DocumentsDialog {
                                           value: _isSelectAll,
                                           onChanged: (value) {
                                             setStateForDialog(() {
-                                              _isSelectAll = value;
+                                              _isSelectAll = value == true;
 
                                               for (var i = 0;
                                                   i < _filteredTerminals.length;
                                                   i++) {
                                                 _sendDocuments[
                                                         _filteredTerminals[i]] =
-                                                    value;
+                                                    value == true;
                                               }
                                             });
                                           }),
@@ -318,9 +319,9 @@ class DocumentsDialog {
       child: TextButton(
         style: ButtonStyle(
           backgroundColor: _filter == filter
-              ? MaterialStateProperty.all(Colors.black87)
-              : MaterialStateProperty.all(Colors.transparent),
-          shape: MaterialStateProperty.all(
+              ? WidgetStateProperty.all(Colors.black87)
+              : WidgetStateProperty.all(Colors.transparent),
+          shape: WidgetStateProperty.all(
             CircleBorder(side: BorderSide(color: Colors.transparent)),
           ),
         ),
@@ -334,7 +335,7 @@ class DocumentsDialog {
     );
   }
 
-  void filterTerminals(Function setStateForDialog) {
+  void filterTerminals(Function? setStateForDialog) {
     if (_filter == 'deputy') {
       _filteredTerminals = getDeputyOnline();
     } else if (_filter == 'guest') {
@@ -363,16 +364,14 @@ class DocumentsDialog {
           itemCount: _filteredTerminals.length,
           itemBuilder: (BuildContext context, int index) {
             var terminalId = _filteredTerminals[index];
-            User userOntrerminal;
+            User? userOntrerminal;
 
             if (_connection.getServerState.usersTerminals
                 .containsKey(terminalId)) {
-              int userId =
+              int? userId =
                   _connection.getServerState.usersTerminals[terminalId];
-              userOntrerminal = _users.firstWhere(
-                (element) => element.id == userId,
-                orElse: () => null,
-              );
+              userOntrerminal =
+                  _users.firstWhereOrNull((element) => element.id == userId);
             }
 
             var isDocumentsLoading = _connection
@@ -402,8 +401,9 @@ class DocumentsDialog {
             if (isDocumentsError) {
               documentsIconColor = Colors.purple;
               documentsIconTooltip = 'Ошибка: ' +
-                  _connection
-                      .getServerState.terminalsDocumentErrors[terminalId];
+                  (_connection
+                          .getServerState.terminalsDocumentErrors[terminalId] ??
+                      '');
             }
 
             var isGuest = !_connection.getServerState.usersTerminals
@@ -434,12 +434,12 @@ class DocumentsDialog {
                           child: Checkbox(
                               value: _sendDocuments[terminalId] ?? false,
                               onChanged: (value) {
-                                if (!value) {
+                                if (value == false) {
                                   _isSelectAll = false;
                                 }
                                 if (terminalId != null) {
                                   setStateForDialog(() {
-                                    _sendDocuments[terminalId] = value;
+                                    _sendDocuments[terminalId] = value == true;
                                   });
                                 }
                               }),
@@ -539,7 +539,7 @@ class DocumentsDialog {
 
   List<String> getManagerTerminalOnline() {
     var managerId = GroupUtil().getManagerId(
-        _selectedMeeting.group, _connection.getServerState.usersTerminals);
+        _selectedMeeting.group!, _connection.getServerState.usersTerminals);
 
     var managerTerminals = _connection.getServerState.usersTerminals.entries
         .where((element) =>
@@ -570,11 +570,11 @@ class DocumentsDialog {
     return getTerminalsOnline()
         .where((terminalId) =>
             !(getManagerTerminalOnline().contains(terminalId) ||
-                _selectedMeeting.group.workplaces.tribuneTerminalIds
+                _selectedMeeting.group!.workplaces.tribuneTerminalIds
                     .contains(terminalId) ||
-                _selectedMeeting.group.workplaces.managementTerminalIds
+                _selectedMeeting.group!.workplaces.managementTerminalIds
                     .contains(terminalId) ||
-                _selectedMeeting.group.workplaces.workplacesTerminalIds
+                _selectedMeeting.group!.workplaces.workplacesTerminalIds
                     .any((row) => row.any((place) => place == terminalId))))
         .toList();
   }

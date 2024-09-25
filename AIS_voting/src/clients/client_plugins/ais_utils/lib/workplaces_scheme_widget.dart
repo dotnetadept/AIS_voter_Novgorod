@@ -129,10 +129,6 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
   }
 
   Widget getWorkplacesScheme() {
-    if (widget.group == null) {
-      return new Container();
-    }
-
     List<Widget> columns = <Widget>[];
 
     var alternateRowNumbers = widget
@@ -709,27 +705,15 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
 
   Widget createUserCell(
     Group selectedGroup,
-    String terminalId,
+    String? terminalId,
     int? userId,
     bool isDisplayEmptyCell,
     Color cellBackground,
     bool isManagementSection,
   ) {
-    if (GroupUtil.isTerminalGuest(widget.serverState, terminalId)) {
-      //return guest cell
-      var guestPlaceFound = widget.serverState.guestsPlaces
-          .firstWhereOrNull((element) => element.terminalId == terminalId);
-
-      return createGuestCell(
-        terminalId,
-        guestPlaceFound?.name ?? '',
-        cellBackground,
-        isManagementSection,
-      );
-    }
+    // return empty cell
     if (terminalId == null || terminalId.isEmpty) {
       if (isDisplayEmptyCell) {
-        // return empty cell
         var verticalPadding = widget.isOperatorView
             ? widget.settings.operatorSchemeSettings.cellOuterPaddingVertical
                 .toDouble()
@@ -752,6 +736,19 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
       } else {
         return Container();
       }
+    }
+
+    //return guest cell
+    if (GroupUtil.isTerminalGuest(widget.serverState, terminalId)) {
+      var guestPlaceFound = widget.serverState.guestsPlaces
+          .firstWhereOrNull((element) => element.terminalId == terminalId);
+
+      return createGuestCell(
+        terminalId,
+        guestPlaceFound?.name ?? '',
+        cellBackground,
+        isManagementSection,
+      );
     }
 
     var selectedUser = selectedGroup.groupUsers

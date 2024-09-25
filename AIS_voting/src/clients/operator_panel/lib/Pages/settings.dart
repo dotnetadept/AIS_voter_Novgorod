@@ -1,4 +1,5 @@
 import 'dart:convert' show json;
+import 'package:collection/collection.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +23,11 @@ class SettingsPage extends StatefulWidget {
   final int startedTabIndex;
   List<User> users;
 
-  SettingsPage({Key key, this.users, this.startedTabIndex}) : super(key: key);
+  SettingsPage({
+    Key? key,
+    required this.users,
+    required this.startedTabIndex,
+  }) : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -32,7 +37,7 @@ class _SettingsPageState extends State<SettingsPage>
     with SingleTickerProviderStateMixin {
   final int _tabLenght = 14;
   bool _isLoadingComplete = false;
-  TabController _tabController;
+  late TabController _tabController;
   var _headerItemsScrollController = ScrollController();
   var _votingModesScrollController = ScrollController();
   var _votingDecisionsScrollController = ScrollController();
@@ -45,22 +50,22 @@ class _SettingsPageState extends State<SettingsPage>
   var _tecEditVotingModeName = TextEditingController();
   var _tecSettingsName = TextEditingController();
 
-  Settings _currentSettings;
-  List<Settings> _settings;
-  List<Settings> _settingsTemplates;
-  DecisionMode _selectedDecisionMode;
-  List<VotingMode> _votingModes;
-  HeaderItem _selectedHeaderItem;
-  VotingMode _selectedVotingMode;
-  List<Signal> _signals;
-  Signal _selectedSignal;
-  List<ais.Interval> _intervals;
-  ais.Interval _selectedInterval;
-  Settings _settingsForRestore;
-  WebSocketConnection _connection;
-  PackageInfo _packageInfo;
+  late Settings _currentSettings;
+  late List<Settings> _settings;
+  late List<Settings> _settingsTemplates;
+  late DecisionMode _selectedDecisionMode;
+  late List<VotingMode> _votingModes;
+  late HeaderItem _selectedHeaderItem;
+  late VotingMode _selectedVotingMode;
+  late List<Signal> _signals;
+  Signal? _selectedSignal;
+  late List<ais.Interval> _intervals;
+  late ais.Interval _selectedInterval;
+  late Settings? _settingsForRestore;
+  late WebSocketConnection _connection;
+  late PackageInfo _packageInfo;
 
-  void Function(void Function()) _setStateForDialog;
+  void Function(void Function())? _setStateForDialog;
 
   @override
   void initState() {
@@ -86,9 +91,8 @@ class _SettingsPageState extends State<SettingsPage>
                     .map((data) => Settings.fromJson(data))
                     .toList();
 
-                _currentSettings = _settings.firstWhere(
-                    (element) => element.isSelected,
-                    orElse: () => null);
+                _currentSettings =
+                    _settings.firstWhere((element) => element.isSelected);
                 _settingsTemplates =
                     _settings.where((x) => x != _currentSettings).toList();
                 _settingsForRestore = _settingsTemplates.length > 0
@@ -228,7 +232,7 @@ class _SettingsPageState extends State<SettingsPage>
                     height: 2,
                     color: Colors.deepPurpleAccent,
                   ),
-                  onChanged: (Settings value) {
+                  onChanged: (Settings? value) {
                     setState(() {
                       _settingsForRestore = value;
                     });
@@ -263,55 +267,55 @@ class _SettingsPageState extends State<SettingsPage>
                     setState(() {
                       if (_tabController.index == 0) {
                         _currentSettings.palletteSettings =
-                            _settingsForRestore.palletteSettings;
+                            _settingsForRestore!.palletteSettings;
                       }
                       if (_tabController.index == 1) {
                         _currentSettings.operatorSchemeSettings =
-                            _settingsForRestore.operatorSchemeSettings;
+                            _settingsForRestore!.operatorSchemeSettings;
                       }
                       if (_tabController.index == 2) {
                         _currentSettings.managerSchemeSettings =
-                            _settingsForRestore.managerSchemeSettings;
+                            _settingsForRestore!.managerSchemeSettings;
                       }
                       if (_tabController.index == 3) {
                         _currentSettings.managerSchemeSettings =
-                            _settingsForRestore.managerSchemeSettings;
+                            _settingsForRestore!.managerSchemeSettings;
                       }
                       if (_tabController.index == 4) {
                         _currentSettings.deputySettings =
-                            _settingsForRestore.deputySettings;
+                            _settingsForRestore!.deputySettings;
                       }
                       if (_tabController.index == 5) {
                         _currentSettings.votingSettings =
-                            _settingsForRestore.votingSettings;
+                            _settingsForRestore!.votingSettings;
                       }
                       if (_tabController.index == 6) {
                         _currentSettings.reportSettings =
-                            _settingsForRestore.reportSettings;
+                            _settingsForRestore!.reportSettings;
                       }
                       if (_tabController.index == 7) {
                         _currentSettings.storeboardSettings =
-                            _settingsForRestore.storeboardSettings;
+                            _settingsForRestore!.storeboardSettings;
                       }
                       if (_tabController.index == 8) {
                         _currentSettings.questionListSettings =
-                            _settingsForRestore.questionListSettings;
+                            _settingsForRestore!.questionListSettings;
                       }
                       if (_tabController.index == 9) {
                         _currentSettings.signalsSettings =
-                            _settingsForRestore.signalsSettings;
+                            _settingsForRestore!.signalsSettings;
                       }
                       if (_tabController.index == 10) {
                         _currentSettings.signalsSettings =
-                            _settingsForRestore.signalsSettings;
+                            _settingsForRestore!.signalsSettings;
                       }
                       if (_tabController.index == 11) {
                         _currentSettings.intervalsSettings =
-                            _settingsForRestore.intervalsSettings;
+                            _settingsForRestore!.intervalsSettings;
                       }
                       if (_tabController.index == 12) {
                         _currentSettings.licenseSettings =
-                            _settingsForRestore.licenseSettings;
+                            _settingsForRestore!.licenseSettings;
                       }
                     });
                     DbHelper.saveSettings(_currentSettings);
@@ -347,7 +351,7 @@ class _SettingsPageState extends State<SettingsPage>
                     height: 2,
                     color: Colors.deepPurpleAccent,
                   ),
-                  onChanged: (Settings value) {
+                  onChanged: (Settings? value) {
                     setState(() {
                       _settingsForRestore = value;
                     });
@@ -381,23 +385,23 @@ class _SettingsPageState extends State<SettingsPage>
                   onPressed: () {
                     setState(() {
                       _currentSettings.palletteSettings =
-                          _settingsForRestore.palletteSettings;
+                          _settingsForRestore!.palletteSettings;
                       _currentSettings.operatorSchemeSettings =
-                          _settingsForRestore.operatorSchemeSettings;
+                          _settingsForRestore!.operatorSchemeSettings;
                       _currentSettings.managerSchemeSettings =
-                          _settingsForRestore.managerSchemeSettings;
+                          _settingsForRestore!.managerSchemeSettings;
                       _currentSettings.deputySettings =
-                          _settingsForRestore.deputySettings;
+                          _settingsForRestore!.deputySettings;
                       _currentSettings.votingSettings =
-                          _settingsForRestore.votingSettings;
+                          _settingsForRestore!.votingSettings;
                       _currentSettings.reportSettings =
-                          _settingsForRestore.reportSettings;
+                          _settingsForRestore!.reportSettings;
                       _currentSettings.storeboardSettings =
-                          _settingsForRestore.storeboardSettings;
+                          _settingsForRestore!.storeboardSettings;
                       _currentSettings.signalsSettings =
-                          _settingsForRestore.signalsSettings;
+                          _settingsForRestore!.signalsSettings;
                       _currentSettings.licenseSettings =
-                          _settingsForRestore.licenseSettings;
+                          _settingsForRestore!.licenseSettings;
                     });
                     DbHelper.saveSettings(_currentSettings);
                     Navigator.pop(context);
@@ -435,7 +439,7 @@ class _SettingsPageState extends State<SettingsPage>
                         labelText: 'Наименование шаблона настроек',
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Введите наименование повестки';
                         }
 
@@ -467,13 +471,13 @@ class _SettingsPageState extends State<SettingsPage>
             TextButton(
               child: Text('Ок'),
               onPressed: () {
-                if (!formKey.currentState.validate()) {
+                if (formKey.currentState?.validate() != true) {
                   return;
                 }
 
                 var setting = Settings.fromJson(
                     json.decode(json.encode(_currentSettings.toJson())));
-                setting.id = null;
+                setting.id = 0;
                 setting.name = _tecSettingsName.text;
                 setting.createdDate = DateTime.now();
                 setting.isSelected = false;
@@ -579,7 +583,7 @@ class _SettingsPageState extends State<SettingsPage>
                     'Восстановить настройки по умолчанию на текущей вкладке',
                 child: TextButton(
                   style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),
@@ -591,7 +595,7 @@ class _SettingsPageState extends State<SettingsPage>
                 message: 'Восстановить настройки по умолчанию для всех вкладок',
                 child: TextButton(
                   style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),
@@ -603,7 +607,7 @@ class _SettingsPageState extends State<SettingsPage>
                 message: 'Сохранить как настройки по умолчанию',
                 child: TextButton(
                   style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),
@@ -734,7 +738,7 @@ class _SettingsPageState extends State<SettingsPage>
             message: 'Изменить $caption2',
             child: TextButton(
               style: ButtonStyle(
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   CircleBorder(side: BorderSide(color: Colors.transparent)),
                 ),
               ),
@@ -948,7 +952,7 @@ class _SettingsPageState extends State<SettingsPage>
           message: 'Изменить $caption2',
           child: TextButton(
             style: ButtonStyle(
-              shape: MaterialStateProperty.all(
+              shape: WidgetStateProperty.all(
                 CircleBorder(side: BorderSide(color: Colors.transparent)),
               ),
             ),
@@ -970,7 +974,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 labelText: '$caption1',
                               ),
                               validator: (value) {
-                                if (value.isEmpty) {
+                                if (value == null || value.isEmpty) {
                                   return 'Введите $caption2';
                                 }
                                 if (int.tryParse(value) == null) {
@@ -999,7 +1003,7 @@ class _SettingsPageState extends State<SettingsPage>
                         child: TextButton(
                           child: Text('Ок'),
                           onPressed: () {
-                            if (!formKey.currentState.validate()) {
+                            if (formKey.currentState?.validate() != true) {
                               return;
                             }
 
@@ -1032,7 +1036,7 @@ class _SettingsPageState extends State<SettingsPage>
       String value,
       String caption1,
       String caption2,
-      String validator(String value, String fieldName),
+      String? validator(String? value, String fieldName),
       {bool multiline = false}) {
     final formKey = GlobalKey<FormState>();
     final tecValue = TextEditingController(text: value.toString());
@@ -1059,7 +1063,7 @@ class _SettingsPageState extends State<SettingsPage>
           message: 'Изменить $caption2',
           child: TextButton(
             style: ButtonStyle(
-              shape: MaterialStateProperty.all(
+              shape: WidgetStateProperty.all(
                 CircleBorder(side: BorderSide(color: Colors.transparent)),
               ),
             ),
@@ -1106,7 +1110,7 @@ class _SettingsPageState extends State<SettingsPage>
                         child: TextButton(
                           child: Text('Ок'),
                           onPressed: () {
-                            if (!formKey.currentState.validate()) {
+                            if (formKey.currentState?.validate() != true) {
                               return;
                             }
 
@@ -1135,7 +1139,7 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   Widget getFileSettingItem(void setValue(String value), String value,
-      String caption, String validator(String value, String fieldName)) {
+      String caption, String? validator(String? value, String fieldName)) {
     final tecValue = TextEditingController(text: value.toString());
 
     return Row(
@@ -1159,9 +1163,9 @@ class _SettingsPageState extends State<SettingsPage>
           child: TextButton(
             style: ButtonStyle(
               foregroundColor: _connection.getServerState.playSound == value
-                  ? MaterialStateProperty.all(Colors.lightGreenAccent)
-                  : MaterialStateProperty.all(Colors.white),
-              shape: MaterialStateProperty.all(
+                  ? WidgetStateProperty.all(Colors.lightGreenAccent)
+                  : WidgetStateProperty.all(Colors.white),
+              shape: WidgetStateProperty.all(
                 CircleBorder(side: BorderSide(color: Colors.transparent)),
               ),
             ),
@@ -1176,7 +1180,7 @@ class _SettingsPageState extends State<SettingsPage>
           message: 'Изменить $caption',
           child: TextButton(
             style: ButtonStyle(
-              shape: MaterialStateProperty.all(
+              shape: WidgetStateProperty.all(
                 CircleBorder(side: BorderSide(color: Colors.transparent)),
               ),
             ),
@@ -1187,7 +1191,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
               final String initialDirectory =
                   (await getApplicationDocumentsDirectory()).path;
-              final XFile file = await openFile(
+              final XFile? file = await openFile(
                 acceptedTypeGroups: <XTypeGroup>[typeGroup],
                 initialDirectory: initialDirectory,
               );
@@ -1205,7 +1209,7 @@ class _SettingsPageState extends State<SettingsPage>
           message: 'Очистить $caption',
           child: TextButton(
             style: ButtonStyle(
-              shape: MaterialStateProperty.all(
+              shape: WidgetStateProperty.all(
                 CircleBorder(side: BorderSide(color: Colors.transparent)),
               ),
             ),
@@ -1226,17 +1230,17 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  String defaultStringFieldValidator(String value, String fieldName) {
-    if (value.isEmpty) {
+  String? defaultStringFieldValidator(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
       return 'Введите $fieldName';
     }
 
     return null;
   }
 
-  String defaultRowNumbersValidator(String value, String fieldName) {
-    if (value.isEmpty) {
-      return null;
+  String? defaultRowNumbersValidator(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return '';
     } else {
       var rowNumbers = value.split(',');
 
@@ -1250,7 +1254,7 @@ class _SettingsPageState extends State<SettingsPage>
     return null;
   }
 
-  String emptyStringFieldValidator(String value, String fieldName) {
+  String? emptyStringFieldValidator(String? value, String fieldName) {
     return null;
   }
 
@@ -1277,10 +1281,10 @@ class _SettingsPageState extends State<SettingsPage>
                 value: true,
                 groupValue:
                     _currentSettings.operatorSchemeSettings.useTableView,
-                onChanged: (bool value) {
+                onChanged: (bool? value) {
                   setState(() {
                     _currentSettings.operatorSchemeSettings.useTableView =
-                        value;
+                        value == true;
                   });
 
                   DbHelper.saveSettings(_currentSettings);
@@ -1294,10 +1298,10 @@ class _SettingsPageState extends State<SettingsPage>
                 value: false,
                 groupValue:
                     _currentSettings.operatorSchemeSettings.useTableView,
-                onChanged: (bool value) {
+                onChanged: (bool? value) {
                   setState(() {
                     _currentSettings.operatorSchemeSettings.useTableView =
-                        value;
+                        value == true;
                   });
 
                   DbHelper.saveSettings(_currentSettings);
@@ -1311,10 +1315,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: _currentSettings.operatorSchemeSettings.showLegend,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
                         _currentSettings.operatorSchemeSettings.showLegend =
-                            value;
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -1330,10 +1334,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: _currentSettings.operatorSchemeSettings.showTribune,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
                         _currentSettings.operatorSchemeSettings.showTribune =
-                            value;
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -1350,10 +1354,10 @@ class _SettingsPageState extends State<SettingsPage>
                   Checkbox(
                     value:
                         _currentSettings.operatorSchemeSettings.showStatePanel,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
                         _currentSettings.operatorSchemeSettings.showStatePanel =
-                            value;
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -1375,10 +1379,10 @@ class _SettingsPageState extends State<SettingsPage>
                         Checkbox(
                           value: _currentSettings
                               .operatorSchemeSettings.controlSound,
-                          onChanged: (bool value) {
+                          onChanged: (bool? value) {
                             setState(() {
-                              _currentSettings
-                                  .operatorSchemeSettings.controlSound = value;
+                              _currentSettings.operatorSchemeSettings
+                                  .controlSound = value == true;
                             });
 
                             DbHelper.saveSettings(_currentSettings);
@@ -1399,10 +1403,10 @@ class _SettingsPageState extends State<SettingsPage>
                   Checkbox(
                     value:
                         _currentSettings.operatorSchemeSettings.inverseScheme,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
                         _currentSettings.operatorSchemeSettings.inverseScheme =
-                            value;
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -1458,10 +1462,10 @@ class _SettingsPageState extends State<SettingsPage>
                   Checkbox(
                     value: _currentSettings
                         .operatorSchemeSettings.isShortNamesUsed,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
-                        _currentSettings
-                            .operatorSchemeSettings.isShortNamesUsed = value;
+                        _currentSettings.operatorSchemeSettings
+                            .isShortNamesUsed = value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -1493,10 +1497,10 @@ class _SettingsPageState extends State<SettingsPage>
                 value: 'Растягивать ячейку по высоте текста',
                 groupValue:
                     _currentSettings.operatorSchemeSettings.overflowOption,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     _currentSettings.operatorSchemeSettings.overflowOption =
-                        value;
+                        value ?? '';
                   });
 
                   DbHelper.saveSettings(_currentSettings);
@@ -1510,10 +1514,10 @@ class _SettingsPageState extends State<SettingsPage>
                 value: 'Обрезать текст',
                 groupValue:
                     _currentSettings.operatorSchemeSettings.overflowOption,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     _currentSettings.operatorSchemeSettings.overflowOption =
-                        value;
+                        value ?? '';
                   });
 
                   DbHelper.saveSettings(_currentSettings);
@@ -1538,10 +1542,10 @@ class _SettingsPageState extends State<SettingsPage>
                         Checkbox(
                           value: _currentSettings
                               .operatorSchemeSettings.showOverflow,
-                          onChanged: (bool value) {
+                          onChanged: (bool? value) {
                             setState(() {
-                              _currentSettings
-                                  .operatorSchemeSettings.showOverflow = value;
+                              _currentSettings.operatorSchemeSettings
+                                  .showOverflow = value == true;
                             });
 
                             DbHelper.saveSettings(_currentSettings);
@@ -1589,10 +1593,10 @@ class _SettingsPageState extends State<SettingsPage>
                   value: true,
                   groupValue:
                       _currentSettings.managerSchemeSettings.useTableView,
-                  onChanged: (bool value) {
+                  onChanged: (bool? value) {
                     setState(() {
                       _currentSettings.managerSchemeSettings.useTableView =
-                          value;
+                          value == true;
                     });
 
                     DbHelper.saveSettings(_currentSettings);
@@ -1606,10 +1610,10 @@ class _SettingsPageState extends State<SettingsPage>
                   value: false,
                   groupValue:
                       _currentSettings.managerSchemeSettings.useTableView,
-                  onChanged: (bool value) {
+                  onChanged: (bool? value) {
                     setState(() {
                       _currentSettings.managerSchemeSettings.useTableView =
-                          value;
+                          value == true;
                     });
 
                     DbHelper.saveSettings(_currentSettings);
@@ -1623,10 +1627,10 @@ class _SettingsPageState extends State<SettingsPage>
                   children: [
                     Checkbox(
                       value: _currentSettings.managerSchemeSettings.showLegend,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.managerSchemeSettings.showLegend =
-                              value;
+                              value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -1642,10 +1646,10 @@ class _SettingsPageState extends State<SettingsPage>
                   children: [
                     Checkbox(
                       value: _currentSettings.managerSchemeSettings.showTribune,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.managerSchemeSettings.showTribune =
-                              value;
+                              value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -1662,10 +1666,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value:
                           _currentSettings.managerSchemeSettings.showStatePanel,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
-                          _currentSettings
-                              .managerSchemeSettings.showStatePanel = value;
+                          _currentSettings.managerSchemeSettings
+                              .showStatePanel = value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -1683,10 +1687,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value:
                           _currentSettings.managerSchemeSettings.controlSound,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.managerSchemeSettings.controlSound =
-                              value;
+                              value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -1704,10 +1708,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value:
                           _currentSettings.managerSchemeSettings.inverseScheme,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.managerSchemeSettings.inverseScheme =
-                              value;
+                              value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -1763,10 +1767,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value: _currentSettings
                           .managerSchemeSettings.isShortNamesUsed,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
-                          _currentSettings
-                              .managerSchemeSettings.isShortNamesUsed = value;
+                          _currentSettings.managerSchemeSettings
+                              .isShortNamesUsed = value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -1798,10 +1802,10 @@ class _SettingsPageState extends State<SettingsPage>
                   value: 'Растягивать ячейку по высоте текста',
                   groupValue:
                       _currentSettings.managerSchemeSettings.overflowOption,
-                  onChanged: (String value) {
+                  onChanged: (String? value) {
                     setState(() {
                       _currentSettings.managerSchemeSettings.overflowOption =
-                          value;
+                          value ?? '';
                     });
 
                     DbHelper.saveSettings(_currentSettings);
@@ -1815,10 +1819,10 @@ class _SettingsPageState extends State<SettingsPage>
                   value: 'Обрезать текст',
                   groupValue:
                       _currentSettings.managerSchemeSettings.overflowOption,
-                  onChanged: (String value) {
+                  onChanged: (String? value) {
                     setState(() {
                       _currentSettings.managerSchemeSettings.overflowOption =
-                          value;
+                          value ?? '';
                     });
 
                     DbHelper.saveSettings(_currentSettings);
@@ -1843,10 +1847,10 @@ class _SettingsPageState extends State<SettingsPage>
                           Checkbox(
                             value: _currentSettings
                                 .managerSchemeSettings.showOverflow,
-                            onChanged: (bool value) {
+                            onChanged: (bool? value) {
                               setState(() {
-                                _currentSettings
-                                    .managerSchemeSettings.showOverflow = value;
+                                _currentSettings.managerSchemeSettings
+                                    .showOverflow = value == true;
                               });
 
                               DbHelper.saveSettings(_currentSettings);
@@ -1960,7 +1964,7 @@ class _SettingsPageState extends State<SettingsPage>
                         height: 2,
                         color: Colors.deepPurpleAccent,
                       ),
-                      onChanged: (TextAlign value) {
+                      onChanged: (TextAlign? value) {
                         _currentSettings.tableViewSettings.cellTextAlign =
                             value == TextAlign.left ? 'Слева' : 'По центру';
 
@@ -1992,9 +1996,10 @@ class _SettingsPageState extends State<SettingsPage>
                   children: [
                     Checkbox(
                       value: _currentSettings.tableViewSettings.showLegend,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
-                          _currentSettings.tableViewSettings.showLegend = value;
+                          _currentSettings.tableViewSettings.showLegend =
+                              value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -2012,10 +2017,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value: _currentSettings
                           .operatorSchemeSettings.isShortNamesUsed,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
-                          _currentSettings
-                              .operatorSchemeSettings.isShortNamesUsed = value;
+                          _currentSettings.operatorSchemeSettings
+                              .isShortNamesUsed = value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -2047,10 +2052,10 @@ class _SettingsPageState extends State<SettingsPage>
                   value: 'Растягивать ячейку по высоте текста',
                   groupValue:
                       _currentSettings.operatorSchemeSettings.overflowOption,
-                  onChanged: (String value) {
+                  onChanged: (String? value) {
                     setState(() {
                       _currentSettings.operatorSchemeSettings.overflowOption =
-                          value;
+                          value ?? '';
                     });
 
                     DbHelper.saveSettings(_currentSettings);
@@ -2064,10 +2069,10 @@ class _SettingsPageState extends State<SettingsPage>
                   value: 'Обрезать текст',
                   groupValue:
                       _currentSettings.operatorSchemeSettings.overflowOption,
-                  onChanged: (String value) {
+                  onChanged: (String? value) {
                     setState(() {
                       _currentSettings.operatorSchemeSettings.overflowOption =
-                          value;
+                          value ?? '';
                     });
 
                     DbHelper.saveSettings(_currentSettings);
@@ -2092,10 +2097,10 @@ class _SettingsPageState extends State<SettingsPage>
                           Checkbox(
                             value: _currentSettings
                                 .operatorSchemeSettings.showOverflow,
-                            onChanged: (bool value) {
+                            onChanged: (bool? value) {
                               setState(() {
                                 _currentSettings.operatorSchemeSettings
-                                    .showOverflow = value;
+                                    .showOverflow = value == true;
                               });
 
                               DbHelper.saveSettings(_currentSettings);
@@ -2145,7 +2150,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 'Переместить выбранный режим голосования вверх',
                             child: TextButton(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                   CircleBorder(
                                       side: BorderSide(
                                           color: Colors.transparent)),
@@ -2164,7 +2169,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 'Переместить выбранный режим голосования вниз',
                             child: TextButton(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                   CircleBorder(
                                       side: BorderSide(
                                           color: Colors.transparent)),
@@ -2180,7 +2185,7 @@ class _SettingsPageState extends State<SettingsPage>
                       message: 'Добавить',
                       child: TextButton(
                         style: ButtonStyle(
-                          shape: MaterialStateProperty.all(
+                          shape: WidgetStateProperty.all(
                             CircleBorder(
                                 side: BorderSide(color: Colors.transparent)),
                           ),
@@ -2224,15 +2229,15 @@ class _SettingsPageState extends State<SettingsPage>
             rows: _votingModes
                 .map(
                   ((element) => DataRow(
-                        color: MaterialStateProperty.resolveWith<Color>(
-                            (Set<MaterialState> states) {
+                        color: WidgetStateProperty.resolveWith<Color>(
+                            (Set<WidgetState> states) {
                           if (element == _selectedVotingMode) {
                             return Theme.of(context)
                                 .colorScheme
                                 .primary
                                 .withOpacity(0.3);
                           }
-                          return null;
+                          return Colors.transparent;
                         }),
                         cells: <DataCell>[
                           DataCell(
@@ -2253,7 +2258,7 @@ class _SettingsPageState extends State<SettingsPage>
                                       value: element.id,
                                       groupValue: _currentSettings
                                           .votingSettings.defaultVotingModeId,
-                                      onChanged: (int value) {
+                                      onChanged: (int? value) {
                                         setState(() {
                                           _currentSettings.votingSettings
                                               .defaultVotingModeId = value;
@@ -2280,14 +2285,14 @@ class _SettingsPageState extends State<SettingsPage>
                                     child: TextButton(
                                       style: ButtonStyle(
                                         backgroundColor:
-                                            MaterialStateProperty.all(
+                                            WidgetStateProperty.all(
                                                 Colors.transparent),
                                         foregroundColor:
-                                            MaterialStateProperty.all(
+                                            WidgetStateProperty.all(
                                                 Colors.black),
-                                        overlayColor: MaterialStateProperty.all(
+                                        overlayColor: WidgetStateProperty.all(
                                             Colors.black12),
-                                        shape: MaterialStateProperty.all(
+                                        shape: WidgetStateProperty.all(
                                           CircleBorder(
                                               side: BorderSide(
                                                   color: Colors.transparent)),
@@ -2307,14 +2312,14 @@ class _SettingsPageState extends State<SettingsPage>
                                     child: TextButton(
                                       style: ButtonStyle(
                                         backgroundColor:
-                                            MaterialStateProperty.all(
+                                            WidgetStateProperty.all(
                                                 Colors.transparent),
                                         foregroundColor:
-                                            MaterialStateProperty.all(
+                                            WidgetStateProperty.all(
                                                 Colors.black),
-                                        overlayColor: MaterialStateProperty.all(
+                                        overlayColor: WidgetStateProperty.all(
                                             Colors.black12),
-                                        shape: MaterialStateProperty.all(
+                                        shape: WidgetStateProperty.all(
                                           CircleBorder(
                                               side: BorderSide(
                                                   color: Colors.transparent)),
@@ -2360,8 +2365,8 @@ class _SettingsPageState extends State<SettingsPage>
                           ),
                         ],
                         selected: element == _selectedVotingMode,
-                        onSelectChanged: (bool value) {
-                          if (value) {
+                        onSelectChanged: (bool? value) {
+                          if (value == true) {
                             setState(() {
                               _selectedVotingMode = element;
                               _selectedDecisionMode =
@@ -2477,10 +2482,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value: _currentSettings
                           .deputySettings.showQuestionsOnPreparation,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.deputySettings
-                              .showQuestionsOnPreparation = value;
+                              .showQuestionsOnPreparation = value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -2497,10 +2502,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value: _currentSettings
                           .deputySettings.showQuestionsForRegistred,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
-                          _currentSettings
-                              .deputySettings.showQuestionsForRegistred = value;
+                          _currentSettings.deputySettings
+                              .showQuestionsForRegistred = value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -2518,10 +2523,10 @@ class _SettingsPageState extends State<SettingsPage>
                   value: false,
                   groupValue:
                       _currentSettings.deputySettings.useTempAskWordQueue,
-                  onChanged: (bool value) {
+                  onChanged: (bool? value) {
                     setState(() {
                       _currentSettings.deputySettings.useTempAskWordQueue =
-                          value;
+                          value == true;
                     });
 
                     DbHelper.saveSettings(_currentSettings);
@@ -2535,10 +2540,10 @@ class _SettingsPageState extends State<SettingsPage>
                   value: true,
                   groupValue:
                       _currentSettings.deputySettings.useTempAskWordQueue,
-                  onChanged: (bool value) {
+                  onChanged: (bool? value) {
                     setState(() {
                       _currentSettings.deputySettings.useTempAskWordQueue =
-                          value;
+                          value == true;
                     });
 
                     DbHelper.saveSettings(_currentSettings);
@@ -2574,10 +2579,10 @@ class _SettingsPageState extends State<SettingsPage>
                   children: [
                     Checkbox(
                       value: _currentSettings.reportSettings.isLastResultsOnly,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.reportSettings.isLastResultsOnly =
-                              value;
+                              value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -2632,9 +2637,10 @@ class _SettingsPageState extends State<SettingsPage>
                   children: [
                     Checkbox(
                       value: _currentSettings.votingSettings.isVotingFixed,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
-                          _currentSettings.votingSettings.isVotingFixed = value;
+                          _currentSettings.votingSettings.isVotingFixed =
+                              value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -2653,10 +2659,10 @@ class _SettingsPageState extends State<SettingsPage>
                       value: _currentSettings
                               .votingSettings.isCountNotVotingAsIndifferent ==
                           true,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.votingSettings
-                              .isCountNotVotingAsIndifferent = value;
+                              .isCountNotVotingAsIndifferent = value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -2782,10 +2788,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value: _currentSettings
                           .questionListSettings.mainQuestion.isUseNumber,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.questionListSettings.mainQuestion
-                              .isUseNumber = value;
+                              .isUseNumber = value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -2805,10 +2811,10 @@ class _SettingsPageState extends State<SettingsPage>
                   onChanged: !_currentSettings
                           .questionListSettings.mainQuestion.isUseNumber
                       ? null
-                      : (bool value) {
+                      : (bool? value) {
                           setState(() {
                             _currentSettings.questionListSettings.mainQuestion
-                                .showNumberBeforeName = value;
+                                .showNumberBeforeName = value == true;
                           });
 
                           DbHelper.saveSettings(_currentSettings);
@@ -2825,10 +2831,10 @@ class _SettingsPageState extends State<SettingsPage>
                   onChanged: !_currentSettings
                           .questionListSettings.mainQuestion.isUseNumber
                       ? null
-                      : (bool value) {
+                      : (bool? value) {
                           setState(() {
                             _currentSettings.questionListSettings.mainQuestion
-                                .showNumberBeforeName = value;
+                                .showNumberBeforeName = value == true;
                           });
 
                           DbHelper.saveSettings(_currentSettings);
@@ -2854,10 +2860,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value: _currentSettings
                           .questionListSettings.additionalQiestion.isUseNumber,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.questionListSettings
-                              .additionalQiestion.isUseNumber = value;
+                              .additionalQiestion.isUseNumber = value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -2877,12 +2883,12 @@ class _SettingsPageState extends State<SettingsPage>
                   onChanged: !_currentSettings
                           .questionListSettings.additionalQiestion.isUseNumber
                       ? null
-                      : (bool value) {
+                      : (bool? value) {
                           setState(() {
                             _currentSettings
                                 .questionListSettings
                                 .additionalQiestion
-                                .showNumberBeforeName = value;
+                                .showNumberBeforeName = value == true;
                           });
 
                           DbHelper.saveSettings(_currentSettings);
@@ -2899,12 +2905,12 @@ class _SettingsPageState extends State<SettingsPage>
                   onChanged: !_currentSettings
                           .questionListSettings.additionalQiestion.isUseNumber
                       ? null
-                      : (bool value) {
+                      : (bool? value) {
                           setState(() {
                             _currentSettings
                                 .questionListSettings
                                 .additionalQiestion
-                                .showNumberBeforeName = value;
+                                .showNumberBeforeName = value == true;
                           });
 
                           DbHelper.saveSettings(_currentSettings);
@@ -3122,8 +3128,10 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(DecisionModeHelper.getStringValue(item)),
               value: item,
               groupValue: _selectedDecisionMode,
-              onChanged: (DecisionMode value) {
-                setDecisionMode(value);
+              onChanged: (DecisionMode? value) {
+                if (value != null) {
+                  setDecisionMode(value);
+                }
               },
             ),
           ),
@@ -3136,7 +3144,7 @@ class _SettingsPageState extends State<SettingsPage>
               value: isDecisionModeIncluded(item),
               onChanged: (value) {
                 if (_selectedDecisionMode != item) {
-                  setDecisionModeIncluded(item, value);
+                  setDecisionModeIncluded(item, value == true);
                 }
               },
             ),
@@ -3244,7 +3252,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 'Переместить выбранный элемент информационной панели вверх',
                             child: TextButton(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                   CircleBorder(
                                       side: BorderSide(
                                           color: Colors.transparent)),
@@ -3263,7 +3271,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 'Переместить выбранный элемент информационной панели вниз',
                             child: TextButton(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                   CircleBorder(
                                       side: BorderSide(
                                           color: Colors.transparent)),
@@ -3318,15 +3326,15 @@ class _SettingsPageState extends State<SettingsPage>
                   rows: _currentSettings.tableViewSettings.headerItems
                       .map(
                         ((element) => DataRow(
-                              color: MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
+                              color: WidgetStateProperty.resolveWith<Color>(
+                                  (Set<WidgetState> states) {
                                 if (element == _selectedHeaderItem) {
                                   return Theme.of(context)
                                       .colorScheme
                                       .primary
                                       .withOpacity(0.3);
                                 }
-                                return null;
+                                return Colors.transparent;
                               }),
                               cells: <DataCell>[
                                 DataCell(
@@ -3359,15 +3367,15 @@ class _SettingsPageState extends State<SettingsPage>
                                           child: TextButton(
                                             style: ButtonStyle(
                                               backgroundColor:
-                                                  MaterialStateProperty.all(
+                                                  WidgetStateProperty.all(
                                                       Colors.transparent),
                                               foregroundColor:
-                                                  MaterialStateProperty.all(
+                                                  WidgetStateProperty.all(
                                                       Colors.black),
                                               overlayColor:
-                                                  MaterialStateProperty.all(
+                                                  WidgetStateProperty.all(
                                                       Colors.black12),
-                                              shape: MaterialStateProperty.all(
+                                              shape: WidgetStateProperty.all(
                                                 CircleBorder(
                                                     side: BorderSide(
                                                         color: Colors
@@ -3390,7 +3398,8 @@ class _SettingsPageState extends State<SettingsPage>
                                             value: element.isVisible,
                                             onChanged: (value) {
                                               setState(() {
-                                                element.isVisible = value;
+                                                element.isVisible =
+                                                    value == true;
                                               });
 
                                               DbHelper.saveSettings(
@@ -3407,8 +3416,8 @@ class _SettingsPageState extends State<SettingsPage>
                                 ),
                               ],
                               selected: element == _selectedHeaderItem,
-                              onSelectChanged: (bool value) {
-                                if (value) {
+                              onSelectChanged: (bool? value) {
+                                if (value == true) {
                                   setState(() {
                                     _selectedHeaderItem = element;
                                   });
@@ -3457,11 +3466,11 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   void upSignal() {
-    var index = _signals.indexOf(_selectedSignal);
+    var index = _signals.indexOf(_selectedSignal!);
 
     if (index >= 1) {
       _signals[index - 1].orderNum += 1;
-      _selectedSignal.orderNum -= 1;
+      _selectedSignal!.orderNum -= 1;
 
       http
           .put(
@@ -3475,11 +3484,11 @@ class _SettingsPageState extends State<SettingsPage>
       http
           .put(
               Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
-                  '/signals/${_selectedSignal.id}'),
+                  '/signals/${_selectedSignal!.id}'),
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },
-              body: json.encode(_selectedSignal.toJson()))
+              body: json.encode(_selectedSignal!.toJson()))
           .then((response) {
         setState(() {
           _signals.sort((a, b) => a.orderNum.compareTo(b.orderNum));
@@ -3489,20 +3498,20 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   void downSignal() {
-    var index = _signals.indexOf(_selectedSignal);
+    var index = _signals.indexOf(_selectedSignal!);
 
     if (index < _signals.length) {
       _signals[index + 1].orderNum -= 1;
-      _selectedSignal.orderNum += 1;
+      _selectedSignal!.orderNum += 1;
 
       http
           .put(
               Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
-                  '/signals/${_selectedSignal.id}'),
+                  '/signals/${_selectedSignal!.id}'),
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },
-              body: json.encode(_selectedSignal.toJson()))
+              body: json.encode(_selectedSignal!.toJson()))
           .then((response) {});
       http
           .put(
@@ -3604,9 +3613,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: questionGroupSettings.showCaption1OnStoreboard,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
-                        questionGroupSettings.showCaption1OnStoreboard = value;
+                        questionGroupSettings.showCaption1OnStoreboard =
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -3622,9 +3632,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: questionGroupSettings.showCaption1InReports,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
-                        questionGroupSettings.showCaption1InReports = value;
+                        questionGroupSettings.showCaption1InReports =
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -3656,9 +3667,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: questionGroupSettings.showCaption2OnStoreboard,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
-                        questionGroupSettings.showCaption2OnStoreboard = value;
+                        questionGroupSettings.showCaption2OnStoreboard =
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -3674,9 +3686,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: questionGroupSettings.showCaption2InReports,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
-                        questionGroupSettings.showCaption2InReports = value;
+                        questionGroupSettings.showCaption2InReports =
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -3708,9 +3721,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: questionGroupSettings.showCaption3OnStoreboard,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
-                        questionGroupSettings.showCaption3OnStoreboard = value;
+                        questionGroupSettings.showCaption3OnStoreboard =
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -3726,9 +3740,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: questionGroupSettings.showCaption3InReports,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
-                        questionGroupSettings.showCaption3InReports = value;
+                        questionGroupSettings.showCaption3InReports =
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -3760,9 +3775,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: questionGroupSettings.showCaption4OnStoreboard,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
-                        questionGroupSettings.showCaption4OnStoreboard = value;
+                        questionGroupSettings.showCaption4OnStoreboard =
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -3778,9 +3794,10 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Checkbox(
                     value: questionGroupSettings.showCaption4InReports,
-                    onChanged: (bool value) {
+                    onChanged: (bool? value) {
                       setState(() {
-                        questionGroupSettings.showCaption4InReports = value;
+                        questionGroupSettings.showCaption4InReports =
+                            value == true;
                       });
 
                       DbHelper.saveSettings(_currentSettings);
@@ -3822,7 +3839,7 @@ class _SettingsPageState extends State<SettingsPage>
                       labelText: 'Наименование элемента информационной панели',
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return 'Введите наименование элемента информационной панели';
                       }
                       if (_currentSettings.tableViewSettings.headerItems.any(
@@ -3853,7 +3870,7 @@ class _SettingsPageState extends State<SettingsPage>
               child: TextButton(
                 child: Text('Ок'),
                 onPressed: () {
-                  if (!formKey.currentState.validate()) {
+                  if (formKey.currentState?.validate() != true) {
                     return;
                   }
 
@@ -3898,7 +3915,7 @@ class _SettingsPageState extends State<SettingsPage>
                       labelText: 'Наименование режима голосования',
                     ),
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return 'Введите наименование режима голосования';
                       }
                       if (_votingModes
@@ -3927,7 +3944,7 @@ class _SettingsPageState extends State<SettingsPage>
               child: TextButton(
                 child: Text('Ок'),
                 onPressed: () {
-                  if (!formKey.currentState.validate()) {
+                  if (formKey.currentState?.validate() != true) {
                     return;
                   }
 
@@ -3960,6 +3977,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                     setState(() {
                       var newVotingMode = VotingMode(
+                        id: 0,
                         name: _tecEditVotingModeName.text,
                         orderNum: orderNum,
                         defaultDecision: DecisionModeHelper.getStringValue(
@@ -4025,9 +4043,8 @@ class _SettingsPageState extends State<SettingsPage>
     final formKey = GlobalKey<FormState>();
 
     var tecSignalName = TextEditingController(text: signal.name);
-    var tecDuration =
-        TextEditingController(text: signal.duration?.toString() ?? "");
-    Color signalColor = Color(signal.color ?? Colors.transparent.value);
+    var tecDuration = TextEditingController(text: signal.duration.toString());
+    Color signalColor = Color(signal.color);
     String signalSoundPath = signal.soundPath;
     double signalVolume = signal.volume;
 
@@ -4074,7 +4091,7 @@ class _SettingsPageState extends State<SettingsPage>
                           labelText: 'Наименование',
                         ),
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value == null || value.isEmpty) {
                             return 'Введите наименование';
                           }
 
@@ -4091,7 +4108,7 @@ class _SettingsPageState extends State<SettingsPage>
                           labelText: 'Продолжительность цветовой индикации, c',
                         ),
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value == null || value.isEmpty) {
                             return 'Введите цветовой индикации';
                           }
                           if (int.tryParse(value.toString()) == null) {
@@ -4131,7 +4148,7 @@ class _SettingsPageState extends State<SettingsPage>
                             message: 'Изменить цвет индикации',
                             child: TextButton(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                   CircleBorder(
                                       side: BorderSide(
                                           color: Colors.transparent)),
@@ -4192,7 +4209,7 @@ class _SettingsPageState extends State<SettingsPage>
                             message: 'Удалить цвет',
                             child: TextButton(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                   CircleBorder(
                                       side: BorderSide(
                                           color: Colors.transparent)),
@@ -4212,7 +4229,7 @@ class _SettingsPageState extends State<SettingsPage>
                     getFileSettingItem(
                       (value) {
                         setStateForDialog(() {
-                          signalSoundPath = value?.trim();
+                          signalSoundPath = value.trim();
                         });
                       },
                       signalSoundPath ?? '',
@@ -4249,7 +4266,7 @@ class _SettingsPageState extends State<SettingsPage>
                 child: TextButton(
                   child: Text('Ок'),
                   onPressed: () {
-                    if (!formKey.currentState.validate()) {
+                    if (formKey.currentState?.validate() != true) {
                       return;
                     }
 
@@ -4258,7 +4275,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                       if (_selectedSignal != null) {
                         _signals.forEach((element) {
-                          if (element.orderNum > _selectedSignal.orderNum) {
+                          if (element.orderNum > _selectedSignal!.orderNum) {
                             element.orderNum += 1;
 
                             http.put(
@@ -4273,7 +4290,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 body: json.encode(element.toJson()));
                           }
                         });
-                        orderNum = _selectedSignal.orderNum + 1;
+                        orderNum = _selectedSignal!.orderNum + 1;
                       } else {
                         if (_signals.length > 0) {
                           orderNum = _signals.last.orderNum + 1;
@@ -4363,7 +4380,7 @@ class _SettingsPageState extends State<SettingsPage>
 
     tecduration.addListener(() {
       if (_setStateForDialog != null) {
-        _setStateForDialog(() {
+        _setStateForDialog!(() {
           if (tecduration.text == null ||
               tecduration.text.isEmpty ||
               int.tryParse(tecduration.text) == null ||
@@ -4419,7 +4436,7 @@ class _SettingsPageState extends State<SettingsPage>
                           labelText: 'Наименование',
                         ),
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value == null || value.isEmpty) {
                             return 'Введите наименование';
                           }
 
@@ -4436,7 +4453,7 @@ class _SettingsPageState extends State<SettingsPage>
                           labelText: 'Продолжительность интервала, с',
                         ),
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value == null || value.isEmpty) {
                             return 'Введите продолжительность интервала';
                           }
                           if (int.tryParse(value.toString()) == null) {
@@ -4462,14 +4479,13 @@ class _SettingsPageState extends State<SettingsPage>
                         children: [
                           Checkbox(
                             value: isAutoEnd,
-                            onChanged: (tecduration.text == null ||
-                                    tecduration.text.isEmpty ||
+                            onChanged: (tecduration.text.isEmpty ||
                                     int.tryParse(tecduration.text) == null ||
                                     int.tryParse(tecduration.text) == 0)
                                 ? null
-                                : (bool value) {
+                                : (bool? value) {
                                     setStateForDialog(() {
-                                      isAutoEnd = value;
+                                      isAutoEnd = value == true;
                                     });
                                   },
                           ),
@@ -4483,9 +4499,9 @@ class _SettingsPageState extends State<SettingsPage>
                         children: [
                           Checkbox(
                             value: isActive,
-                            onChanged: (bool value) {
+                            onChanged: (bool? value) {
                               setStateForDialog(() {
-                                isActive = value;
+                                isActive = value == true;
                               });
                             },
                           ),
@@ -4512,7 +4528,7 @@ class _SettingsPageState extends State<SettingsPage>
                 child: TextButton(
                   child: Text('Ок'),
                   onPressed: () {
-                    if (!formKey.currentState.validate()) {
+                    if (formKey.currentState?.validate() != true) {
                       return;
                     }
 
@@ -4837,10 +4853,10 @@ class _SettingsPageState extends State<SettingsPage>
                     Checkbox(
                       value: _currentSettings
                           .storeboardSettings.justifyQuestionDescription,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.storeboardSettings
-                              .justifyQuestionDescription = value;
+                              .justifyQuestionDescription = value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -4860,10 +4876,10 @@ class _SettingsPageState extends State<SettingsPage>
                   children: [
                     Checkbox(
                       value: _currentSettings.storeboardSettings.clockFontBold,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         setState(() {
                           _currentSettings.storeboardSettings.clockFontBold =
-                              value;
+                              value == true;
                         });
 
                         DbHelper.saveSettings(_currentSettings);
@@ -4925,10 +4941,10 @@ class _SettingsPageState extends State<SettingsPage>
                       Checkbox(
                         value: _currentSettings
                             .signalsSettings.isOperatorPlaySound,
-                        onChanged: (bool value) {
+                        onChanged: (bool? value) {
                           setState(() {
-                            _currentSettings
-                                .signalsSettings.isOperatorPlaySound = value;
+                            _currentSettings.signalsSettings
+                                .isOperatorPlaySound = value == true;
                           });
 
                           DbHelper.saveSettings(_currentSettings);
@@ -4945,10 +4961,10 @@ class _SettingsPageState extends State<SettingsPage>
                       Checkbox(
                         value: _currentSettings
                             .signalsSettings.isStoreboardPlaySound,
-                        onChanged: (bool value) {
+                        onChanged: (bool? value) {
                           setState(() {
-                            _currentSettings
-                                .signalsSettings.isStoreboardPlaySound = value;
+                            _currentSettings.signalsSettings
+                                .isStoreboardPlaySound = value == true;
                           });
 
                           DbHelper.saveSettings(_currentSettings);
@@ -5000,7 +5016,7 @@ class _SettingsPageState extends State<SettingsPage>
                                         'Переместить выбранный сигнал вверх',
                                     child: TextButton(
                                       style: ButtonStyle(
-                                        shape: MaterialStateProperty.all(
+                                        shape: WidgetStateProperty.all(
                                           CircleBorder(
                                               side: BorderSide(
                                                   color: Colors.transparent)),
@@ -5019,7 +5035,7 @@ class _SettingsPageState extends State<SettingsPage>
                                         'Переместить выбранный сигнал вниз',
                                     child: TextButton(
                                       style: ButtonStyle(
-                                        shape: MaterialStateProperty.all(
+                                        shape: WidgetStateProperty.all(
                                           CircleBorder(
                                               side: BorderSide(
                                                   color: Colors.transparent)),
@@ -5035,14 +5051,17 @@ class _SettingsPageState extends State<SettingsPage>
                               message: 'Добавить сигнал',
                               child: TextButton(
                                 style: ButtonStyle(
-                                  shape: MaterialStateProperty.all(
+                                  shape: WidgetStateProperty.all(
                                     CircleBorder(
                                         side: BorderSide(
                                             color: Colors.transparent)),
                                   ),
                                 ),
                                 onPressed: () {
-                                  showSignalDialog(Signal());
+                                  showSignalDialog(Signal(
+                                    id: 0,
+                                    name: '',
+                                  ));
                                 },
                                 child: Icon(Icons.add),
                               ),
@@ -5072,7 +5091,7 @@ class _SettingsPageState extends State<SettingsPage>
           columnSpacing: 1,
           horizontalMargin: 10,
           showCheckboxColumn: false,
-          headingRowColor: MaterialStateProperty.all(Colors.black12),
+          headingRowColor: WidgetStateProperty.all(Colors.black12),
           columns: [
             DataColumn(
               label: Container(
@@ -5129,15 +5148,15 @@ class _SettingsPageState extends State<SettingsPage>
           rows: _signals
               .map(
                 ((element) => DataRow(
-                      color: MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
+                      color: WidgetStateProperty.resolveWith<Color>(
+                          (Set<WidgetState> states) {
                         if (element == _selectedSignal) {
                           return Theme.of(context)
                               .colorScheme
                               .primary
                               .withOpacity(0.3);
                         }
-                        return null;
+                        return Colors.transparent;
                       }),
                       cells: <DataCell>[
                         DataCell(
@@ -5225,16 +5244,18 @@ class _SettingsPageState extends State<SettingsPage>
                                 message: 'Проверить звуковой сигнал',
                                 child: TextButton(
                                   style: ButtonStyle(
-                                    foregroundColor: _connection.getServerState
-                                                .playSound.isNotEmpty &&
+                                    foregroundColor: _connection
+                                                    .getServerState.playSound !=
+                                                null &&
+                                            _connection.getServerState
+                                                .playSound!.isNotEmpty &&
                                             _connection
                                                     .getServerState.playSound ==
                                                 element.soundPath
-                                        ? MaterialStateProperty.all(
+                                        ? WidgetStateProperty.all(
                                             Colors.lightGreenAccent)
-                                        : MaterialStateProperty.all(
-                                            Colors.white),
-                                    shape: MaterialStateProperty.all(
+                                        : WidgetStateProperty.all(Colors.white),
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -5253,7 +5274,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 message: 'Изменить сигнал',
                                 child: TextButton(
                                   style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -5269,7 +5290,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 message: 'Удалить сигнал',
                                 child: TextButton(
                                   style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -5311,8 +5332,8 @@ class _SettingsPageState extends State<SettingsPage>
                         ),
                       ],
                       selected: element == _selectedSignal,
-                      onSelectChanged: (bool value) {
-                        if (value) {
+                      onSelectChanged: (bool? value) {
+                        if (value == true) {
                           setState(() {
                             _selectedSignal = element;
                           });
@@ -5359,24 +5380,24 @@ class _SettingsPageState extends State<SettingsPage>
                 getHeader('Стандартные интервалы'),
                 getIntervalSelector((value) {
                   _currentSettings.intervalsSettings
-                      .defaultRegistrationIntervalId = value.id;
+                      .defaultRegistrationIntervalId = value?.id;
                 },
                     _currentSettings
                         .intervalsSettings.defaultRegistrationIntervalId,
                     'Стандартный интервал регистрации'),
                 getIntervalSelector((value) {
                   _currentSettings.intervalsSettings.defaultVotingIntervalId =
-                      value.id;
+                      value?.id;
                 }, _currentSettings.intervalsSettings.defaultVotingIntervalId,
                     'Стандартный интервал голосования'),
                 getIntervalSelector((value) {
                   _currentSettings.intervalsSettings.defaultSpeakerIntervalId =
-                      value.id;
+                      value?.id;
                 }, _currentSettings.intervalsSettings.defaultSpeakerIntervalId,
                     'Стандартный интервал выступления'),
                 getIntervalSelector((value) {
                   _currentSettings.intervalsSettings
-                      .defaultAskWordQueueIntervalId = value.id;
+                      .defaultAskWordQueueIntervalId = value?.id;
                 },
                     _currentSettings
                         .intervalsSettings.defaultAskWordQueueIntervalId,
@@ -5406,7 +5427,7 @@ class _SettingsPageState extends State<SettingsPage>
                                         'Переместить выбранный интервал вверх',
                                     child: TextButton(
                                       style: ButtonStyle(
-                                        shape: MaterialStateProperty.all(
+                                        shape: WidgetStateProperty.all(
                                           CircleBorder(
                                               side: BorderSide(
                                                   color: Colors.transparent)),
@@ -5425,7 +5446,7 @@ class _SettingsPageState extends State<SettingsPage>
                                         'Переместить выбранный интервал вниз',
                                     child: TextButton(
                                       style: ButtonStyle(
-                                        shape: MaterialStateProperty.all(
+                                        shape: WidgetStateProperty.all(
                                           CircleBorder(
                                               side: BorderSide(
                                                   color: Colors.transparent)),
@@ -5441,7 +5462,7 @@ class _SettingsPageState extends State<SettingsPage>
                               message: 'Добавить интервал',
                               child: TextButton(
                                 style: ButtonStyle(
-                                  shape: MaterialStateProperty.all(
+                                  shape: WidgetStateProperty.all(
                                     CircleBorder(
                                         side: BorderSide(
                                             color: Colors.transparent)),
@@ -5479,7 +5500,7 @@ class _SettingsPageState extends State<SettingsPage>
           columnSpacing: 1,
           horizontalMargin: 10,
           showCheckboxColumn: false,
-          headingRowColor: MaterialStateProperty.all(Colors.black12),
+          headingRowColor: WidgetStateProperty.all(Colors.black12),
           columns: [
             DataColumn(
               label: Container(
@@ -5545,15 +5566,15 @@ class _SettingsPageState extends State<SettingsPage>
           rows: _intervals
               .map(
                 ((element) => DataRow(
-                      color: MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
+                      color: WidgetStateProperty.resolveWith<Color>(
+                          (Set<WidgetState> states) {
                         if (element == _selectedInterval) {
                           return Theme.of(context)
                               .colorScheme
                               .primary
                               .withOpacity(0.3);
                         }
-                        return null;
+                        return Colors.transparent;
                       }),
                       cells: <DataCell>[
                         DataCell(
@@ -5623,7 +5644,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 message: 'Изменить интервал',
                                 child: TextButton(
                                   style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -5640,7 +5661,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 message: 'Удалить интервал',
                                 child: TextButton(
                                   style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       CircleBorder(
                                           side: BorderSide(
                                               color: Colors.transparent)),
@@ -5682,8 +5703,8 @@ class _SettingsPageState extends State<SettingsPage>
                         ),
                       ],
                       selected: element == _selectedInterval,
-                      onSelectChanged: (bool value) {
-                        if (value) {
+                      onSelectChanged: (bool? value) {
+                        if (value == true) {
                           setState(() {
                             _selectedInterval = element;
                           });
@@ -5709,14 +5730,12 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   Widget getSignalsSelector(
-    void setValue(Signal value),
-    int signalId,
+    void setValue(Signal? value),
+    int? signalId,
     String title,
   ) {
-    Signal currentSignal = _signals.firstWhere(
-      (element) => element.id == signalId,
-      orElse: () => null,
-    );
+    Signal currentSignal =
+        _signals.firstWhere((element) => element.id == signalId);
     return Container(
       padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
       child: Row(
@@ -5740,11 +5759,13 @@ class _SettingsPageState extends State<SettingsPage>
               height: 2,
               color: Colors.deepPurpleAccent,
             ),
-            onChanged: (Signal newValue) {
-              setState(() {
-                setValue(newValue);
-              });
-              DbHelper.saveSettings(_currentSettings);
+            onChanged: (Signal? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  setValue(newValue);
+                });
+                DbHelper.saveSettings(_currentSettings);
+              }
             },
             items: _signals.map<DropdownMenuItem<Signal>>((Signal value) {
               return DropdownMenuItem<Signal>(
@@ -5759,14 +5780,12 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   Widget getIntervalSelector(
-    void setValue(ais.Interval value),
-    int intervalId,
+    void setValue(ais.Interval? value),
+    int? intervalId,
     String title,
   ) {
-    var currentInterval = _intervals.firstWhere(
-      (element) => element.id == intervalId,
-      orElse: () => null,
-    );
+    var currentInterval =
+        _intervals.firstWhereOrNull((element) => element.id == intervalId);
     return Container(
       padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
       child: Row(
@@ -5785,11 +5804,13 @@ class _SettingsPageState extends State<SettingsPage>
               height: 2,
               color: Colors.deepPurpleAccent,
             ),
-            onChanged: (ais.Interval newValue) {
-              setState(() {
-                setValue(newValue);
-              });
-              DbHelper.saveSettings(_currentSettings);
+            onChanged: (ais.Interval? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  setValue(newValue);
+                });
+                DbHelper.saveSettings(_currentSettings);
+              }
             },
             items: _intervals
                 .map<DropdownMenuItem<ais.Interval>>((ais.Interval value) {
@@ -5826,9 +5847,9 @@ class _SettingsPageState extends State<SettingsPage>
               height: 2,
               color: Colors.deepPurpleAccent,
             ),
-            onChanged: (String newValue) {
+            onChanged: (String? newValue) {
               setState(() {
-                setValue(newValue);
+                setValue(newValue ?? '');
               });
               DbHelper.saveSettings(_currentSettings);
             },
@@ -5891,7 +5912,7 @@ class _SettingsPageState extends State<SettingsPage>
           columnSpacing: 1,
           horizontalMargin: 10,
           showCheckboxColumn: false,
-          headingRowColor: MaterialStateProperty.all(Colors.black12),
+          headingRowColor: WidgetStateProperty.all(Colors.black12),
           columns: [
             DataColumn(
               label: Container(
@@ -5965,9 +5986,12 @@ class _SettingsPageState extends State<SettingsPage>
 
             var userId = int.tryParse(userText);
             if (userId != null) {
-              userText = widget.users
-                  .firstWhere((element) => element.id == userId)
-                  .getShortName();
+              var user = widget.users
+                  .firstWhereOrNull((element) => element.id == userId);
+
+              if (user != null) {
+                userText = user.getShortName();
+              }
             }
 
             var version = element.value;
@@ -6048,8 +6072,8 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  String licenseKeyValidator(String value, String fieldName) {
-    if (value.isEmpty) {
+  String? licenseKeyValidator(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
       return 'Введите $fieldName';
     }
 
@@ -6127,11 +6151,10 @@ class _SettingsPageState extends State<SettingsPage>
               flex: 10,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  overlayColor: MaterialStateProperty.all(Colors.black12),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  overlayColor: WidgetStateProperty.all(Colors.black12),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                 ),
                 child: Text('Наименование'),
                 //  Container(
@@ -6202,9 +6225,9 @@ class _SettingsPageState extends State<SettingsPage>
                 child: TextButton(
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.transparent),
-                    overlayColor: MaterialStateProperty.all(Colors.black12),
-                    shape: MaterialStateProperty.all(
+                        WidgetStateProperty.all(Colors.transparent),
+                    overlayColor: WidgetStateProperty.all(Colors.black12),
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),

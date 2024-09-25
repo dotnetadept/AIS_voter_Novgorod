@@ -9,16 +9,16 @@ import 'package:horizontal_data_table/horizontal_data_table.dart';
 import '../Controls/controls.dart';
 
 class GroupsPage extends StatefulWidget {
-  GroupsPage({Key key}) : super(key: key);
+  GroupsPage({Key? key}) : super(key: key);
 
   @override
   _GroupsPageState createState() => _GroupsPageState();
 }
 
 class _GroupsPageState extends State<GroupsPage> {
-  List<Group> _groups = <Group>[];
-  List<Meeting> _meetings;
-  List<MeetingSession> _meetingSessions;
+  late List<Group> _groups;
+  late List<Meeting> _meetings;
+  late List<MeetingSession> _meetingSessions;
   bool _isLoadingComplete = false;
   bool _isAscending = true;
 
@@ -148,7 +148,7 @@ class _GroupsPageState extends State<GroupsPage> {
               message: "Добавить",
               child: TextButton(
                 style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
+                  shape: WidgetStateProperty.all(
                     CircleBorder(side: BorderSide(color: Colors.transparent)),
                   ),
                 ),
@@ -271,11 +271,10 @@ class _GroupsPageState extends State<GroupsPage> {
               flex: 10,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  overlayColor: MaterialStateProperty.all(Colors.black12),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  overlayColor: WidgetStateProperty.all(Colors.black12),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                 ),
                 child: Container(
                   child: TableHelper().getTitleItemWidget(
@@ -375,10 +374,10 @@ class _GroupsPageState extends State<GroupsPage> {
                         child: TextButton(
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.black12),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.black12),
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -394,10 +393,10 @@ class _GroupsPageState extends State<GroupsPage> {
                         child: TextButton(
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.black12),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.black12),
+                            shape: WidgetStateProperty.all(
                               CircleBorder(
                                   side: BorderSide(color: Colors.transparent)),
                             ),
@@ -416,97 +415,101 @@ class _GroupsPageState extends State<GroupsPage> {
                       ),
                     ],
                   )
-                : Row(mainAxisAlignment: MainAxisAlignment.start, children: <
-                    Widget>[
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Tooltip(
-                      message: 'Копировать',
-                      child: TextButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.black12),
-                          shape: MaterialStateProperty.all(
-                            CircleBorder(
-                                side: BorderSide(color: Colors.transparent)),
-                          ),
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                        Expanded(
+                          child: Container(),
                         ),
-                        child: Icon(Icons.copy, color: Colors.blue),
-                        onPressed: () {
-                          _copyGroup(index);
-                        },
-                      ),
-                    ),
-                    Tooltip(
-                      message: 'Редактировать',
-                      child: TextButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.black12),
-                          shape: MaterialStateProperty.all(
-                            CircleBorder(
-                                side: BorderSide(color: Colors.transparent)),
-                          ),
-                        ),
-                        child: Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () {
-                          _navigateGroupPage(index, false);
-                        },
-                      ),
-                    ),
-                    Tooltip(
-                      message: 'Удалить',
-                      child: TextButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.black12),
-                          shape: MaterialStateProperty.all(
-                            CircleBorder(
-                                side: BorderSide(color: Colors.transparent)),
-                          ),
-                        ),
-                        child: Icon(Icons.delete, color: Colors.black87),
-                        onPressed: () async {
-                          var noButtonPressed = false;
-                          var title = 'Удалить группу';
-
-                          await Utility().showYesNoDialog(
-                            context,
-                            title: title,
-                            message: TextSpan(
-                              text:
-                                  'Вы уверены, что хотите ${title.toLowerCase()}?',
+                        Tooltip(
+                          message: 'Копировать',
+                          child: TextButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStateProperty.all(Colors.transparent),
+                              overlayColor:
+                                  WidgetStateProperty.all(Colors.black12),
+                              shape: WidgetStateProperty.all(
+                                CircleBorder(
+                                    side:
+                                        BorderSide(color: Colors.transparent)),
+                              ),
                             ),
-                            yesButtonText: 'Да',
-                            yesCallBack: () {
-                              Navigator.of(context).pop();
+                            child: Icon(Icons.copy, color: Colors.blue),
+                            onPressed: () {
+                              _copyGroup(index);
                             },
-                            noButtonText: 'Нет',
-                            noCallBack: () {
-                              noButtonPressed = true;
-                              Navigator.of(context).pop();
+                          ),
+                        ),
+                        Tooltip(
+                          message: 'Редактировать',
+                          child: TextButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStateProperty.all(Colors.transparent),
+                              overlayColor:
+                                  WidgetStateProperty.all(Colors.black12),
+                              shape: WidgetStateProperty.all(
+                                CircleBorder(
+                                    side:
+                                        BorderSide(color: Colors.transparent)),
+                              ),
+                            ),
+                            child: Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () {
+                              _navigateGroupPage(index, false);
                             },
-                          );
+                          ),
+                        ),
+                        Tooltip(
+                          message: 'Удалить',
+                          child: TextButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStateProperty.all(Colors.transparent),
+                              overlayColor:
+                                  WidgetStateProperty.all(Colors.black12),
+                              shape: WidgetStateProperty.all(
+                                CircleBorder(
+                                    side:
+                                        BorderSide(color: Colors.transparent)),
+                              ),
+                            ),
+                            child: Icon(Icons.delete, color: Colors.black87),
+                            onPressed: () async {
+                              var noButtonPressed = false;
+                              var title = 'Удалить группу';
 
-                          if (noButtonPressed) {
-                            return;
-                          }
+                              await Utility().showYesNoDialog(
+                                context,
+                                title: title,
+                                message: TextSpan(
+                                  text:
+                                      'Вы уверены, что хотите ${title.toLowerCase()}?',
+                                ),
+                                yesButtonText: 'Да',
+                                yesCallBack: () {
+                                  Navigator.of(context).pop();
+                                },
+                                noButtonText: 'Нет',
+                                noCallBack: () {
+                                  noButtonPressed = true;
+                                  Navigator.of(context).pop();
+                                },
+                              );
 
-                          removeGroup(index);
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: 20,
-                    ),
-                  ])),
+                              if (noButtonPressed) {
+                                return;
+                              }
+
+                              removeGroup(index);
+                            },
+                          ),
+                        ),
+                        Container(
+                          width: 20,
+                        ),
+                      ])),
       ],
     );
   }

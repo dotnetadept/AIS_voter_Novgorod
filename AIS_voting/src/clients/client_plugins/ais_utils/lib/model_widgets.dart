@@ -2,7 +2,7 @@ import 'package:ais_model/ais_model.dart';
 import 'package:flutter/material.dart';
 
 class ModelWidgets {
-  Widget getSignalWidget(Signal signal) {
+  Widget getSignalWidget(Signal? signal) {
     if (signal == null) {
       return Container();
     }

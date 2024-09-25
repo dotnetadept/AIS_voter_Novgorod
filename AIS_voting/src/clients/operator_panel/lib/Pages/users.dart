@@ -9,7 +9,7 @@ import 'package:horizontal_data_table/horizontal_data_table.dart';
 import '../Controls/controls.dart';
 
 class UsersPage extends StatefulWidget {
-  UsersPage({Key key}) : super(key: key);
+  UsersPage({Key? key}) : super(key: key);
 
   @override
   _UsersPageState createState() => _UsersPageState();
@@ -96,7 +96,7 @@ class _UsersPageState extends State<UsersPage> {
                   message: "Добавить",
                   child: TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         CircleBorder(
                             side: BorderSide(color: Colors.transparent)),
                       ),
@@ -221,11 +221,10 @@ class _UsersPageState extends State<UsersPage> {
               flex: 10,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  overlayColor: MaterialStateProperty.all(Colors.black12),
-                  padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  overlayColor: WidgetStateProperty.all(Colors.black12),
+                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
                 ),
                 child: Container(
                   child: Text(
@@ -327,9 +326,9 @@ class _UsersPageState extends State<UsersPage> {
                 child: TextButton(
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.transparent),
-                    overlayColor: MaterialStateProperty.all(Colors.black12),
-                    shape: MaterialStateProperty.all(
+                        WidgetStateProperty.all(Colors.transparent),
+                    overlayColor: WidgetStateProperty.all(Colors.black12),
+                    shape: WidgetStateProperty.all(
                       CircleBorder(side: BorderSide(color: Colors.transparent)),
                     ),
                   ),
