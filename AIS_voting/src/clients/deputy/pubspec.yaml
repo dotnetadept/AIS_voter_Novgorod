@@ -39,7 +39,7 @@ dependencies:
   sdp_transform: ^0.3.2
   statsfl: ^2.3.0
   pdfrx: ^1.0.72
-  collection: ^1.19.0
+  collection: ^1.18.0
 
 flutter:
   uses-material-design: true

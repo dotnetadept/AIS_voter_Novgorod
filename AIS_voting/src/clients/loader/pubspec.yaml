@@ -4,26 +4,27 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.0
-  file_picker_cross: any
-  uuid: 2.2.2
+  file_picker: any
+  uuid: any
   csv: any
   http: any
   path: any
   intl: any
-  global_configuration: 
-    path: '../client_plugins/global_configuration-1.6.0'
+  global_configuration: any
+    #path: '../client_plugins/global_configuration-1.6.0'
   ais_model:
     path: '../client_plugins/ais_model'
   ais_utils:
     path: '../client_plugins/ais_utils'
-  dropdown_search: 
-    path: '../client_plugins/dropdown_search-0.6.3'
+  dropdown_search: ^5.0.6
+    #path: '../client_plugins/dropdown_search-0.6.3'
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:

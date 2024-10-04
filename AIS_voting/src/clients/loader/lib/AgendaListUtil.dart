@@ -9,9 +9,9 @@ class AgendaListUtil {
     var additionalQuestionCount = questions
         .sublist(0, index)
         .where((element) =>
-            (regExp.firstMatch(element).group(2).contains(' д') == true))
+            (regExp.firstMatch(element)?.group(2)?.contains(' д') == true))
         .length;
-    if (regExp.firstMatch(questions[index]).group(3) ==
+    if (regExp.firstMatch(questions[index])?.group(3) ==
         settings.additionalQiestion.defaultGroupName) {
       return additionalQuestionCount + 1;
     }

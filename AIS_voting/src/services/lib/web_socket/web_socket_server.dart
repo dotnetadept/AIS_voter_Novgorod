@@ -137,7 +137,7 @@ class WebSocketServer {
     updatedQuestionSession = (await updateQuestionSession.update()).firstOrNull;
 
     if (startedMeeting != null) {
-      if (startedMeeting.status.startsWith('Регистрация')) {
+      if (startedMeeting.status!.startsWith('Регистрация')) {
         // fix meeting status
         var query = Query<Meeting>(_context)
           ..values.status = 'Начато'
@@ -149,17 +149,17 @@ class WebSocketServer {
         startedMeeting.lastUpdated = lastUpdated;
         ServerState.systemState = cm.SystemState.MeetingStarted;
       }
-      if (startedMeeting.status.startsWith('Голосование')) {
+      if (startedMeeting.status!.startsWith('Голосование')) {
         // fix meeting status
         var query = Query<Meeting>(_context)
-          ..values.status = startedMeeting.status
+          ..values.status = startedMeeting.status!
               .replaceFirst('Голосование', 'Просмотр')
               .replaceFirst(' завершено', '')
           ..values.lastUpdated = lastUpdated
           ..where((u) => u.id).equalTo(startedMeeting.id);
         await query.update();
 
-        startedMeeting.status = startedMeeting.status
+        startedMeeting.status = startedMeeting.status!
             .replaceFirst('Голосование', 'Просмотр')
             .replaceFirst(' завершено', '');
         startedMeeting.lastUpdated = lastUpdated;
@@ -167,17 +167,17 @@ class WebSocketServer {
         ServerState.systemState = cm.SystemState.QuestionLocked;
       }
 
-      if (startedMeeting.status.startsWith('Запись')) {
+      if (startedMeeting.status!.startsWith('Запись')) {
         // fix meeting status
         var query = Query<Meeting>(_context)
-          ..values.status = startedMeeting.status
+          ..values.status = startedMeeting.status!
               .replaceFirst('Запись в очередь на выступление', 'Просмотр')
               .replaceFirst(' завершена', '')
           ..values.lastUpdated = lastUpdated
           ..where((u) => u.id).equalTo(startedMeeting.id);
         await query.update();
 
-        startedMeeting.status = startedMeeting.status
+        startedMeeting.status = startedMeeting.status!
             .replaceFirst('Запись в очередь на выступление', 'Просмотр')
             .replaceFirst(' завершена', '');
         startedMeeting.lastUpdated = lastUpdated;
@@ -239,12 +239,12 @@ class WebSocketServer {
         ServerState.systemState = cm.SystemState.MeetingPreparation;
       }
 
-      if (startedMeeting.status.startsWith('Начато')) {
+      if (startedMeeting.status!.startsWith('Начато')) {
         ServerState.systemState = cm.SystemState.MeetingStarted;
       }
 
       // find selectedQuestion
-      if (startedMeeting.status.startsWith('Просмотр')) {
+      if (startedMeeting.status!.startsWith('Просмотр')) {
         Question? selectedQuestion;
         if (updatedQuestionSession != null) {
           selectedQuestion = startedMeeting.agenda!.questions.firstWhereOrNull(
@@ -2201,7 +2201,7 @@ class WebSocketServer {
       _interval = registrationInterval;
 
       final insertRegistrationSession = Query<RegistrationSession>(_context)
-        ..values.meetingId = ServerState.selectedMeeting!.id
+        ..values.meetingId = ServerState.selectedMeeting!.id!
         ..values.interval = registrationInterval
         ..values.startDate = lastUpdated;
       var insertedRegistrationSession =
@@ -2466,7 +2466,7 @@ class WebSocketServer {
     var lastUpdated = CommonUtils.getDateTimeNow(_timeOffset);
 
     final insertRegistrationSession = Query<RegistrationSession>(_context)
-      ..values.meetingId = ServerState.selectedMeeting!.id
+      ..values.meetingId = ServerState.selectedMeeting!.id!
       ..values.interval = 0
       ..values.startDate = lastUpdated;
     var insertedRegistrationSession = await insertRegistrationSession.insert();
@@ -2622,7 +2622,7 @@ class WebSocketServer {
     var updatedAskWordSession = (await updateAskWordSession.update()).first;
 
     var updateMeeting = Query<Meeting>(_context)
-      ..values.status = ServerState.selectedMeeting!.status + ' завершена'
+      ..values.status = ServerState.selectedMeeting!.status! + ' завершена'
       ..values.lastUpdated = lastUpdated
       ..where((u) => u.id).equalTo(ServerState.selectedMeeting!.id);
     var updatedMeeting = (await updateMeeting.update()).first;

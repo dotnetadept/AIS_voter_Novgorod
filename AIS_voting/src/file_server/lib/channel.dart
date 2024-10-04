@@ -1,7 +1,7 @@
 import 'controllers/document_upload_controller.dart';
 import 'ais_file_server.dart';
+import 'package:conduit_core/conduit_core.dart';
 
-/// This type initializes an application.
 class ServicesChannel extends ApplicationChannel {
   @override
   Future prepare() async {

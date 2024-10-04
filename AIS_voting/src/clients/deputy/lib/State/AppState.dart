@@ -46,7 +46,7 @@ class AppState with ChangeNotifier {
   // intervals
   late List<ais.Interval> _intervals;
   late ais.Interval? _selectedInterval;
-  bool _autoEnd = false;
+  bool? _autoEnd = false;
 
   // prev card values
   static bool _prevIsCardOn = false;
@@ -394,12 +394,12 @@ class AppState with ChangeNotifier {
     return _selectedInterval;
   }
 
-  void setAutoEnd(bool autoEnd) {
+  void setAutoEnd(bool? autoEnd) {
     _autoEnd = autoEnd;
     notifyListeners();
   }
 
-  bool getAutoEnd() {
+  bool? getAutoEnd() {
     return _autoEnd;
   }
 }

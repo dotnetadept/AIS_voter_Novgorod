@@ -14,7 +14,8 @@ dependencies:
   ntp: any
   enum_to_string: any
   ais_model:
-    path: '../clients/client_plugins/ais_model'
+    #path: '../clients/client_plugins/ais_model'
+    path: '/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/client_plugins/ais_model'
   mutex: ^3.0.0
   path: ^1.8.0
   #threading: any
@@ -22,6 +23,7 @@ dependencies:
   #package_info_plus: any
   yaml: any
   collection: ^1.18.0
+
 
 #dependency_overrides:
 #  postgres: ^2.1.1

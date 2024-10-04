@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:collection/collection.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ais_model/ais_model.dart';
 import 'package:csv/csv.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
-import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:loader/AgendaListUtil.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
@@ -35,13 +36,13 @@ class MyApp extends StatelessWidget {
         ),
         textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.blue),
-          foregroundColor: MaterialStateProperty.all(Colors.white),
-          padding: MaterialStateProperty.all(EdgeInsets.all(20)),
-          overlayColor: MaterialStateProperty.all(Colors.blueAccent),
+          backgroundColor: WidgetStateProperty.all(Colors.blue),
+          foregroundColor: WidgetStateProperty.all(Colors.white),
+          padding: WidgetStateProperty.all(EdgeInsets.all(20)),
+          overlayColor: WidgetStateProperty.all(Colors.blueAccent),
         )),
         scrollbarTheme: ScrollbarThemeData(
-          thickness: MaterialStateProperty.all(12),
+          thickness: WidgetStateProperty.all(12),
         ),
       ),
       home: Scaffold(
@@ -67,7 +68,7 @@ class LoaderFormState extends State<LoaderForm> {
   ScrollController _scrollController = ScrollController();
   List<Widget> _checkDialogItems = <Widget>[];
   List<String> _checkDialogItemsText = <String>[];
-  Settings _settings;
+  late Settings _settings;
   var _tecDefaultQuestionName = TextEditingController();
   var _tecFirstQuestionName = TextEditingController();
   var _tecAddtitionalQuestionName = TextEditingController();
@@ -90,7 +91,7 @@ class LoaderFormState extends State<LoaderForm> {
         _settings = (json.decode(value.body) as List)
             .map((data) => Settings.fromJson(data))
             .toList()
-            .firstWhere((element) => element.isSelected, orElse: () => null);
+            .firstWhere((element) => element.isSelected);
         setState(() {
           _tecFirstQuestionName.text =
               _settings.questionListSettings.firstQuestion.defaultGroupName;
@@ -195,7 +196,7 @@ class LoaderFormState extends State<LoaderForm> {
                         DateFormat('dd.MM.yyyy').format(DateTime.now());
                   },
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Введите описание';
                     }
                     return null;
@@ -236,7 +237,7 @@ class LoaderFormState extends State<LoaderForm> {
                         hintStyle: TextStyle(fontStyle: FontStyle.italic),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Выберите файл повестки';
                         }
                         return null;
@@ -284,7 +285,7 @@ class LoaderFormState extends State<LoaderForm> {
                         hintStyle: TextStyle(fontStyle: FontStyle.italic),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Введите наименование вопроса по умолчанию';
                         }
                         return null;
@@ -313,7 +314,7 @@ class LoaderFormState extends State<LoaderForm> {
                         hintStyle: TextStyle(fontStyle: FontStyle.italic),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Введите наименование нулевого вопроса';
                         }
                         return null;
@@ -346,7 +347,7 @@ class LoaderFormState extends State<LoaderForm> {
                               hintStyle: TextStyle(fontStyle: FontStyle.italic),
                             ),
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value == null || value.isEmpty) {
                                 return 'Введите наименование дополнительного вопроса по умолчанию';
                               }
                               return null;
@@ -427,7 +428,7 @@ class LoaderFormState extends State<LoaderForm> {
   }
 
   void copyToClipboard() {
-    if (_checkDialogItemsText != null && _checkDialogItemsText.length > 0) {
+    if (_checkDialogItemsText.length > 0) {
       Clipboard.setData(new ClipboardData(text: getJournalText()));
     }
   }
@@ -441,22 +442,22 @@ class LoaderFormState extends State<LoaderForm> {
   }
 
   void saveToFile() {
-    FilePickerCross(
-      Utf8Encoder().convert(getJournalText()),
-      path: 'журнал_' +
+    FilePicker.platform.saveFile(
+      fileName: 'журнал_' +
           DateFormat('dd.MM.yyyy_HH:mm:ss').format(DateTime.now()) +
           '.txt',
-      type: FileTypeCross.custom,
-      fileExtension: 'txt',
-    ).exportToStorage();
+      type: FileType.custom,
+      allowedExtensions: ['txt'],
+    );
   }
 
   void selectFile() async {
-    FilePickerCross.importFromStorage(
-            type: FileTypeCross.custom,
-            fileExtension: _settings.questionListSettings.agendaFileExtension)
-        .then((filePicker) {
-      _tecFile.text = filePicker.path;
+    FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.custom,
+      allowedExtensions: [_settings.questionListSettings.agendaFileExtension],
+    ).then((filePicker) {
+      _tecFile.text = filePicker?.files[0].path ?? '';
     }).catchError((onError) {});
   }
 
@@ -475,7 +476,7 @@ class LoaderFormState extends State<LoaderForm> {
               width: 120,
               child: TextButton(
                 onPressed: () {
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey.currentState!.validate()) {
                     _checkDialogItems = <Widget>[];
                     processCheck()
                         .then((value) => Future.delayed(
@@ -501,7 +502,7 @@ class LoaderFormState extends State<LoaderForm> {
               width: 120,
               child: TextButton(
                 onPressed: () {
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey.currentState!.validate()) {
                     _checkDialogItems = <Widget>[];
                     loadData()
                         .then((value) => Navigator.pop(context))
@@ -705,9 +706,8 @@ class LoaderFormState extends State<LoaderForm> {
     var isDirectoriesCorrect = true;
 
     for (int i = 0; i < documentFolders.length; i++) {
-      var documentFolder = documentFolders.firstWhere(
-          (element) => path.basename(element.path) == i.toString(),
-          orElse: () => null);
+      var documentFolder = documentFolders.firstWhereOrNull(
+          (element) => path.basename(element.path) == i.toString());
 
       if (documentFolder == null) {
         isDirectoriesCorrect = false;
@@ -1030,6 +1030,7 @@ class LoaderFormState extends State<LoaderForm> {
 
     // Создаем повестку
     var agenda = new Agenda(
+        id: 0,
         name: _tecName.text,
         folder: _tecDirectoryName.text,
         createdDate: DateTime.now(),
@@ -1149,25 +1150,25 @@ class LoaderFormState extends State<LoaderForm> {
         if (tableQuestion[j].toString().isNotEmpty) {
           var descriptionItem = new QuestionDescriptionItem(
               caption: '', //tableQuestions[0][j] + ':',
-              text: tableQuestion[j].toString());
+              text: tableQuestion[j].toString(),
+              showInReports: true,
+              showOnStoreboard: true);
           questionDescriptions.add(descriptionItem);
         }
       }
 
       // Загружаем файлы вопроса
       var questionFolder = Uuid().v4();
-      var documentFolder = documentFolders.firstWhere(
-          (element) => path.basename(element.path) == questionOrder.toString(),
-          orElse: () => null);
+      var documentFolder = documentFolders.firstWhereOrNull(
+          (element) => path.basename(element.path) == questionOrder.toString());
       var questionFiles = <QuestionFile>[];
 
-      var documentFolderContents = documentFolder.listSync();
+      var documentFolderContents = documentFolder!.listSync();
       documentFolderContents.sort((a, b) => a.path.compareTo(b.path));
 
       // Загружаем описания файлов вопросов
-      var descriptionFile = documentFolderContents.firstWhere(
-          (element) => path.basename(element.path) == 'Описание.txt',
-          orElse: () => null);
+      var descriptionFile = documentFolderContents.firstWhereOrNull(
+          (element) => path.basename(element.path) == 'Описание.txt');
       Map<String, dynamic> filesDescriptions = {};
       if (descriptionFile != null) {
         filesDescriptions = jsonDecode(String.fromCharCodes(File(
@@ -1189,6 +1190,8 @@ class LoaderFormState extends State<LoaderForm> {
           }
 
           var questionFile = new QuestionFile(
+            id: 0,
+            questionId: 0,
             relativePath:
                 _tecDirectoryName.text + '/' + questionFolder.toString(),
             realPath: path.dirname(fileOrDir.path),
@@ -1202,6 +1205,9 @@ class LoaderFormState extends State<LoaderForm> {
 
       // Создаем вопрос
       var question = new Question(
+          id: 0,
+          accessRights: <int>[],
+          agendaId: 0,
           name: questionOrder == 0
               ? _tecFirstQuestionName.text
               : _tecDefaultQuestionName.text,
@@ -1242,15 +1248,15 @@ class LoaderFormState extends State<LoaderForm> {
           r'("[^"]*"),("?[^"]+"?),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*")');
 
       var questionNumberData =
-          regExp.firstMatch(questions[i]).group(2).replaceAll('"', '');
+          regExp.firstMatch(questions[i])?.group(2)?.replaceAll('"', '');
       var questionDescriptionData1 =
-          regExp.firstMatch(questions[i]).group(4).replaceAll('"', '');
+          regExp.firstMatch(questions[i])?.group(4)?.replaceAll('"', '');
       var questionDescriptionData2 =
-          regExp.firstMatch(questions[i]).group(5).replaceAll('"', '');
+          regExp.firstMatch(questions[i])?.group(5)?.replaceAll('"', '');
       var questionDescriptionData3 =
-          regExp.firstMatch(questions[i]).group(6).replaceAll('"', '');
+          regExp.firstMatch(questions[i])?.group(6)?.replaceAll('"', '');
       var questionDescriptionData4 =
-          regExp.firstMatch(questions[i]).group(7).replaceAll('"', '');
+          regExp.firstMatch(questions[i])?.group(7)?.replaceAll('"', '');
 
       // Загружаем описание вопроса
       var questionDescriptions = <QuestionDescriptionItem>[];
@@ -1264,7 +1270,7 @@ class LoaderFormState extends State<LoaderForm> {
         questionSettings = _settings.questionListSettings.firstQuestion;
       }
 
-      if (int.tryParse(questionNumberData) == null) {
+      if (int.tryParse(questionNumberData ?? '') == null) {
         questionName = _tecAddtitionalQuestionName.text;
         questionSettings = _settings.questionListSettings.additionalQiestion;
       }
@@ -1300,18 +1306,15 @@ class LoaderFormState extends State<LoaderForm> {
 
       // Загружаем файлы вопроса
       var questionFolder = Uuid().v4();
-      var documentFolder = documentFolders.firstWhere(
-          (element) =>
-              path.basename(element.path) == questionNumberData.toString(),
-          orElse: () => null);
+      var documentFolder = documentFolders.firstWhereOrNull((element) =>
+          path.basename(element.path) == questionNumberData.toString());
       var questionFiles = <QuestionFile>[];
 
-      var documentFolderContents = documentFolder.listSync();
+      var documentFolderContents = documentFolder!.listSync();
       documentFolderContents.sort((a, b) => a.path.compareTo(b.path));
 
-      var descriptionFile = documentFolderContents.firstWhere(
-          (element) => path.basename(element.path) == 'Описание.txt',
-          orElse: () => null);
+      var descriptionFile = documentFolderContents.firstWhereOrNull(
+          (element) => path.basename(element.path) == 'Описание.txt');
       Map<String, dynamic> filesDescriptions = {};
       if (descriptionFile != null) {
         var descriptionsBytes = File(descriptionFile.path).readAsBytesSync();
@@ -1333,6 +1336,8 @@ class LoaderFormState extends State<LoaderForm> {
           }
 
           var questionFile = new QuestionFile(
+            id: 0,
+            questionId: 0,
             relativePath:
                 _tecDirectoryName.text + '/' + questionFolder.toString(),
             realPath: path.dirname(fileOrDir.path),
@@ -1346,11 +1351,14 @@ class LoaderFormState extends State<LoaderForm> {
 
       // Создаем вопрос
       var question = new Question(
+          id: 0,
           name: questionName,
           folder: questionFolder,
           orderNum: questionNumber,
           descriptions: questionDescriptions,
-          files: questionFiles);
+          files: questionFiles,
+          accessRights: <int>[],
+          agendaId: 0);
 
       //agendaQuestions.add(question);
       QuestionListUtil.insert(

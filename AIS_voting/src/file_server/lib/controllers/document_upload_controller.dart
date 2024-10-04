@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:mime/mime.dart';
 import 'package:ais_file_server/ais_file_server.dart';
 import 'package:http_server/http_server.dart';
+import 'package:conduit_core/conduit_core.dart';
 
 class DocumentUploadController extends ResourceController {
   DocumentUploadController() {
@@ -12,18 +12,18 @@ class DocumentUploadController extends ResourceController {
   @Operation.post()
   Future<Response> postForm() async {
     final transformer = MimeMultipartTransformer(
-        request.raw.headers.contentType.parameters['boundary']);
+        request!.raw.headers.contentType!.parameters['boundary']!);
     final bodyStream =
-        Stream.fromIterable([await request.body.decode<List<int>>()]);
+        Stream.fromIterable([await request!.body.decode<List<int>>()]);
     final parts = await transformer.bind(bodyStream).toList();
 
     if (parts.length == 3) {
       // Parse agendaName param
       var agendaFolderName = utf8
-          .decode(await parts[0].cast<Uint8List>().asBroadcastStream().first);
+          .decode(await parts[0].cast<List<int>>().asBroadcastStream().first);
       // Parse folderName param
       var folderName = utf8
-          .decode(await parts[1].cast<Uint8List>().asBroadcastStream().first);
+          .decode(await parts[1].cast<List<int>>().asBroadcastStream().first);
       // Parse fileName param
       var fileName = parts[2]
           .headers
@@ -52,7 +52,7 @@ class DocumentUploadController extends ResourceController {
 
     if (parts.length == 1) {
       var pingFlag = utf8
-          .decode(await parts[0].cast<Uint8List>().asBroadcastStream().first);
+          .decode(await parts[0].cast<List<int>>().asBroadcastStream().first);
 
       if (pingFlag == 'true') {
         return Response.ok({});
