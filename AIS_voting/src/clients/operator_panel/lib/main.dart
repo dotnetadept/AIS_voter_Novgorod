@@ -77,6 +77,7 @@ class _MyAppState extends State<MyApp> {
               title: 'Рабочее место оператора', //v 1.33
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
+                useMaterial3: false,
                 primarySwatch: Colors.blue,
                 visualDensity: VisualDensity.adaptivePlatformDensity,
                 scrollbarTheme: ScrollbarThemeData(
@@ -94,6 +95,9 @@ class _MyAppState extends State<MyApp> {
                 ),
                 tooltipTheme: TooltipThemeData(
                   textStyle: TextStyle(fontSize: 14, color: Colors.white),
+                ),
+                appBarTheme: AppBarTheme(
+                  backgroundColor: Colors.lightBlue,
                 ),
               ),
               home: OperatorPage(),
@@ -135,6 +139,7 @@ class _OperatorPageState extends State<OperatorPage> {
   late List<MeetingSession> _meetingSessions;
   late List<VotingMode> _votingModes;
   late List<User> _users;
+  late List<Proxy> _proxies;
 
   Meeting? _selectedMeeting;
   Question? _selectedQuestion;
@@ -276,6 +281,13 @@ class _OperatorPageState extends State<OperatorPage> {
               setState(() {
                 _users = (json.decode(response.body) as List)
                     .map((data) => User.fromJson(data))
+                    .toList();
+              })
+            }))
+        .then((value) => http.get(Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()), "/proxies")).then((response) => {
+              setState(() {
+                _proxies = (json.decode(response.body) as List)
+                    .map((data) => Proxy.fromJson(data))
                     .toList();
               })
             }))
@@ -546,8 +558,11 @@ class _OperatorPageState extends State<OperatorPage> {
                   DropdownSearch<User>(
                     // mode: Mode.DIALOG,
                     // showSearchBox: true,
-                    items: UsersFilterUtil.getAbsentUserList(_users,
-                        _selectedMeeting!.group!, _connection.getServerState),
+                    items: (filter, infiniteScrollProps) =>
+                        UsersFilterUtil.getAbsentUserList(
+                            _users,
+                            _selectedMeeting!.group!,
+                            _connection.getServerState),
                     enabled: true,
                     // popupTitle: Container(
                     //     alignment: Alignment.center,
@@ -614,7 +629,7 @@ class _OperatorPageState extends State<OperatorPage> {
   }
 
   Widget userPopupItemBuilder(
-      BuildContext context, User item, bool isSelected) {
+      BuildContext context, User item, bool isDisabled, bool isSelected) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 8),
       child: ListTile(
@@ -1001,6 +1016,7 @@ class _OperatorPageState extends State<OperatorPage> {
           removeGuestAskWord: removeGuestAskWord,
           addUserAskWord: addUserAskWord,
           removeUserAskWord: removeUserAskWord,
+          proxies: _proxies,
         ),
         StoreboardWidget(
           serverState: _connection.getServerState,

@@ -103,9 +103,6 @@ class WebSocketConnection with ChangeNotifier {
   }
 
   void setState(String responce) async {
-    var stopwatch = Stopwatch();
-    stopwatch.start();
-
     var registredMessage = json
         .encode(<String, String>{'registration': 'ЗАРЕГИСТРИРОВАН'}).toString();
     var unregistredMessage = json.encode(
@@ -400,10 +397,6 @@ class WebSocketConnection with ChangeNotifier {
     processNavigation();
     checkMeetingDocumentsStatus();
     notifyListeners();
-
-    stopwatch.stop();
-    print(
-        '${DateTime.now().toString()} setState time: ${stopwatch.elapsedMilliseconds}');
   }
 
   Future<void> updateFilesVersions(String data) async {
@@ -581,6 +574,14 @@ class WebSocketConnection with ChangeNotifier {
 
   void setMicsMode(bool isEnabled) {
     _channel.sink.add(json.encode({'isMicsEnabled': isEnabled}));
+  }
+
+  void setMicsOff() {
+    _channel.sink.add(json.encode({'setMicsOff': true}));
+  }
+
+  void closeVissonic() {
+    _channel.sink.add(json.encode({'close_vissonic': true}));
   }
 
   Future<void> initNewChannel(String clientType) async {

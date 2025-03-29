@@ -8,13 +8,24 @@ import 'package:vissonic_client/vissonic_client/vissonic_client.dart';
 void main(List<String> arguments) async {
   print('Запуск Vissonic клиента системы АИС Голосование');
 
-  await File(arguments[0]).readAsString().then((value) {
+  await File(
+          '/home/user/Desktop/AIS/AIS_voter_Yaroslavl/AIS_voting/src/clients/vissonic_client/bin/app_settings.json')
+      .readAsString()
+      .then((value) {
     AppSettings.settings = jsonDecode(value);
   }).then((value) {
     print('Чтение файла настроек успешно завершено');
 
     ConsoleApp();
   });
+
+  // await File(arguments[0]).readAsString().then((value) {
+  //   AppSettings.settings = jsonDecode(value);
+  // }).then((value) {
+  //   print('Чтение файла настроек успешно завершено');
+
+  //   ConsoleApp();
+  // });
 }
 
 class ConsoleApp {
@@ -38,6 +49,7 @@ class ConsoleApp {
       );
 
       _webSocket?.listen((data) async {
+        print(data);
         await processMessage(data.toString());
       }, onDone: reconnect, onError: wserror, cancelOnError: true);
 

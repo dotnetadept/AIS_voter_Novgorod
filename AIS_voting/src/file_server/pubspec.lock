@@ -88,83 +88,82 @@ packages:
   conduit:
     dependency: "direct main"
     description:
-      name: conduit
-      sha256: "11f2554d6b7a0ec23454c90d5b16d3bc75d13100bc3fb8ffe8edc306f54c5b59"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.1.0"
+      path: "/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/client_plugins/conduit-5.1.3"
+      relative: false
+    source: path
+    version: "5.1.3"
   conduit_codable:
     dependency: transitive
     description:
       name: conduit_codable
-      sha256: a36e2a15c2fcc54b346432e28e8429af35a139964f2d1ac62ded82112c51f817
+      sha256: "2e7ff016d25b0f9878d50d59922f23dbea9ca5b16a591ac7b6758ab24d649458"
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.3"
   conduit_common:
     dependency: transitive
     description:
       name: conduit_common
-      sha256: "38cbcc2321410c6fb9a62f90cecb71ea340ee5dc404052a04a9f8a7aa67ffa9e"
+      sha256: d89ceaff6d538d02ff4e1ee418e4ae465f6451cd18b1c8507059efcfd6a9eeb1
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.3"
   conduit_config:
     dependency: transitive
     description:
       name: conduit_config
-      sha256: "3b80ee2e9c93a4155f9a35a4673400d94d5e52f0037caab67030ba9b7486d528"
+      sha256: d0c90950a3bfbd062d80a574719c7bf11d619eb658d40b3ad3b6771bf6468962
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.3"
   conduit_core:
     dependency: transitive
     description:
       name: conduit_core
-      sha256: aec1449262926989c6fa38fc16c2cb2ac94554d6c4ee8e969ed9dfa4a3b13d6f
+      sha256: a259b57f8430dcb40469af12a920cfdc5b2449f29aa9dfcad06cd048e5cb2d43
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.3"
   conduit_isolate_exec:
     dependency: transitive
     description:
       name: conduit_isolate_exec
-      sha256: f4021869e72b646b380823b451a42301e8155b18a488573de45527df4e60aa69
+      sha256: "037e6766eb2e1aa2e6564072a8aa851f462cbf340008d558719be9abc9a2f492"
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.3"
   conduit_open_api:
     dependency: transitive
     description:
       name: conduit_open_api
-      sha256: "8b1cc253398130651ab5f6e8733a3f7902baf26936b9f8ebeaad60e1da9f46b4"
+      sha256: ebe17fe0df14f2232d4879ca2bda8a095ea0f6f4bf8dd48d64fceafa33108243
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.3"
   conduit_password_hash:
     dependency: transitive
     description:
       name: conduit_password_hash
-      sha256: "4a5197d0d5f204a1b6ae9aa32449529486b1ef85afcf470c839b9d4a859df6d1"
+      sha256: "771480d90ccb5e53b5b65d4cdfd6a1d04e4e71e0ea0b3e3b0a9ecbeba2885b96"
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.3"
   conduit_postgresql:
     dependency: transitive
     description:
       name: conduit_postgresql
-      sha256: "62afc51a00e68967b775ee7438b59eb0bab9f12f3f82d94e0da2aa994c04744d"
+      sha256: adb098f68c58dbc5ca379815d4797401d5637cc0e3b31eb4f195720b15c0b02b
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.3"
   conduit_runtime:
     dependency: transitive
     description:
       name: conduit_runtime
-      sha256: "9f8c200e0dc4e14716581828ac2bbe57f76ed4fd0f01a42ba425fa00df7bdd31"
+      sha256: "3ce97d3fa612ad586d5d52c0d3468285cacd27e4e4f702512d5f59d95804a79f"
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.3"
   convert:
     dependency: transitive
     description:

@@ -28,7 +28,7 @@ dependencies:
   #  git:
   #      url: https://github.com/matheusfajardo/searchable_dropdown
   #      ref: master
-  dropdown_search: ^5.0.6
+  dropdown_search: 6.0.2 #^5.0.6
     #path: '../client_plugins/dropdown_search-0.6.3'
   ais_model:
     path: '../client_plugins/ais_model'

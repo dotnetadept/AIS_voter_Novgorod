@@ -201,12 +201,13 @@ class WebSocketServer {
           ServerState.meetingSession!.startDate != null) {
         final queryRegistrationSessions = Query<RegistrationSession>(_context);
         var registrationSessions = await queryRegistrationSessions.fetch();
-        registrationSessions.sort((a, b) => a.startDate.compareTo(b.startDate));
+        registrationSessions
+            .sort((a, b) => a.startDate!.compareTo(b.startDate!));
 
         var registrationSession = registrationSessions.lastWhereOrNull(
             (element) =>
                 element.meetingId == ServerState.selectedMeeting!.id &&
-                element.startDate.microsecondsSinceEpoch >
+                element.startDate!.microsecondsSinceEpoch >
                     ServerState
                         .meetingSession!.startDate!.microsecondsSinceEpoch);
         ServerState.registrationSession = registrationSession;
@@ -247,10 +248,10 @@ class WebSocketServer {
       if (startedMeeting.status!.startsWith('Просмотр')) {
         Question? selectedQuestion;
         if (updatedQuestionSession != null) {
-          selectedQuestion = startedMeeting.agenda!.questions.firstWhereOrNull(
+          selectedQuestion = startedMeeting.agenda!.questions!.firstWhereOrNull(
               (element) => element.id == updatedQuestionSession!.questionId);
         } else {
-          selectedQuestion = startedMeeting.agenda!.questions.firstWhereOrNull(
+          selectedQuestion = startedMeeting.agenda!.questions!.firstWhereOrNull(
               (element) =>
                   startedMeeting.status ==
                   'Просмотр ${element.name} ${element.orderNum}');
@@ -277,7 +278,7 @@ class WebSocketServer {
         if (ServerState.systemState == cm.SystemState.QuestionVoting) {
           var secondsElapsed =
               ((CommonUtils.getDateTimeNow(_timeOffset).millisecondsSinceEpoch -
-                          ServerState.questionSession!.startDate
+                          ServerState.questionSession!.startDate!
                               .millisecondsSinceEpoch) /
                       1000)
                   .round();
@@ -756,10 +757,10 @@ class WebSocketServer {
           }
 
           processSetStoreboard(
-              EnumToString.fromString(
-                      cm.StoreboardState.values, value['storeboardState']) ??
+              EnumToString.fromString(cm.StoreboardState.values,
+                      value['storeboardState'] ?? 'None') ??
                   cm.StoreboardState.None,
-              value['storeboardParams']);
+              value['storeboardParams'] ?? '');
 
           processSetHistory(json.encode(value['voting_history']));
 
@@ -856,7 +857,7 @@ class WebSocketServer {
             value['deputyId'],
             value['terminalId'],
             value['isUseAuthCard'],
-            value['isWindowsClient']);
+            value['isWindowsClient'] ?? false);
         _isSendState = true;
       } else if (connection.type == 'guest') {
         //guest functions
@@ -882,19 +883,6 @@ class WebSocketServer {
         var isMessageProcessed = await processDeputyMessage(
             connection, value['deputyId'], value['value'].toString());
 
-        if (value['isMicsEnabled'] != null) {
-          await sendVissonicMessage('setAllState',
-              isEnabled: value['isMicsEnabled']);
-          isMessageProcessed = true;
-        }
-
-        if (value['setMicsOff'] != null) {
-          await sendVissonicMessage('setMicSound',
-              terminalId: 'fff', isEnabled: false);
-
-          isMessageProcessed = true;
-        }
-
         if (value['isMicrophoneOn'] != null) {
           await sendVissonicMessage('setMicSound',
               terminalId: value['speaker'], isEnabled: value['isMicrophoneOn']);
@@ -903,6 +891,29 @@ class WebSocketServer {
 
         // manager functions
         if (connection.type == 'manager') {
+          if (value['restore_vissonic'] != null) {
+            await restoreVissonicConnection();
+            isMessageProcessed = true;
+          }
+
+          if (value['close_vissonic'] != null) {
+            await closeVissonicConnection();
+            isMessageProcessed = true;
+          }
+
+          if (value['isMicsEnabled'] != null) {
+            await sendVissonicMessage('setAllState',
+                isEnabled: value['isMicsEnabled']);
+            isMessageProcessed = true;
+          }
+
+          if (value['setMicsOff'] != null) {
+            await sendVissonicMessage('setMicSound',
+                terminalId: 'fff', isEnabled: false);
+
+            isMessageProcessed = true;
+          }
+
           if (value['guest'] != null || value['guestTerminalId'] != null) {
             processSetGuest(
               value['guest'],
@@ -946,10 +957,10 @@ class WebSocketServer {
             processSetStoreboard(
                 EnumToString.fromString(
                       cm.StoreboardState.values,
-                      value['storeboardState'],
+                      value['storeboardState'] ?? 'None',
                     ) ??
                     cm.StoreboardState.None,
-                value['storeboardParams']);
+                value['storeboardParams'] ?? '');
 
             if (value['flush_navigation'] == 'true') {
               processSetFlushNavigation();
@@ -1154,7 +1165,7 @@ class WebSocketServer {
         key == connection.terminalId || value == connection.deputyId);
 
     if (ServerState.selectedMeeting != null) {
-      if (ServerState.selectedMeeting!.group!.isUnregisterUserOnExit) {
+      if (ServerState.selectedMeeting!.group!.isUnregisterUserOnExit!) {
         undoUserRegistration(connection, connection.deputyId);
       }
       // set user terminal back if it default
@@ -1228,7 +1239,7 @@ class WebSocketServer {
 
     // enable managers mics
     if (ServerState.selectedMeeting != null) {
-      var managerIds = ServerState.selectedMeeting!.group!.groupUsers
+      var managerIds = ServerState.selectedMeeting!.group!.groupUsers!
           .where((element) => element.isManager)
           .map((e) => e.user.id)
           .toList();
@@ -1266,9 +1277,9 @@ class WebSocketServer {
   }
 
   Future<bool> processDeputyMessage(
-      WSConnection connection, int deputyId, String value) async {
+      WSConnection connection, int? deputyId, String value) async {
     if (ServerState.systemState == cm.SystemState.Registration) {
-      if (value == 'ЗАРЕГИСТРИРОВАТЬСЯ') {
+      if (value == 'ЗАРЕГИСТРИРОВАТЬСЯ' && deputyId != null) {
         setUserRegistration(connection, deputyId);
         return true;
       }
@@ -1312,7 +1323,7 @@ class WebSocketServer {
     }
 
     if (value == 'ПРОШУ СЛОВА') {
-      if (!ServerState.usersAskSpeech.contains(deputyId)) {
+      if (!ServerState.usersAskSpeech.contains(deputyId) && deputyId != null) {
         ServerState.usersAskSpeech.add(deputyId);
       }
 
@@ -1388,7 +1399,7 @@ class WebSocketServer {
 
           var proxyRegistration = Registration();
           proxyRegistration.userId = proxyUser.user.id;
-          proxyRegistration.proxyId = proxy.id;
+          proxyRegistration.proxyId = proxy.id!;
           proxyRegistration.registrationSession =
               ServerState.registrationSession!;
           registrationsForInsert.add(proxyRegistration);
@@ -1550,11 +1561,11 @@ class WebSocketServer {
 
     // auto registration
     if (deputyId != null && ServerState.selectedMeeting != null) {
-      if (ServerState.selectedMeeting!.group!.isFastRegistrationUsed ||
+      if (ServerState.selectedMeeting!.group!.isFastRegistrationUsed! ||
           (connection.type == 'deputy' &&
-              ServerState.selectedMeeting!.group!.isDeputyAutoRegistration) ||
+              ServerState.selectedMeeting!.group!.isDeputyAutoRegistration!) ||
           (connection.type == 'manager' &&
-              ServerState.selectedMeeting!.group!.isManagerAutoRegistration)) {
+              ServerState.selectedMeeting!.group!.isManagerAutoRegistration!)) {
         setUserRegistration(connection, deputyId);
       }
     }
@@ -1582,7 +1593,7 @@ class WebSocketServer {
         .firstWhereOrNull((element) => element.terminalId == terminalId);
     if (connection != null && userId != null) {
       // change type of terminal
-      var clientType = ServerState.selectedMeeting!.group!.groupUsers
+      var clientType = ServerState.selectedMeeting!.group!.groupUsers!
               .any((element) => element.isManager && element.user.id == userId)
           ? 'manager'
           : 'deputy';
@@ -1860,7 +1871,7 @@ class WebSocketServer {
     var previousAgenda = ServerState.selectedMeeting!.agenda!;
 
     // delete questions
-    var questionsForDelete = previousAgenda.questions
+    var questionsForDelete = previousAgenda.questions!
         .where((prevElement) => !agendaForSave.questions
             .any((element) => element.id == prevElement.id))
         .toList();
@@ -1875,7 +1886,7 @@ class WebSocketServer {
 
     // add new questions
     var questionsForAdd = agendaForSave.questions
-        .where((prevElement) => !previousAgenda.questions
+        .where((prevElement) => !previousAgenda.questions!
             .any((element) => element.id == prevElement.id))
         .toList();
 
@@ -1894,7 +1905,7 @@ class WebSocketServer {
         ..values.description = question.toJson()['description'];
       var insertedQuestion = await queryInsert.insert();
 
-      question.id = insertedQuestion.id;
+      question.id = insertedQuestion.id!;
       insertedQuestion.files = ManagedSet<File>();
 
       // insert questionFiles
@@ -1908,11 +1919,11 @@ class WebSocketServer {
 
         var insertedFile = await insertedQuestionFile.insert();
 
-        insertedQuestion.files.add(insertedFile);
+        insertedQuestion.files!.add(insertedFile);
         question.files[question.files.indexOf(question.files[j])].id =
             insertedFile.id;
         question.files[question.files.indexOf(question.files[j])].questionId =
-            insertedQuestion.id;
+            insertedQuestion.id!;
       }
 
       sendQuestions.add(insertedQuestion);
@@ -1921,11 +1932,13 @@ class WebSocketServer {
 
       //copy files from temp folder
       var fromPath = 'documents/' +
-          previousAgenda.folder +
+          previousAgenda.folder! +
           '/temp/' +
-          insertedQuestion.folder;
-      var toPath =
-          'documents/' + previousAgenda.folder + '/' + insertedQuestion.folder;
+          insertedQuestion.folder!;
+      var toPath = 'documents/' +
+          previousAgenda.folder! +
+          '/' +
+          insertedQuestion.folder!;
 
       await copyPath(fromPath, toPath);
 
@@ -1937,7 +1950,7 @@ class WebSocketServer {
 
     // update other questions
     var questionsForUpdate = agendaForSave.questions
-        .where((prevElement) => previousAgenda.questions
+        .where((prevElement) => previousAgenda.questions!
             .any((element) => element.id == prevElement.id))
         .toList();
 
@@ -1952,13 +1965,13 @@ class WebSocketServer {
       var updatedQuestions = await queryUpdate.update();
 
       var updatedQuestion = updatedQuestions[0];
-      var oldQuestion = previousAgenda.questions
+      var oldQuestion = previousAgenda.questions!
           .firstWhereOrNull((element) => element.id == question.id);
 
       //update question files
       // add files
       var filesForAdd = question.files
-          .where((prevElement) => !(oldQuestion?.files
+          .where((prevElement) => !(oldQuestion?.files!
                   .any((element) => element.id == prevElement.id) ??
               false))
           .toList();
@@ -1975,11 +1988,11 @@ class WebSocketServer {
         question.files[question.files.indexOf(filesForAdd[j])].id =
             insertedFile.id;
         question.files[question.files.indexOf(filesForAdd[j])].questionId =
-            updatedQuestion.id;
+            updatedQuestion.id!;
       }
 
       // delete files
-      var filesForDelete = oldQuestion?.files
+      var filesForDelete = oldQuestion?.files!
           .where((prevElement) =>
               !question.files.any((element) => element.id == prevElement.id))
           .toList();
@@ -2001,13 +2014,13 @@ class WebSocketServer {
       if (selectedUpdatedQuestion != null) {
         //copy files from temp folder
         var fromPath = 'documents/' +
-            previousAgenda.folder +
+            previousAgenda.folder! +
             '/temp/' +
-            selectedUpdatedQuestion.folder;
+            selectedUpdatedQuestion.folder!;
         var toPath = 'documents/' +
-            previousAgenda.folder +
+            previousAgenda.folder! +
             '/' +
-            selectedUpdatedQuestion.folder;
+            selectedUpdatedQuestion.folder!;
 
         await copyPath(fromPath, toPath);
 
@@ -2028,9 +2041,9 @@ class WebSocketServer {
     await query.update();
 
     //clear all tempFolders
-    if (await io.Directory('documents/' + previousAgenda.folder + '/temp/')
+    if (await io.Directory('documents/' + previousAgenda.folder! + '/temp/')
         .exists()) {
-      await io.Directory('documents/' + previousAgenda.folder + '/temp/')
+      await io.Directory('documents/' + previousAgenda.folder! + '/temp/')
           .delete(recursive: true);
     }
 
@@ -2172,7 +2185,7 @@ class WebSocketServer {
       await sendVissonicMessage('setAllState',
           isEnabled: getIsMicsEnabledState());
 
-      if (ServerState.selectedMeeting!.group!.isFastRegistrationUsed) {
+      if (ServerState.selectedMeeting!.group!.isFastRegistrationUsed!) {
         await fastRegistration();
         processSetFlushMeeting();
       }
@@ -2180,7 +2193,7 @@ class WebSocketServer {
       return;
     }
 
-    var selectedQuestion = ServerState.selectedMeeting?.agenda?.questions
+    var selectedQuestion = ServerState.selectedMeeting?.agenda?.questions!
         .firstWhereOrNull((element) => element.id == questionId);
     var votingInterval = json.decode(params)['voting_interval'];
     var registrationInterval = json.decode(params)['registration_interval'];
@@ -2192,7 +2205,7 @@ class WebSocketServer {
 
     // Регистрация
     if (systemState == cm.SystemState.Registration) {
-      if (ServerState.selectedMeeting!.group!.isFastRegistrationUsed) {
+      if (ServerState.selectedMeeting!.group!.isFastRegistrationUsed!) {
         await fastRegistration();
         return;
       }
@@ -2277,7 +2290,7 @@ class WebSocketServer {
       _interval = votingInterval;
 
       final insertQuestionSession = Query<QuestionSession>(_context)
-        ..values.meetingSessionId = ServerState.meetingSession!.id
+        ..values.meetingSessionId = ServerState.meetingSession!.id!
         ..values.questionId = questionId
         ..values.votingRegim = votingRegim
         ..values.interval = _interval ?? 0
@@ -2286,6 +2299,10 @@ class WebSocketServer {
         ..values.usersCountRegistred = ServerState.usersRegistered.length
         ..values.usersCountForSuccess = successCount
         ..values.usersCountForSuccessDisplay = successCount
+        ..values.usersCountVoted = 0
+        ..values.usersCountVotedYes = 0
+        ..values.usersCountVotedNo = 0
+        ..values.usersCountVotedIndiffirent = 0
         ..values.startDate = lastUpdated;
       var insertedQuestionSession = await insertQuestionSession.insert();
 
@@ -2303,6 +2320,17 @@ class WebSocketServer {
       ServerState.usersDecisions = <String, String>{};
       //ServerState.usersAskSpeech = <int>[];
       //ServerState.guestsAskSpeech = <String>[];
+
+      //init decisions
+      var initialChoises = json
+          .decode(json.decode(params)['initial_choices'])
+          .cast<String, String>();
+
+      for (int i = 0; i < initialChoises.length; i++) {
+        ServerState.usersDecisions.putIfAbsent(
+            initialChoises.entries.elementAt(i).key,
+            () => initialChoises.entries.elementAt(i).value);
+      }
 
       ServerState.startSignal = json
                   .decode(json.decode(params)['startSignal']) ==
@@ -2330,7 +2358,7 @@ class WebSocketServer {
       _interval = askWordQueueInterval;
 
       final insertAskWordQueueSession = Query<AskWordQueueSession>(_context)
-        ..values.meetingSessionId = ServerState.meetingSession!.id
+        ..values.meetingSessionId = ServerState.meetingSession!.id!
         ..values.questionId = questionId
         ..values.interval = _interval ?? 0
         ..values.votingModeId = votingModeId
@@ -2522,18 +2550,18 @@ class WebSocketServer {
     ServerState.questionSession!.usersCountRegistred =
         registredAndOnline.length;
     if ((DecisionModeHelper.getEnumValue(
-                ServerState.questionSession!.decision) ==
+                ServerState.questionSession!.decision!) ==
             cm.DecisionMode.MajorityOfRegistredMembers) ||
         (DecisionModeHelper.getEnumValue(
-                ServerState.questionSession!.decision) ==
+                ServerState.questionSession!.decision!) ==
             cm.DecisionMode.TwoThirdsOfRegistredMembers) ||
         (DecisionModeHelper.getEnumValue(
-                ServerState.questionSession!.decision) ==
+                ServerState.questionSession!.decision!) ==
             cm.DecisionMode.OneThirdsOfRegistredMembers)) {
       ServerState.questionSession!.usersCountForSuccess =
           DecisionModeHelper.getSuccuessValue(
               DecisionModeHelper.getEnumValue(
-                  ServerState.questionSession!.decision),
+                  ServerState.questionSession!.decision!),
               ServerState.selectedMeeting!.group!.toClient(),
               registredAndOnline,
               isManagerVoted);
@@ -2719,7 +2747,7 @@ class WebSocketServer {
 
     // add tribune mics
     var workplaces = Workplaces.fromJson(
-        json.decode(ServerState.selectedMeeting!.group!.workplaces));
+        json.decode(ServerState.selectedMeeting!.group!.workplaces!));
 
     for (var i = 0; i < workplaces.tribuneTerminalIds.length; i++) {
       var parts = workplaces.tribuneTerminalIds[i].split(',');

@@ -7,7 +7,8 @@
         {
             "name": "operator_panel",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "flutterMode": "debug"
         }
     ]
 }

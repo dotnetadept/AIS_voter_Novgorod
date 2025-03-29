@@ -27,6 +27,10 @@ class TerminalMic {
     _isEnabled = isEnabled;
   }
 
+  bool? getIsEnabled() {
+    return _isEnabled;
+  }
+
   void setIsWaiting(bool isWaiting) {
     _isWaiting = isWaiting;
   }
@@ -36,13 +40,17 @@ class TerminalMic {
   }
 
   void setIsSound(bool isSound) {
-    // if sound enabled then state enabled anyway
-    if (isSound) {
-      setIsEnabled(true);
+    if (_isEnabled == false && isSound == true) {
+      return;
     }
 
     // if sound changed waiting is over anyway
     setIsWaiting(false);
+
+    // // if sound enabled then state enabled anyway
+    // if (isSound) {
+    //   setIsEnabled(true);
+    // }
 
     _isSound = isSound;
 
@@ -66,6 +74,7 @@ class TerminalMic {
           commands.add(stateCommand);
         }
       }
+
       // set mic sound
       commands.add(VissonicBasicCommand.setMicSound(micId.toString(), isSound));
     }

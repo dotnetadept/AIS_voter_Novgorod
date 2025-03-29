@@ -39,7 +39,8 @@ class QuestionListChangeDialog {
   Question? _editedQuestion;
   List<int> _accessRights = <int>[];
   List<QuestionFile> _files = <QuestionFile>[];
-  late List<QuestionDescriptionItem> _questionDescriptions;
+  List<QuestionDescriptionItem> _questionDescriptions =
+      <QuestionDescriptionItem>[];
   String _filesFolder = Uuid().v4();
   late WebSocketConnection _connection;
   List<User> _users;
@@ -748,7 +749,7 @@ class QuestionListChangeDialog {
   }
 
   Widget getNewQuestionDescription(Function setStateForDialog) {
-    if (_questionDescriptions == null) {
+    if (_questionDescriptions.isEmpty) {
       return Container();
     }
     return SingleChildScrollView(
@@ -1292,7 +1293,8 @@ class QuestionListChangeDialog {
       // mode: Mode.DIALOG,
       // showSearchBox: true,
       // showClearButton: true,
-      items: _users.where((element) => !groupUsers.contains(element)).toList(),
+      items: (filter, infiniteScrollProps) =>
+          _users.where((element) => !groupUsers.contains(element)).toList(),
       //label: 'Депутат',
       //popupTitle: Container(
       // alignment: Alignment.center,

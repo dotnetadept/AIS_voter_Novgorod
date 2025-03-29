@@ -6,6 +6,7 @@ class ProxyUser {
   late User user;
 
   ProxyUser({
+    required this.id,
     required this.proxyId,
     required this.user,
   });

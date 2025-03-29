@@ -251,7 +251,7 @@ class _GroupsPageState extends State<GroupsPage> {
         leftHandSideColBackgroundColor: Color(0xFFFFFFFF),
         rightHandSideColBackgroundColor: Color(0xFFFFFFFF),
       ),
-      height: MediaQuery.of(context).size.height - 126,
+      height: MediaQuery.of(context).size.height - 132,
     );
   }
 

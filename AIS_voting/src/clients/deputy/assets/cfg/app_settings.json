@@ -26,7 +26,7 @@
     "reconnect_delay": "10000",
     "ping_interval": "1000",
     "ntp_timeout": "500",
-    "use_manual_login": "true",
+    "use_manual_login": "false",
 
     "oven_media_server": "192.168.15.103",
     "oven_signaling_port": "3333",
@@ -40,5 +40,5 @@
     "close_browser_command_params": "-f;chrome",
     "folder_path": "//home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/deputy/build/linux/x64/debug/bundle",
     
-    "terminal_id": "069"
+    "terminal_id": "002"
 }

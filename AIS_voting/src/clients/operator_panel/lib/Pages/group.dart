@@ -1106,7 +1106,7 @@ class _GroupPageState extends State<GroupPage>
       // mode: Mode.DIALOG,
       // showSearchBox: true,
       // showClearButton: true,
-      items: groupUsers,
+      items: (filter, infiniteScrollProps) => groupUsers,
       // label: 'Председатель',
       // popupTitle: Container(
       //     alignment: Alignment.center,
@@ -1138,6 +1138,7 @@ class _GroupPageState extends State<GroupPage>
         }
         return null;
       },
+
       dropdownBuilder: userDropDownItemBuilder,
       // popupItemBuilder: userItemBuilder,
       // emptyBuilder: emptyBuilder,
@@ -1434,7 +1435,8 @@ class _GroupPageState extends State<GroupPage>
       // mode: Mode.DIALOG,
       // showSearchBox: true,
       // showClearButton: true,
-      items: _users.where((element) => !groupUsers.contains(element)).toList(),
+      items: (filter, infiniteScrollProps) =>
+          _users.where((element) => !groupUsers.contains(element)).toList(),
       // label: 'Депутат',
       // popupTitle: Container(
       //     alignment: Alignment.center,
@@ -1454,6 +1456,7 @@ class _GroupPageState extends State<GroupPage>
         }
         return null;
       },
+
       dropdownBuilder: userDropDownItemBuilder,
       //popupItemBuilder: userItemBuilder,
       //emptyBuilder: emptyBuilder,
@@ -2035,11 +2038,11 @@ class _GroupPageState extends State<GroupPage>
             },
           ),
           DropdownSearch<User>(
-            key: dropDownKeyWorkplacesUser,
+            //key: GlobalKey<DropdownSearchState>(),
             // mode: Mode.DIALOG,
             // showSearchBox: !widget.isReadOnly,
             // showClearButton: !widget.isReadOnly,
-            items: usersForAdd,
+            items: (filter, infiniteScrollProps) => usersForAdd,
             enabled: !widget.isReadOnly,
             // dropDownButton: !widget.isReadOnly ? null : Container(),
             // popupTitle: Container(
@@ -2054,6 +2057,12 @@ class _GroupPageState extends State<GroupPage>
             //           fontSize: 20),
             //     )),
             // hint: 'Выберите пользователя',
+            validator: (value) {
+              if (value == null) {
+                return 'Выберите пользователя';
+              }
+              return null;
+            },
             selectedItem: widget.group.groupUsers
                 .firstWhereOrNull((element) =>
                     element.user.id != null &&
@@ -2076,8 +2085,10 @@ class _GroupPageState extends State<GroupPage>
 
                     setState(() {});
                   },
-
             popupProps: PopupProps.menu(
+              fit: FlexFit.loose,
+              //comment this if you want that the items do not takes all available height
+              constraints: BoxConstraints.tightFor(width: 600, height: 110),
               itemBuilder: userPopupItemBuilder,
             ),
           ),
@@ -2104,11 +2115,11 @@ class _GroupPageState extends State<GroupPage>
             },
           ),
           DropdownSearch<User>(
-            key: dropDownKeyWorkplacesUser,
+            //key: dropDownKeyWorkplacesUser,
             // mode: Mode.DIALOG,
             // showSearchBox: !widget.isReadOnly,
             // showClearButton: !widget.isReadOnly,
-            items: usersForAdd,
+            items: (filter, infiniteScrollProps) => usersForAdd,
             enabled: !widget.isReadOnly,
             // popupTitle: Container(
             //     alignment: Alignment.center,
@@ -2122,6 +2133,12 @@ class _GroupPageState extends State<GroupPage>
             //           fontSize: 20),
             //     )),
             // hint: 'Выберите пользователя',
+            validator: (value) {
+              if (value == null) {
+                return 'Выберите депутата';
+              }
+              return null;
+            },
             selectedItem: widget.group.groupUsers
                 .firstWhereOrNull((element) =>
                     element.user.id != null &&
@@ -2140,6 +2157,8 @@ class _GroupPageState extends State<GroupPage>
               setState(() {});
             },
             popupProps: PopupProps.menu(
+              fit: FlexFit.loose,
+              constraints: BoxConstraints(),
               itemBuilder: userPopupItemBuilder,
             ),
           ),
@@ -2183,7 +2202,11 @@ class _GroupPageState extends State<GroupPage>
   }
 
   Widget userPopupItemBuilder(
-      BuildContext context, User item, bool isSelected) {
+    BuildContext context,
+    User item,
+    bool isDisabled,
+    bool isSelected,
+  ) {
     var isOnScheme = false;
 
     var managementPlaces = widget.group.workplaces.schemeManagement;

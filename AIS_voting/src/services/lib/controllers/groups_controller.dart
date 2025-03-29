@@ -59,7 +59,7 @@ class GroupsController extends ResourceController {
 
     var insertedGroup = await query.insert();
 
-    await Future.forEach(group.groupUsers, (GroupUser gu) async {
+    await Future.forEach(group.groupUsers!, (GroupUser gu) async {
       var groupUser = Query<GroupUser>(context)
         ..values.isManager = gu.isManager
         ..values.user = gu.user
@@ -109,7 +109,7 @@ class GroupsController extends ResourceController {
     await deleteGroupUsers.delete();
 
     // Insert GroupUsers from payload
-    await Future.forEach(group.groupUsers, (GroupUser gu) async {
+    await Future.forEach(group.groupUsers!, (GroupUser gu) async {
       var groupUser = Query<GroupUser>(context)
         ..values.isManager = gu.isManager
         ..values.user = gu.user

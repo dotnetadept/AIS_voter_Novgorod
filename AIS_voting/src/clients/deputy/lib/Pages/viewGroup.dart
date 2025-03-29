@@ -160,6 +160,9 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                                 removeGuestAskWord: removeGuestAskWord,
                                 reconnectToVissonic:
                                     _connection.reconnectToVissonic,
+                                closeVissonic: _connection.closeVissonic,
+                                setMicsMode: _connection.setMicsMode,
+                                setMicsOff: _connection.setMicsOff,
                               ),
                             ),
                           ),

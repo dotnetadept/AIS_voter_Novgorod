@@ -25,8 +25,8 @@ class Meeting {
         'name': name,
         'description': description,
         'status': status,
-        'agenda': agenda == agenda?.toJson(),
-        'group': group == group?.toJson(),
+        'agenda': agenda?.toJson(),
+        'group': group?.toJson(),
         'lastUpdated': lastUpdated.toIso8601String(),
       };
 

@@ -8,6 +8,7 @@ import 'package:collection/collection.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:operator_panel/Providers/AppState.dart';
 import 'package:operator_panel/Widgets/rigthPanelMenu.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,7 @@ class RightPanelTop extends StatefulWidget {
   final Question? selectedQuestion;
   final List<VotingMode> votingModes;
   final List<User> users;
+  final List<Proxy> proxies;
 
   final int timeOffset;
   final void Function(Meeting meeting) changeSelectedMeeting;
@@ -51,6 +53,7 @@ class RightPanelTop extends StatefulWidget {
     required this.removeGuestAskWord,
     required this.addUserAskWord,
     required this.removeUserAskWord,
+    required this.proxies,
   }) : super(key: key);
 
   @override
@@ -84,7 +87,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
 
     var scrollPosition = 0.0;
 
-    if (_selectedMeeting != null) {
+    if (_selectedMeeting != null && widget.lockedQuestion != null) {
       scrollPosition = _selectedMeeting!.agenda!.questions.indexOf(
                   widget.selectedMeeting!.agenda!.questions.firstWhere(
                       (element) => element.id == widget.lockedQuestion?.id)) *
@@ -191,7 +194,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
       // mode: Mode.DIALOG,
       // showSearchBox: true,
       // showClearButton: true,
-      items: widget.meetings
+      items: (filter, infiniteScrollProps) => widget.meetings
           .where((element) => element.status == 'Ожидание')
           .toList(),
       // label: 'Заседание',
@@ -239,7 +242,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
   }
 
   Widget meetingPopupItemBuilder(
-      BuildContext context, Meeting item, bool isSelected) {
+      BuildContext context, Meeting item, bool isDisabled, bool isSelected) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 8),
       child: ListTile(
@@ -802,7 +805,8 @@ class _RightPanelTopState extends State<RightPanelTop> {
             widget.lockedQuestion!,
             widget.votingModes,
             _selectedVotingMode,
-            DecisionModeHelper.getEnumValue(_selectedDecision))
+            DecisionModeHelper.getEnumValue(_selectedDecision),
+            widget.proxies)
         .openDialog()
         .then((value) {
       AppState().refreshDialog = null;

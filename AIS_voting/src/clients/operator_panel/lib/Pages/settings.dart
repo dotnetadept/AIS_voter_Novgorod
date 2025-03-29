@@ -6130,7 +6130,7 @@ class _SettingsPageState extends State<SettingsPage>
             leftHandSideColBackgroundColor: Color(0xFFFFFFFF),
             rightHandSideColBackgroundColor: Color(0xFFFFFFFF),
           ),
-          height: MediaQuery.of(context).size.height - 208,
+          height: MediaQuery.of(context).size.height - 214,
         ),
       ],
     );

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:synchronized/extension.dart';
 import 'package:vissonic_client/app_settings.dart';
 import '../server_state.dart';
 import 'terminal_mic.dart';
@@ -33,6 +34,9 @@ class VissonicClient {
     _isMicsEnabledOnStart = isMicsEnabledOnStart;
 
     if (_socket != null) {
+      ServerState.isVissonicServerOnline = false;
+      ServerState.isVissonicModuleInit = false;
+
       await _socket?.close();
       _socket?.destroy();
     }
@@ -40,15 +44,17 @@ class VissonicClient {
     await Future.delayed(Duration(seconds: 1)).then((value) async {
       try {
         print('Устанавливается соединение с сервером Vissonic');
-        await Socket.connect(_address, _port,
-                timeout: Duration(seconds: _timeout))
-            .then((socket) async {
+        await Socket.connect(
+          _address,
+          _port,
+          timeout: Duration(seconds: _timeout),
+        ).then((socket) async {
           _socket = socket;
           // configure socket settings
           socket.setOption(SocketOption.tcpNoDelay, true);
 
           // configure socket events
-          socket.listen((data) {
+          var s = socket.listen((data) {
             _processServerMessage(data);
           }, onDone: () {
             print(
@@ -56,6 +62,7 @@ class VissonicClient {
 
             closeConnection();
           }, onError: (err) {
+            print('OnError');
             _processError(err.toString());
           }, cancelOnError: true); // break connection on first error
 
@@ -83,8 +90,13 @@ class VissonicClient {
                       .settings?['vissonic_message_interval']), (timer) async {
             await _lock.synchronized(_sendMessageQueueToServer);
           });
+        }).onError((ee, e) {
+          ServerState.isVissonicServerOnline = true;
+          print('SocketError');
+          _processError(e.toString());
         });
       } on SocketException catch (e) {
+        print('SocketException');
         _processError(e.toString());
 
         //close on timeout
@@ -92,6 +104,7 @@ class VissonicClient {
           exit(0);
         }
       } catch (e) {
+        print('Catch');
         _processError(e.toString());
       }
     });
@@ -99,6 +112,10 @@ class VissonicClient {
 
   void processInitMessage(List<int> data) {
     if (data.length < 36) {
+      _processError(data.toString());
+
+      //_sendToServer(VissonicCommand(
+      //    [0x00, 0x06, 0x00, 0x00, 0x00, 0x01, 0xFC, 0xFC], []));
       return;
     }
 
@@ -152,13 +169,16 @@ class VissonicClient {
 
   void _processError(String errorText) {
     print(
-        '${DateTime.now().toString()} В ходе подключения сервера Vissonic ${_address}:${_port} возникла шибка: ${errorText}');
+        '${DateTime.now().toString()} В ходе подключения сервера Vissonic ${_address}:${_port} возникла ошибка: ${errorText}');
     print(
         '${DateTime.now().toString()} Последнее отправленное сообщение: ${_lastMessage}');
     print(
         '${DateTime.now().toString()} Последнее принятое сообщение: ${_lastResponce} ${_lastResponceTimeStamp.toString()}');
-    print(
-        '${DateTime.now().toString()} Текущая очередь сообщений: ${_sendQueue}');
+
+    print('${DateTime.now().toString()} Текущая очередь сообщений:');
+    for (int i = 0; i < _sendQueue.length; i++) {
+      print('\t\t' + _sendQueue[i].getComand().toString());
+    }
 
     closeConnection();
   }
@@ -170,8 +190,14 @@ class VissonicClient {
     // destroy socket
     _socket?.destroy();
 
+    if (ServerState.isVissonicServerOnline == true) {
+      Future.delayed(Duration(seconds: 3)).then((value) {
+        connect(_isMicsEnabledOnStart!);
+      });
+    }
+
     ServerState.isVissonicServerOnline = false;
-    ServerState.isVissonicModuleInit = true;
+    ServerState.isVissonicModuleInit = false;
 
     // clear mics state
     for (int i = 0; i < ServerState.currentMics.length; i++) {
@@ -202,8 +228,11 @@ class VissonicClient {
 
     _lastMessage =
         VissonicCommandHelper.formatData(command.getComand()).toString();
-    print(
-        '${DateTime.now().toString()} Отправлено на Vissonic сервер: ${_lastMessage}');
+
+    if (_lastMessage != '[00, 06, 00, 00, 0e, 00, fc, fc]') {
+      print(
+          '${DateTime.now().toString()} Отправлено на Vissonic сервер: ${_lastMessage}');
+    }
   }
 
   // inserts command at the start of queue
@@ -235,6 +264,7 @@ class VissonicClient {
   void _processServerMessage(List<int> data) {
     _lastResponce = VissonicCommandHelper.formatData(data).toString();
     _lastResponceTimeStamp = DateTime.now();
+
     print(
         '${DateTime.now().toString()} Vissonic сервер packet: ${_lastResponce}');
 
@@ -268,13 +298,17 @@ class VissonicClient {
 
         _processServerCommand(serverCommand, command, terminalId);
 
-        print(
-            '${DateTime.now().toString()} Vissonic сервер: ${decodedServerCommand}');
-        print(
-            '${DateTime.now().toString()} Vissonic сервер: ${VissonicCommandHelper.commandToString(command)} ${VissonicCommandHelper.idToString(terminalId)}');
+        if (_lastResponce != '[fe, 00, 0e, 00, fc]') {
+          print(
+              '${DateTime.now().toString()} Vissonic сервер: ${decodedServerCommand}    ${VissonicCommandHelper.commandToString(command)} ${VissonicCommandHelper.idToString(terminalId)}');
+        }
+        //print(
+        //    '${DateTime.now().toString()} Vissonic сервер: ${VissonicCommandHelper.commandToString(command)} ${VissonicCommandHelper.idToString(terminalId)}');
       }
     }
   }
+
+  Timer? _closeConnectionTimer;
 
   // process single server command
   void _processServerCommand(
@@ -283,6 +317,10 @@ class VissonicClient {
     // FE 00 0E 00 FC
     if (terminalId == 0x000 && command == 0x00e) {
       _insertToQueue(<VissonicCommand>[VissonicBasicCommand.keepAlive()]);
+      _closeConnectionTimer?.cancel();
+      _closeConnectionTimer = Timer(Duration(seconds: 6), () {
+        _processError("connection timeout");
+      });
       return;
     }
 
@@ -308,12 +346,35 @@ class VissonicClient {
       for (var i = 0; i < ServerState.currentMics.length; i++) {
         if (!ServerState.currentMics[i].isUnblockedMic) {
           ServerState.currentMics[i].setIsSound(false);
+
+          // block mic if MicsDisabled mode
+          if (ServerState.micsEnabled == false) {
+            var commands = <VissonicCommand>[];
+            var stateCommand =
+                ServerState.currentMics[i].processSetMicEnabled(false);
+            if (stateCommand != null) {
+              commands.add(stateCommand);
+            }
+
+            _insertToQueue(commands);
+          }
         }
       }
     }
 
     // mic sound enabled
     if (command == 0x110) {
+      //set waiting mics off for vissonic "apply" mode
+      if (foundTerminalMic.getIsEnabled() == false &&
+          foundTerminalMic.getIsWaiting() == true) {
+        _addToQueue(<VissonicCommand>[
+          VissonicBasicCommand.setMicEnabled(
+              foundTerminalMic.micId.toString(), true),
+          VissonicBasicCommand.setMicSound(
+              foundTerminalMic.micId.toString(), false)
+        ]);
+      }
+
       foundTerminalMic.setIsSound(true);
     }
 
@@ -433,20 +494,14 @@ class VissonicClient {
     }
 
     if (terminalIds == 'fff' && isMicrophoneOn == false) {
-      // Disable sound on waiting and active mics
-      // for (var i = 0; i < ServerState.currentMics.length; i++) {
-      //   if (ServerState.currentMics[i].getIsWaiting() &&
-      //       !ServerState.currentMics[i].isUnblockedMic) {
-      //     commands.addAll(ServerState.currentMics[i].processSetMicSound(false));
-      //   }
-      // }
+      //set mics with sound off
       for (var i = 0; i < ServerState.currentMics.length; i++) {
-        if (ServerState.currentMics[i].getIsSound() &&
-            !ServerState.currentMics[i].isUnblockedMic) {
+        if (ServerState.currentMics[i].getIsSound()) {
           commands.addAll(ServerState.currentMics[i].processSetMicSound(false));
         }
       }
 
+      //set mics waiting mics off
       Timer(Duration(milliseconds: 500), () {
         _addToQueue(<VissonicCommand>[
           VissonicCommand([

@@ -52,7 +52,7 @@ class QuestionFileController extends ResourceController {
     }
 
     final a = Query<Agenda>(context)
-      ..where((o) => o.id).equalTo(question.agenda.id);
+      ..where((o) => o.id).equalTo(question.agenda!.id);
     final agenda = await a.fetchOne();
 
     if (agenda == null) {
@@ -61,9 +61,9 @@ class QuestionFileController extends ResourceController {
 
     // remove documents folder
     await io.File('documents/' +
-            agenda.folder +
+            agenda.folder! +
             '/' +
-            question.folder +
+            question.folder! +
             '/' +
             file.fileName)
         .delete(recursive: true);

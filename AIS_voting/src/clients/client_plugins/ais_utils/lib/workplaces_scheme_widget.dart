@@ -472,42 +472,44 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
     }
 
     if (_isControlSound) {
-      if (widget.isOperatorView || isMicEnabled) {
-        buttons.add(
-          SizedBox(
-            height: iconSize,
-            width: iconSize,
-            child: Tooltip(
-              preferBelow: !widget.isOperatorView,
-              waitDuration: Duration(seconds: widget.isOperatorView ? 2 : 0),
-              message: setSpeakerTooltip,
-              child: TextButton(
-                style: ButtonStyle(
-                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
-                  side: widget.interval == null
-                      ? null
-                      : WidgetStateProperty.all(BorderSide(width: 1)),
-                  backgroundColor: WidgetStateProperty.all(micColor),
-                  overlayColor:
-                      WidgetStateProperty.all(Colors.blueAccent.withAlpha(125)),
-                ),
-                child: Icon(
-                  Icons.mic,
-                  size: iconSize,
-                  color: Colors.white,
-                ),
-                onPressed: !widget.isOperatorView
+      //if (widget.isOperatorView || isMicEnabled) {
+      buttons.add(
+        SizedBox(
+          height: iconSize,
+          width: iconSize,
+          child: Tooltip(
+            preferBelow: !widget.isOperatorView,
+            waitDuration: Duration(seconds: widget.isOperatorView ? 2 : 0),
+            message: setSpeakerTooltip,
+            child: TextButton(
+              style: ButtonStyle(
+                padding: WidgetStateProperty.all(EdgeInsets.all(0)),
+                side: widget.interval == null
                     ? null
-                    : () {
-                        setState(() {
-                          widget.setSpeaker(terminalId, !isMicEnabled);
-                        });
-                      },
+                    : WidgetStateProperty.all(BorderSide(width: 1)),
+                backgroundColor: WidgetStateProperty.all(micColor),
+                overlayColor:
+                    WidgetStateProperty.all(Colors.blueAccent.withAlpha(125)),
               ),
+              child: Icon(
+                Icons.mic,
+                size: iconSize,
+                color: Colors.white,
+              ),
+              onPressed:
+                  // !widget.isOperatorView
+                  //     ? null
+                  //     :
+                  () {
+                setState(() {
+                  widget.setSpeaker(terminalId, !isMicEnabled);
+                });
+              },
             ),
           ),
-        );
-      }
+        ),
+      );
+      //}
     }
 
     var guests = (widget.group.guests ?? '').split(',').toList();
@@ -523,117 +525,10 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
           decoration: BoxDecoration(
             color: userColor,
           ),
-          child:
-              // widget.isOperatorView
-              //     ? Container(
-              //         margin: EdgeInsets.fromLTRB(
-              //             cellPadding, cellPadding, cellPadding, 0.0),
-              //         width: cellWidth,
-              //         height: textSize + 8,
-              //         child: DropdownSearch<String>(
-              //           searchBoxController: _searchGuestController,
-              //           searchBoxStyle: TextStyle(
-              //             fontSize: textSize + 4,
-              //           ),
-              //           dropdownSearchTextAlignVertical: TextAlignVertical.top,
-              //           mode: Mode.DIALOG,
-              //           showSearchBox: true,
-              //           showClearButton: guest != null && guest.isNotEmpty,
-              //           clearButtonBuilder: (context) {
-              //             return Align(
-              //               child: Icon(
-              //                 Icons.clear,
-              //                 size: textSize + 6,
-              //               ),
-              //             );
-              //           },
-              //           dropdownButtonBuilder: (context) {
-              //             return Align(
-              //               child: Icon(
-              //                 Icons.arrow_drop_down,
-              //                 size: textSize + 6,
-              //               ),
-              //             );
-              //           },
-              //           items: guests,
-              //           popupTitle: Container(
-              //             alignment: Alignment.center,
-              //             color: Colors.blueAccent,
-              //             padding: EdgeInsets.all(15),
-              //             child: Row(
-              //               children: [
-              //                 Expanded(
-              //                   child: Text(
-              //                     'Гости',
-              //                     textAlign: TextAlign.center,
-              //                     style: TextStyle(
-              //                         fontWeight: FontWeight.bold,
-              //                         color: Colors.white,
-              //                         fontSize: 28),
-              //                   ),
-              //                 ),
-              //                 TextButton(
-              //                   style: ButtonStyle(
-              //                     backgroundColor:
-              //                         WidgetStateProperty.all(Colors.indigoAccent),
-              //                     padding: WidgetStateProperty.all(
-              //                         EdgeInsets.fromLTRB(0, 15, 0, 15)),
-              //                     shape: WidgetStateProperty.all(
-              //                       CircleBorder(
-              //                         side: BorderSide(color: Colors.transparent),
-              //                       ),
-              //                     ),
-              //                   ),
-              //                   onPressed: () {
-              //                     Navigator.of(context).pop();
-              //                   },
-              //                   child: Icon(Icons.close),
-              //                 ),
-              //               ],
-              //             ),
-              //           ),
-              //           hint: 'Выберите гостя',
-              //           selectedItem: guest,
-              //           onChanged: (value) {
-              //             setState(() {
-              //               widget.addGuest(value, terminalId);
-              //             });
-              //           },
-              //           dropdownBuilder: guestDropDownBuilder,
-              //           popupItemBuilder: guestPopupItemBuilder,
-              //           emptyBuilder: (context, searchEntry) {
-              //             return Center(
-              //                 child: TextButton(
-              //               child: Text('Добавить гостя'),
-              //               onPressed: () {
-              //                 setState(() {
-              //                   if (widget.group.guests != null &&
-              //                       widget.group.guests.isNotEmpty) {
-              //                     widget.group.guests +=
-              //                         ',' + _searchGuestController.text;
-              //                   } else {
-              //                     widget.group.guests = _searchGuestController.text;
-              //                   }
-              //                 });
-
-              //                 widget.saveGroup(widget.group);
-              //                 widget.addGuest(
-              //                     _searchGuestController.text, terminalId);
-              //               },
-              //             ));
-              //           },
-              //           onPopupDismissed: () {
-              //             setState(() {
-              //               _searchGuestController.text = '';
-              //             });
-              //           },
-              //         ),
-              //       )
-              //:
-              Container(
-            margin:
-                EdgeInsets.fromLTRB(cellPadding, cellPadding, cellPadding, 0),
-            padding: EdgeInsets.fromLTRB(0, cellPadding, 0, cellPadding),
+          child: Container(
+            margin: EdgeInsets.fromLTRB(
+                cellPadding, cellPadding, cellPadding, cellPadding),
+            padding: EdgeInsets.fromLTRB(0, 0, 0, cellPadding),
             width: cellWidth,
             height: textSize + 6,
             decoration: BoxDecoration(
@@ -1053,42 +948,44 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
     }
 
     if (_isControlSound) {
-      if (widget.isOperatorView || isMicEnabled) {
-        buttons.add(
-          SizedBox(
-            height: iconSize,
-            width: iconSize,
-            child: Tooltip(
-              preferBelow: !widget.isOperatorView,
-              waitDuration: Duration(seconds: widget.isOperatorView ? 2 : 0),
-              message: setSpeakerTooltip,
-              child: TextButton(
-                style: ButtonStyle(
-                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
-                  side: widget.interval == null
-                      ? null
-                      : WidgetStateProperty.all(BorderSide(width: 1)),
-                  backgroundColor: WidgetStateProperty.all(micColor),
-                  overlayColor:
-                      WidgetStateProperty.all(Colors.blueAccent.withAlpha(125)),
-                ),
-                child: Icon(
-                  Icons.mic,
-                  size: iconSize,
-                  color: Colors.white,
-                ),
-                onPressed: !widget.isOperatorView
+      //if (widget.isOperatorView || isMicEnabled) {
+      buttons.add(
+        SizedBox(
+          height: iconSize,
+          width: iconSize,
+          child: Tooltip(
+            preferBelow: !widget.isOperatorView,
+            waitDuration: Duration(seconds: widget.isOperatorView ? 2 : 0),
+            message: setSpeakerTooltip,
+            child: TextButton(
+              style: ButtonStyle(
+                padding: WidgetStateProperty.all(EdgeInsets.all(0)),
+                side: widget.interval == null
                     ? null
-                    : () {
-                        setState(() {
-                          widget.setSpeaker(terminalId, !isMicEnabled);
-                        });
-                      },
+                    : WidgetStateProperty.all(BorderSide(width: 1)),
+                backgroundColor: WidgetStateProperty.all(micColor),
+                overlayColor:
+                    WidgetStateProperty.all(Colors.blueAccent.withAlpha(125)),
               ),
+              child: Icon(
+                Icons.mic,
+                size: iconSize,
+                color: Colors.white,
+              ),
+              onPressed:
+                  // !widget.isOperatorView
+                  //     ? null
+                  //     :
+                  () {
+                setState(() {
+                  widget.setSpeaker(terminalId, !isMicEnabled);
+                });
+              },
             ),
           ),
-        );
-      }
+        ),
+      );
+      //}
     }
 
     TextOverflow textOverflowOption = (overflowOption == 'Обрезать текст')
@@ -1102,17 +999,19 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
     Widget cellContent = Column(
       children: [
         InkWell(
-          onTap: !widget.isOperatorView
-              ? null
-              : () {
-                  setState(() {
-                    widget.setSpeaker(terminalId, !isMicEnabled);
-                  });
-                },
+          onTap:
+              //  !widget.isOperatorView
+              //     ? null
+              //     :
+              () {
+            setState(() {
+              widget.setSpeaker(terminalId, !isMicEnabled);
+            });
+          },
           child: Container(
             margin:
                 EdgeInsets.fromLTRB(cellPadding, cellPadding, cellPadding, 0.0),
-            padding: EdgeInsets.fromLTRB(0, cellPadding, 0, cellPadding),
+            padding: EdgeInsets.fromLTRB(0, 0, 0, cellPadding),
             width: cellWidth,
             height: textSize + 6,
             decoration: BoxDecoration(
@@ -1486,8 +1385,10 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
 
     var isMicsUnBlocked = widget.serverState.micsEnabled == true;
     var isMicsBlocked = widget.serverState.micsEnabled == false;
-    var isInProgress =
-        widget.serverState.isVissonicLoading == true || _isBlockConnectButton;
+    var isInProgress = widget.serverState.isVissonicLoading == true ||
+        (widget.serverState.isVissonicModuleInit == false &&
+            widget.serverState.isVissonicModuleOnline == true) ||
+        _isBlockConnectButton;
 
     if (widget.serverState.isVissonicModuleOnline != true ||
         widget.serverState.isVissonicModuleInit != true ||
@@ -1618,7 +1519,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
                             setState(() {
                               _isBlockMicButton = true;
                             });
-                            Timer(Duration(seconds: 1), () {
+                            Timer(Duration(milliseconds: 1), () {
                               setState(() {
                                 _isBlockMicButton = false;
                               });
@@ -1681,7 +1582,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
                             setState(() {
                               _isBlockMicButton = true;
                             });
-                            Timer(Duration(seconds: 1), () {
+                            Timer(Duration(milliseconds: 1), () {
                               setState(() {
                                 _isBlockMicButton = false;
                               });
@@ -1742,7 +1643,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
                             setState(() {
                               _isBlockMicButton = true;
                             });
-                            Timer(Duration(seconds: 1), () {
+                            Timer(Duration(milliseconds: 1), () {
                               setState(() {
                                 _isBlockMicButton = false;
                               });

@@ -9,7 +9,7 @@ class Proxy extends ManagedObject<_Proxy> implements _Proxy {
 
 class _Proxy {
   @primaryKey
-  late int id;
+  late int? id;
   late ManagedSet<ProxyUser> subjects;
   late bool isActive;
   late DateTime createdDate;

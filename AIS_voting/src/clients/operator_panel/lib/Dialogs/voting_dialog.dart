@@ -5,6 +5,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:ais_model/ais_model.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:flutter/widgets.dart';
+import 'package:operator_panel/Dialogs/initialvotes_dialog.dart';
 
 import 'package:provider/provider.dart';
 import 'package:ais_utils/ais_utils.dart';
@@ -21,6 +23,7 @@ class VotingDialog {
 
   ScrollController _votingOptionsScrollController = ScrollController();
   ScrollController _votingDecisionsScrollController = ScrollController();
+  ScrollController _proxyTableScrollController = ScrollController();
 
   BuildContext _context;
   Settings _settings;
@@ -38,6 +41,10 @@ class VotingDialog {
   late ais.Interval _interval;
   late ais.Interval _tempAskWordQueueInterval;
 
+  List<Proxy> _proxies;
+  Map<String, String> _initialChoices = Map<String, String>();
+  bool _isInitialChoisesSet = false;
+
   VotingDialog(
     this._context,
     this._settings,
@@ -46,6 +53,7 @@ class VotingDialog {
     this._votingModes,
     this._selectedVotingMode,
     this._selectedDecisionMode,
+    this._proxies,
   ) {
     _connection = Provider.of<WebSocketConnection>(_context, listen: false);
     var serverState = Provider.of<WebSocketConnection>(_context, listen: false)
@@ -291,10 +299,24 @@ class VotingDialog {
                           16,
                           showHiddenSections: true,
                         ),
-                        getMeetingRegimSelector((value) {
-                          _settings.votingSettings.votingRegim = value;
-                        }, _settings.votingSettings.votingRegim,
-                            setStateForDialog),
+                        Row(
+                          children: [
+                            getMeetingRegimSelector((value) {
+                              _settings.votingSettings.votingRegim = value;
+                            }, _settings.votingSettings.votingRegim,
+                                setStateForDialog),
+                            Expanded(
+                              child: Container(),
+                            ),
+                            getInitialChoisesButton(
+                              context,
+                              setStateForDialog,
+                            )
+                          ],
+                        ),
+                        Container(
+                          height: 5,
+                        ),
                         Row(
                           children: [
                             Expanded(
@@ -562,6 +584,8 @@ class VotingDialog {
                                         'endSignal':
                                             json.encode(_interval.endSignal),
                                         'autoEnd': _interval.isAutoEnd,
+                                        'initial_choices':
+                                            json.encode(_initialChoices),
                                       }),
                                     }));
 
@@ -622,6 +646,54 @@ class VotingDialog {
         ],
       ),
     );
+  }
+
+  Widget getInitialChoisesButton(BuildContext context, Function setState) {
+    return TextButton(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Tooltip(
+            message: _isInitialChoisesSet
+                ? 'Голосование оператором: есть'
+                : 'Голосование оператором: нет',
+            child: Row(
+              children: [
+                Text(
+                  'Голосование оператором',
+                  style: TextStyle(fontSize: 18),
+                ),
+                Container(
+                  width: 10,
+                ),
+                Icon(
+                  Icons.touch_app,
+                  color: _isInitialChoisesSet ? Colors.green : Colors.white,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      onPressed: () {
+        InitialVotesDialog(
+          context,
+          _settings,
+          _selectedMeeting,
+          _lockedQuestion,
+          _proxies,
+          Map<String, String>.from(_initialChoices),
+          setInitialChoices,
+        ).openDialog().then((e) {
+          setState(() {});
+        });
+      },
+    );
+  }
+
+  void setInitialChoices(Map<String, String> initalChoices) {
+    _initialChoices = initalChoices;
+    _isInitialChoisesSet = true;
   }
 
   Widget getVotingModesHeader() {

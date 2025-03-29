@@ -36,7 +36,7 @@ class AgendasController extends ResourceController {
 
     var insertedAgenda = await query.insert();
 
-    await Future.forEach(agenda.questions, (Question q) async {
+    await Future.forEach(agenda.questions!, (Question q) async {
       var question = Query<Question>(context)
         ..values.name = q.name
         ..values.folder = q.folder
@@ -47,7 +47,7 @@ class AgendasController extends ResourceController {
 
       var insertedQuestion = await question.insert();
 
-      await Future.forEach(q.files, (File f) async {
+      await Future.forEach(q.files!, (File f) async {
         var file = Query<File>(context)
           ..values.path = f.path
           ..values.fileName = f.fileName
@@ -74,7 +74,7 @@ class AgendasController extends ResourceController {
       ..where((u) => u.id).equalTo(id);
 
     // update question's order
-    await Future.forEach(agenda.questions, (Question q) async {
+    await Future.forEach(agenda.questions!, (Question q) async {
       var question = Query<Question>(context)
         ..values.orderNum = q.orderNum
         ..where((u) => u.id).equalTo(q.id);
@@ -99,7 +99,7 @@ class AgendasController extends ResourceController {
     var agendaDeleted = await query.delete();
 
     // remove documents folder
-    await Directory('documents/' + agenda.folder).delete(recursive: true);
+    await Directory('documents/' + agenda.folder!).delete(recursive: true);
 
     return Response.ok(agendaDeleted);
   }

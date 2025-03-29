@@ -76,6 +76,7 @@ class MeetingsController extends ResourceController {
   @Operation.put('id')
   Future<Response> updateMeeting(
       @Bind.path('id') int id, @Bind.body() Meeting meeting) async {
+    print(meeting.agenda);
     var query = Query<Meeting>(context)
       ..values.name = meeting.name
       ..values.description = meeting.description

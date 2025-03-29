@@ -75,7 +75,7 @@ class _MeetingPageState extends State<MeetingPage> {
     widget.meeting.lastUpdated = TimeUtil.getDateTimeNow(widget.timeOffset);
     widget.meeting.status = 'Ожидание';
 
-    if (widget.meeting.id == null) {
+    if (widget.meeting.id == 0) {
       http
           .post(
               Uri.http(ServerConnection.getHttpServerUrl(GlobalConfiguration()),
@@ -241,7 +241,7 @@ class _MeetingPageState extends State<MeetingPage> {
       // mode: Mode.DIALOG,
       // showSearchBox: true,
       // showClearButton: true,
-      items: _agendas,
+      items: (filter, infiniteScrollProps) => _agendas,
       // label: 'Повестка',
       // popupTitle: Container(
       //     alignment: Alignment.center,
@@ -288,10 +288,11 @@ class _MeetingPageState extends State<MeetingPage> {
               ),
             ),
           )
-        : agendaItemBuilder(context, item, true);
+        : agendaItemBuilder(context, item, false, true);
   }
 
-  Widget agendaItemBuilder(BuildContext context, Agenda item, bool isSelected) {
+  Widget agendaItemBuilder(
+      BuildContext context, Agenda item, bool isDisabled, bool isSelected) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0),
       child: ListTile(
@@ -328,7 +329,8 @@ class _MeetingPageState extends State<MeetingPage> {
       // mode: Mode.DIALOG,
       // showSearchBox: true,
       // showClearButton: true,
-      items: _groups.where((element) => element.isActive).toList(),
+      items: (filter, infiniteScrollProps) =>
+          _groups.where((element) => element.isActive).toList(),
       // label: 'Группа',
       // popupTitle: Container(
       //     alignment: Alignment.center,
@@ -370,10 +372,11 @@ class _MeetingPageState extends State<MeetingPage> {
               ),
             ),
           )
-        : groupItemBuilder(context, item, true);
+        : groupItemBuilder(context, item, false, true);
   }
 
-  Widget groupItemBuilder(BuildContext context, Group item, bool isSelected) {
+  Widget groupItemBuilder(
+      BuildContext context, Group item, bool isDisabled, bool isSelected) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0),
       child: ListTile(

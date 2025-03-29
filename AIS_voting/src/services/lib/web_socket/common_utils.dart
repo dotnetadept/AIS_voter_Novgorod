@@ -18,7 +18,7 @@ class CommonUtils {
     }
 
     var workplaces =
-        Workplaces.fromJson(json.decode(selectedMeeting.group!.workplaces));
+        Workplaces.fromJson(json.decode(selectedMeeting.group!.workplaces!));
 
     for (var i = 0; i < workplaces.managementPlacesCount; i++) {
       defaultUsersTerminals.putIfAbsent(
@@ -50,7 +50,7 @@ class CommonUtils {
     }
 
     // add mics from group setting
-    var parts = selectedMeeting.group!.unblockedMics.split(',');
+    var parts = selectedMeeting.group!.unblockedMics!.split(',');
     for (var i = 0; i < parts.length; i++) {
       if (parts[i].isNotEmpty) {
         result.add(int.parse(parts[i]));
@@ -58,7 +58,7 @@ class CommonUtils {
     }
 
     // add managers mics
-    var managerIds = selectedMeeting.group!.groupUsers
+    var managerIds = selectedMeeting.group!.groupUsers!
         .where((element) => element.isManager)
         .map((e) => e.user.id)
         .toList();

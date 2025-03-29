@@ -308,8 +308,8 @@ class _ProxyPageState extends State<ProxyPage>
                 }
 
                 setState(() {
-                  widget.proxy.subjects.add(
-                      ProxyUser(proxyId: widget.proxy.id, user: selectedUser!));
+                  widget.proxy.subjects.add(ProxyUser(
+                      id: 0, proxyId: widget.proxy.id, user: selectedUser!));
                 });
 
                 Navigator.of(context).pop();
@@ -352,7 +352,7 @@ class _ProxyPageState extends State<ProxyPage>
       // mode: Mode.DIALOG,
       // showSearchBox: true,
       // showClearButton: true,
-      items: filteredUsers,
+      items: (filter, infiniteScrollProps) => filteredUsers,
       // label: isProxy ? 'Доверенное лицо' : 'Доверитель',
       // popupTitle: Container(
       //     alignment: Alignment.center,
@@ -394,7 +394,7 @@ class _ProxyPageState extends State<ProxyPage>
               ),
             ),
           )
-        : userItemBuilder(context, item, true);
+        : userItemBuilder(context, item, false, true);
   }
 
   Widget proxyDropDownItemBuilder(
@@ -410,10 +410,11 @@ class _ProxyPageState extends State<ProxyPage>
               ),
             ),
           )
-        : userItemBuilder(context, item, true);
+        : userItemBuilder(context, item, false, true);
   }
 
-  Widget userItemBuilder(BuildContext context, User item, bool isSelected) {
+  Widget userItemBuilder(
+      BuildContext context, User item, bool isDisabled, bool isSelected) {
     var alreadyUsed = false;
 
     for (int index = 0; index < widget.proxies.length; index++) {

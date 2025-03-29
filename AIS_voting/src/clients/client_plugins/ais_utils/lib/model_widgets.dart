@@ -12,7 +12,7 @@ class ModelWidgets {
     if (signal.color != Colors.transparent.value && signal.duration != 0) {
       widgets.add(Container(
         width: 50,
-        height: 30,
+        height: 28,
         decoration: BoxDecoration(
           color: Color(signal.color),
           border: Border.all(

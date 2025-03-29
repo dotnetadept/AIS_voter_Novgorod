@@ -5,8 +5,8 @@ class MeetingSession extends ManagedObject<_MeetingSession>
 
 class _MeetingSession {
   @primaryKey
-  late int id;
-  late int meetingId;
+  late int? id;
+  late int? meetingId;
   @Column(nullable: true)
   String? guestPlaces;
   @Column(nullable: true)

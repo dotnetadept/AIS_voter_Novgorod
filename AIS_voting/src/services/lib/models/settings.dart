@@ -4,7 +4,7 @@ class Settings extends ManagedObject<_Settings> implements _Settings {}
 
 class _Settings {
   @primaryKey
-  late int id;
+  late int? id;
   late String name;
   late DateTime createdDate;
   late bool isSelected;

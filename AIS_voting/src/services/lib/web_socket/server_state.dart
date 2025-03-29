@@ -111,8 +111,8 @@ class ServerState {
           'mode': questionSession?.meetingSessionId,
           'voting_status': questionSession == null
               ? false
-              : questionSession!.usersCountVotedYes >=
-                  questionSession!.usersCountForSuccess,
+              : questionSession!.usersCountVotedYes! >=
+                  questionSession!.usersCountForSuccess!,
           'isLoadingDocuments': isLoadingDocuments,
         }),
         'questionSession': questionSession?.toClient()?.toJson(),

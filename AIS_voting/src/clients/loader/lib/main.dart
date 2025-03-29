@@ -473,7 +473,7 @@ class LoaderFormState extends State<LoaderForm> {
               height: 10,
             ),
             Container(
-              width: 120,
+              width: 130,
               child: TextButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -499,7 +499,7 @@ class LoaderFormState extends State<LoaderForm> {
               height: 20,
             ),
             Container(
-              width: 120,
+              width: 130,
               child: TextButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -844,10 +844,10 @@ class LoaderFormState extends State<LoaderForm> {
         });
 
         var descriptionsBytes = await descriptionFile.readAsBytes();
-        var descriptionsFileContent =
-            String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
+        var descriptionsFileContent = utf8.decode(descriptionsBytes);
+        //String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
         Map<String, dynamic> descriptions =
-            json.decode(descriptionsFileContent.substring(1));
+            json.decode(descriptionsFileContent); //.substring(1)
 
         if (descriptions.length != documentFolderContents.length - 1) {
           isQuestionCorrect = false;
@@ -1318,9 +1318,10 @@ class LoaderFormState extends State<LoaderForm> {
       Map<String, dynamic> filesDescriptions = {};
       if (descriptionFile != null) {
         var descriptionsBytes = File(descriptionFile.path).readAsBytesSync();
-        var descriptionsFileContent =
-            String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
-        filesDescriptions = json.decode(descriptionsFileContent.substring(1));
+        var descriptionsFileContent = utf8.decode(descriptionsBytes);
+        //String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
+        filesDescriptions =
+            json.decode(descriptionsFileContent); //.substring(1)
       }
 
       for (var fileOrDir in documentFolderContents) {

@@ -7,9 +7,9 @@ class RegistrationSession extends ManagedObject<_RegistrationSession>
   client_models.RegistrationSession toClient() {
     var clientSession = client_models.RegistrationSession();
 
-    clientSession.id = id;
-    clientSession.meetingId = meetingId;
-    clientSession.interval = interval;
+    clientSession.id = id!;
+    clientSession.meetingId = meetingId!;
+    clientSession.interval = interval!;
     clientSession.startDate = startDate;
     clientSession.endDate = endDate;
 
@@ -19,12 +19,12 @@ class RegistrationSession extends ManagedObject<_RegistrationSession>
 
 class _RegistrationSession {
   @primaryKey
-  late int id;
-  late int meetingId;
-  late int interval;
-  late DateTime startDate;
+  late int? id;
+  late int? meetingId;
+  late int? interval;
+  late DateTime? startDate;
   @Column(nullable: true)
   DateTime? endDate;
 
-  late ManagedSet<Registration> registrations;
+  late ManagedSet<Registration>? registrations;
 }
