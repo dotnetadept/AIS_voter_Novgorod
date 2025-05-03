@@ -4,7 +4,7 @@ class VotingMode extends ManagedObject<_VotingMode> implements _VotingMode {}
 
 class _VotingMode {
   @primaryKey
-  late int id;
+  late int? id;
   late String name;
   late String defaultDecision;
   late int orderNum;

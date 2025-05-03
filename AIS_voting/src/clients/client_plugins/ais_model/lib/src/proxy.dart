@@ -8,6 +8,7 @@ class Proxy {
   late User? proxy;
   late List<ProxyUser> subjects;
   late bool isActive;
+  late bool isInitialVotes;
   late DateTime? createdDate;
   late DateTime? lastUpdated;
 
@@ -16,6 +17,7 @@ class Proxy {
     required this.proxy,
     required this.subjects,
     required this.isActive,
+    required this.isInitialVotes,
     this.createdDate,
     this.lastUpdated,
   });
@@ -25,6 +27,7 @@ class Proxy {
         'proxy': proxy == null ? null : proxy?.toJson(),
         'subjects': subjects,
         'isActive': isActive,
+        'isInitialVotes': isInitialVotes,
         'createdDate':
             lastUpdated == null ? null : createdDate?.toIso8601String(),
         'lastUpdated':
@@ -34,6 +37,7 @@ class Proxy {
   Proxy.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         isActive = json['isActive'],
+        isInitialVotes = json['isInitialVotes'],
         proxy = json['proxy'] == null ? null : User.fromJson(json['proxy']),
         createdDate = json['createdDate'] == null
             ? null

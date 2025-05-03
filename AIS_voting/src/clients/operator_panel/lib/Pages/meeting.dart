@@ -271,6 +271,9 @@ class _MeetingPageState extends State<MeetingPage> {
         itemBuilder: agendaItemBuilder,
       ),
       // emptyBuilder: emptyBuilder,
+      compareFn: (item1, item2) {
+        return item1 == item2;
+      },
     );
   }
 
@@ -359,6 +362,9 @@ class _MeetingPageState extends State<MeetingPage> {
       popupProps: PopupProps.menu(
         itemBuilder: groupItemBuilder,
       ),
+      compareFn: (item1, item2) {
+        return item1 == item2;
+      },
     );
   }
 

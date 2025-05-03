@@ -723,7 +723,7 @@ class LoaderFormState extends State<LoaderForm> {
         var fullPath = fileOrDir.path;
         if (fileOrDir is Directory ||
             (path.extension(fileOrDir.path) != '.pdf' &&
-                path.basename(fileOrDir.path) != 'Описание.txt')) {
+                path.basename(fileOrDir.path) != 'Description.txt')) {
           isFilesCorrect = false;
           isStructureCheckSuccess = false;
 
@@ -784,7 +784,7 @@ class LoaderFormState extends State<LoaderForm> {
     // Проверяем вопросы
     for (int i = 0; i < questions.length; i++) {
       RegExp regExp = new RegExp(
-          r'("[^"]*"),("?[^"]+"?),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*")');
+          r'("[^"]*"),("?[^"]+"?),("[^"]*"),(".*"),(".*"),(".*"),(".*")');
 
       if (!regExp.hasMatch(questions[i])) {
         isStructureCheckSuccess = false;
@@ -824,7 +824,7 @@ class LoaderFormState extends State<LoaderForm> {
             (element) => path.basename(element.path) == questionNumberData);
 
         var descriptionFile = File(
-            '${File(agendaFilePath).parent.path}/$questionNumberData/Описание.txt');
+            '${File(agendaFilePath).parent.path}/$questionNumberData/Description.txt');
 
         if (!await descriptionFile.exists() && questions[i].isNotEmpty) {
           isQuestionCorrect = false;
@@ -844,10 +844,10 @@ class LoaderFormState extends State<LoaderForm> {
         });
 
         var descriptionsBytes = await descriptionFile.readAsBytes();
-        var descriptionsFileContent = utf8.decode(descriptionsBytes);
-        //String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
+        var descriptionsFileContent =
+            String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
         Map<String, dynamic> descriptions =
-            json.decode(descriptionsFileContent); //.substring(1)
+            json.decode(descriptionsFileContent.substring(1));
 
         if (descriptions.length != documentFolderContents.length - 1) {
           isQuestionCorrect = false;
@@ -864,7 +864,7 @@ class LoaderFormState extends State<LoaderForm> {
           var fullPath = fileOrDir.path;
 
           if (fileOrDir is File &&
-              path.basename(fileOrDir.path) == 'Описание.txt') {
+              path.basename(fileOrDir.path) == 'Description.txt') {
             continue;
           }
 
@@ -1168,7 +1168,7 @@ class LoaderFormState extends State<LoaderForm> {
 
       // Загружаем описания файлов вопросов
       var descriptionFile = documentFolderContents.firstWhereOrNull(
-          (element) => path.basename(element.path) == 'Описание.txt');
+          (element) => path.basename(element.path) == 'Description.txt');
       Map<String, dynamic> filesDescriptions = {};
       if (descriptionFile != null) {
         filesDescriptions = jsonDecode(String.fromCharCodes(File(
@@ -1245,7 +1245,7 @@ class LoaderFormState extends State<LoaderForm> {
     // Загружаем вопросы
     for (int i = 0; i < questions.length; i++) {
       RegExp regExp = new RegExp(
-          r'("[^"]*"),("?[^"]+"?),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*")');
+          r'("[^"]*"),("?[^"]+"?),("[^"]*"),(".*"),(".*"),(".*"),(".*")');
 
       var questionNumberData =
           regExp.firstMatch(questions[i])?.group(2)?.replaceAll('"', '');
@@ -1257,6 +1257,7 @@ class LoaderFormState extends State<LoaderForm> {
           regExp.firstMatch(questions[i])?.group(6)?.replaceAll('"', '');
       var questionDescriptionData4 =
           regExp.firstMatch(questions[i])?.group(7)?.replaceAll('"', '');
+      ;
 
       // Загружаем описание вопроса
       var questionDescriptions = <QuestionDescriptionItem>[];
@@ -1314,14 +1315,13 @@ class LoaderFormState extends State<LoaderForm> {
       documentFolderContents.sort((a, b) => a.path.compareTo(b.path));
 
       var descriptionFile = documentFolderContents.firstWhereOrNull(
-          (element) => path.basename(element.path) == 'Описание.txt');
+          (element) => path.basename(element.path) == 'Description.txt');
       Map<String, dynamic> filesDescriptions = {};
       if (descriptionFile != null) {
         var descriptionsBytes = File(descriptionFile.path).readAsBytesSync();
-        var descriptionsFileContent = utf8.decode(descriptionsBytes);
-        //String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
-        filesDescriptions =
-            json.decode(descriptionsFileContent); //.substring(1)
+        var descriptionsFileContent =
+            String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
+        filesDescriptions = json.decode(descriptionsFileContent.substring(1));
       }
 
       for (var fileOrDir in documentFolderContents) {

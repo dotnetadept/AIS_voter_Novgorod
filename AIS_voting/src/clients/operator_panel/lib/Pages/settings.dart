@@ -4381,8 +4381,7 @@ class _SettingsPageState extends State<SettingsPage>
     tecduration.addListener(() {
       if (_setStateForDialog != null) {
         _setStateForDialog!(() {
-          if (tecduration.text == null ||
-              tecduration.text.isEmpty ||
+          if (tecduration.text.isEmpty ||
               int.tryParse(tecduration.text) == null ||
               int.tryParse(tecduration.text) == 0) {
             isAutoEnd = false;

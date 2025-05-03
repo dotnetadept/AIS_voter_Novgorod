@@ -1142,6 +1142,9 @@ class _GroupPageState extends State<GroupPage>
       dropdownBuilder: userDropDownItemBuilder,
       // popupItemBuilder: userItemBuilder,
       // emptyBuilder: emptyBuilder,
+      compareFn: (item1, item2) {
+        return item1 == item2;
+      },
     );
   }
 
@@ -1234,18 +1237,24 @@ class _GroupPageState extends State<GroupPage>
           title: Text('Добавить Гостя'),
           content: Form(
             key: formKey,
-            child: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  TextField(
-                    controller: _guestController,
-                    readOnly: widget.isReadOnly,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Имя Гостя',
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 500,
+                minWidth: 500,
+              ),
+              child: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    TextField(
+                      controller: _guestController,
+                      readOnly: widget.isReadOnly,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Имя Гостя',
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -1378,13 +1387,19 @@ class _GroupPageState extends State<GroupPage>
           title: Text('Добавить депутата'),
           content: Form(
             key: formKey,
-            child: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  getDeputySelector((value) {
-                    selectedUser = value;
-                  }),
-                ],
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 500,
+                minWidth: 500,
+              ),
+              child: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    getDeputySelector((value) {
+                      selectedUser = value;
+                    }),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1410,7 +1425,7 @@ class _GroupPageState extends State<GroupPage>
                       .any((x) => x.user.id == selectedUser!.id);
                   if (!isContains) {
                     var newGroupUser = GroupUser();
-
+                    newGroupUser.id = widget.group.groupUsers.length;
                     newGroupUser.groupId = widget.group.id;
                     newGroupUser.user = selectedUser!;
                     newGroupUser.isManager = false;
@@ -1460,6 +1475,9 @@ class _GroupPageState extends State<GroupPage>
       dropdownBuilder: userDropDownItemBuilder,
       //popupItemBuilder: userItemBuilder,
       //emptyBuilder: emptyBuilder,
+      compareFn: (item1, item2) {
+        return item1 == item2;
+      },
     );
   }
 
@@ -2044,19 +2062,7 @@ class _GroupPageState extends State<GroupPage>
             // showClearButton: !widget.isReadOnly,
             items: (filter, infiniteScrollProps) => usersForAdd,
             enabled: !widget.isReadOnly,
-            // dropDownButton: !widget.isReadOnly ? null : Container(),
-            // popupTitle: Container(
-            //     alignment: Alignment.center,
-            //     color: Colors.blueAccent,
-            //     padding: EdgeInsets.all(10),
-            //     child: Text(
-            //       'Пользователи',
-            //       style: TextStyle(
-            //           fontWeight: FontWeight.bold,
-            //           color: Colors.white,
-            //           fontSize: 20),
-            //     )),
-            // hint: 'Выберите пользователя',
+
             validator: (value) {
               if (value == null) {
                 return 'Выберите пользователя';
@@ -2086,11 +2092,35 @@ class _GroupPageState extends State<GroupPage>
                     setState(() {});
                   },
             popupProps: PopupProps.menu(
-              fit: FlexFit.loose,
-              //comment this if you want that the items do not takes all available height
-              constraints: BoxConstraints.tightFor(width: 600, height: 110),
-              itemBuilder: userPopupItemBuilder,
-            ),
+                itemBuilder: userPopupItemBuilder,
+                fit: FlexFit.loose,
+                constraints: BoxConstraints(minWidth: 500, maxHeight: 800),
+                containerBuilder: (acontext, popupWidget) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                          alignment: Alignment.center,
+                          color: Colors.blueAccent,
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            'Пользователи',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 20),
+                          )),
+                      Flexible(
+                        child: popupWidget,
+                      ),
+                    ],
+                  );
+                }),
+
+            compareFn: (item1, item2) {
+              return item1 == item2;
+            },
           ),
         ],
       ),
@@ -2157,10 +2187,34 @@ class _GroupPageState extends State<GroupPage>
               setState(() {});
             },
             popupProps: PopupProps.menu(
-              fit: FlexFit.loose,
-              constraints: BoxConstraints(),
-              itemBuilder: userPopupItemBuilder,
-            ),
+                itemBuilder: userPopupItemBuilder,
+                fit: FlexFit.loose,
+                constraints: BoxConstraints(minWidth: 500, maxHeight: 800),
+                containerBuilder: (acontext, popupWidget) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                          alignment: Alignment.center,
+                          color: Colors.blueAccent,
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            'Пользователи',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 20),
+                          )),
+                      Flexible(
+                        child: popupWidget,
+                      ),
+                    ],
+                  );
+                }),
+            compareFn: (item1, item2) {
+              return item1 == item2;
+            },
           ),
         ],
       ),

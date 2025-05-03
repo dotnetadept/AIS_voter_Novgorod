@@ -136,7 +136,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
                   ? Container(
                       width:
                           widget.settings.storeboardSettings.width.toDouble(),
-                      height: 118,
+                      height: 119,
                       color: Colors.black12)
                   : Container(height: 0),
             ],
@@ -144,7 +144,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
           Stack(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                padding: EdgeInsets.fromLTRB(10, 8, 10, 8),
                 child: getMeetingSelector(),
               ),
               _connection.getServerState.systemState ==
@@ -152,7 +152,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
                   ? Container(
                       width:
                           widget.settings.storeboardSettings.width.toDouble(),
-                      height: 72,
+                      height: 68,
                       color: Colors.black12)
                   : Container(height: 0),
             ],
@@ -200,6 +200,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
       // label: 'Заседание',
       // searchBoxDecoration: InputDecoration(fillColor: Colors.red),
       enabled: isEnabled,
+
       // dropDownButton: isEnabled ? null : Container(),
       // clearButton: isEnabled ? null : Container(),
       // popupTitle: Container(
@@ -212,6 +213,9 @@ class _RightPanelTopState extends State<RightPanelTop> {
       //           fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
       //     )),
       // hint: 'Выберите заседание',
+      suffixProps: DropdownSuffixProps(
+          clearButtonProps: ClearButtonProps(isVisible: isEnabled),
+          dropdownButtonProps: DropdownButtonProps(isVisible: isEnabled)),
       selectedItem: widget.meetings
           .firstWhereOrNull((element) => element.id == _selectedMeeting?.id),
       onChanged: (value) {
@@ -237,6 +241,9 @@ class _RightPanelTopState extends State<RightPanelTop> {
       popupProps: PopupProps.menu(
         itemBuilder: meetingPopupItemBuilder,
       ),
+      compareFn: (item1, item2) {
+        return item1 == item2;
+      },
       //emptyBuilder: emptyBuilder,
     );
   }
@@ -247,17 +254,68 @@ class _RightPanelTopState extends State<RightPanelTop> {
       margin: EdgeInsets.symmetric(horizontal: 8),
       child: ListTile(
         selected: isSelected,
-        title: Text(item.toString()),
-        subtitle: Row(
+        title: Text(
+          item.toString(),
+          style: TextStyle(fontSize: 18),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('группа: ', style: TextStyle(fontWeight: FontWeight.w500)),
-            Text(item.group.toString()),
-            Text('\t'),
-            Text('повестка: ', style: TextStyle(fontWeight: FontWeight.w500)),
-            Text(item.agenda.toString()),
-            Text('\t'),
-            Text('статус: ', style: TextStyle(fontWeight: FontWeight.w500)),
-            Text(item.status),
+            Container(
+              height: 5,
+            ),
+            Row(
+              children: [
+                Text('группа: ', style: TextStyle(fontWeight: FontWeight.w700)),
+                Expanded(
+                  child: Wrap(
+                    children: [
+                      Text(
+                        item.group.toString(),
+                        softWrap: false,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text('повестка: ',
+                    style: TextStyle(fontWeight: FontWeight.w700)),
+                Expanded(
+                  child: Wrap(
+                    children: [
+                      Text(
+                        item.agenda.toString(),
+                        softWrap: false,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text('статус: ', style: TextStyle(fontWeight: FontWeight.w600)),
+                Expanded(
+                  child: Wrap(
+                    children: [
+                      Text(
+                        item.status,
+                        softWrap: false,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -545,7 +603,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
                     child: TextButton(
                       style: ButtonStyle(
                         fixedSize: WidgetStateProperty.all(Size(
-                            (widget.settings.storeboardSettings.width - 30)
+                            (widget.settings.storeboardSettings.width - 20)
                                 .toDouble(),
                             100)),
                       ),
@@ -576,7 +634,7 @@ class _RightPanelTopState extends State<RightPanelTop> {
                     child: TextButton(
                       style: ButtonStyle(
                         fixedSize: WidgetStateProperty.all(Size(
-                            (widget.settings.storeboardSettings.width - 30)
+                            (widget.settings.storeboardSettings.width - 20)
                                 .toDouble(),
                             100)),
                       ),

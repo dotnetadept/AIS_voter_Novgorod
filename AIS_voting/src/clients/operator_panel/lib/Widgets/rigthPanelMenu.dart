@@ -485,17 +485,17 @@ class _RightPanelMenuState extends State<RightPanelMenu> {
                             fixedSize: WidgetStateProperty.all(Size(
                                 (widget.settings.storeboardSettings.width - 30)
                                     .toDouble(),
-                                52)),
+                                54)),
                           ),
                           onPressed: _startRegistration,
                           child: Row(
                             children: [
-                              Expanded(child: Container()),
+                              //Expanded(child: Container()),
                               Text(
                                 'Регистрация',
                                 style: TextStyle(fontSize: 24),
                               ),
-                              Expanded(flex: 10, child: Container()),
+                              Expanded(child: Container()),
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Icon(

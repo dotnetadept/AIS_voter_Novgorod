@@ -22,6 +22,7 @@ dependencies:
   #transparent_pointer: any
   select2dot1: any
   collection: ^1.18.0
+  dropdown_search: 6.0.2
 
   # example:
   # fonts:

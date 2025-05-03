@@ -9,7 +9,8 @@ void main(List<String> arguments) async {
   print('Запуск Vissonic клиента системы АИС Голосование');
 
   await File(
-          '/home/user/Desktop/AIS/AIS_voter_Yaroslavl/AIS_voting/src/clients/vissonic_client/bin/app_settings.json')
+          '/home/administrator/ais_voter/ais_server/vissonic_client/app_settings.json')
+      //'/home/user/Desktop/AIS/AIS_voter_Novgorod/AIS_voting/src/clients/vissonic_client/bin/app_settings.json')
       .readAsString()
       .then((value) {
     AppSettings.settings = jsonDecode(value);

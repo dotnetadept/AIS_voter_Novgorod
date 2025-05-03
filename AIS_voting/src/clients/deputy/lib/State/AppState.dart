@@ -19,6 +19,7 @@ class AppState with ChangeNotifier {
   static late ServerState _serverState;
 
   static late List<User> _users;
+  static late List<Proxy> _proxies;
   static late List<VotingMode> _votingModes;
   static User? _currentUser;
   static Meeting? _currentMeeting;
@@ -139,6 +140,13 @@ class AppState with ChangeNotifier {
           .setCurrentMeeting(Meeting.fromJson(json.decode(meetingsData.body)));
     }
 
+    var proxiesData = await http.get(Uri.http(
+        ServerConnection.getHttpServerUrl(GlobalConfiguration()), "/proxies"));
+    var proxies = (json.decode(proxiesData.body) as List)
+        .map((data) => Proxy.fromJson(data))
+        .toList();
+    AppState().setProxies(proxies);
+
     setIsLoadingComplete(true);
     WebSocketConnection.getInstance().processNavigation();
   }
@@ -216,6 +224,14 @@ class AppState with ChangeNotifier {
 
   void setUsers(List<User> users) {
     _users = users;
+  }
+
+  List<Proxy> getProxies() {
+    return _proxies;
+  }
+
+  void setProxies(List<Proxy> proxies) {
+    _proxies = proxies;
   }
 
   List<VotingMode> getVotingModes() {

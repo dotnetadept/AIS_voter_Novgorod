@@ -125,6 +125,12 @@ class WebSocketConnection with ChangeNotifier {
     }));
   }
 
+  void setClearDecisions() {
+    _channel.sink.add(json.encode({
+      'clear_decisions': 'true',
+    }));
+  }
+
   void setRefreshStream() {
     _channel.sink.add(json.encode({
       'refresh_stream': 'true',

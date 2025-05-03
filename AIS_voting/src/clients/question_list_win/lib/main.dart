@@ -1,18 +1,34 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:ais_utils/ais_utils.dart';
 import 'package:ais_utils/dialogs.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
+import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:ais_model/ais_model.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
+import 'package:window_manager/window_manager.dart';
+import 'package:windows_single_instance/windows_single_instance.dart';
 import 'utils/agenda_list_util.dart';
 
-void main() {
+void main(List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await WindowManager.instance.ensureInitialized();
+  windowManager.waitUntilReadyToShow().then((_) async {
+    await windowManager.setTitle('АИС Повестка');
+
+    Future.delayed(Duration(milliseconds: 100), () async {
+      await windowManager.maximize();
+    });
+  });
+
+  await WindowsSingleInstance.ensureSingleInstance(args, "agenda",
+      onSecondWindow: (args) {});
   runApp(const MyApp());
 }
 
@@ -55,8 +71,9 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final _tecFile = TextEditingController();
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  final _tecDirectory = TextEditingController();
 
   List<Widget> _checkDialogItems = <Widget>[];
 
@@ -77,12 +94,15 @@ class _MyHomePageState extends State<MyHomePage> {
   List<TextEditingController> _tecDescriptionTexts = <TextEditingController>[];
   List<bool> _tecDescriptionShowTexts = <bool>[];
 
-  late Function(VoidCallback fn) _setStateForDialog = setState;
-  bool _isCheckEnded = false;
+  bool _agendaCheckResult = true;
+
+  late TabController _tabController;
 
   @override
   void initState() {
     AgendaListUtil.init(context, setState);
+
+    _tabController = TabController(vsync: this, length: 2);
 
     super.initState();
   }
@@ -97,42 +117,59 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text('Создание списка вопросов'),
             ),
             Tooltip(
-              message: 'Сохранить список вопросов',
+              message: 'Архивировать повестку',
               child: TextButton(
-                onPressed: () {
-                  if (!onSaveQuestion()) {
-                    return;
-                  }
-
-                  try {
-                    AgendaListUtil.saveQuestionList().then((value) async {
-                      _isCheckEnded = false;
-                      await clearDialogItems();
-                      await processCheck().then((value) {
-                        _isCheckEnded = true;
-                        _setStateForDialog(() {});
-                      }).catchError((e) {
-                        _isCheckEnded = true;
-                        _setStateForDialog(() {});
-                      });
-                    });
-                  } catch (e) {
-                    Utility().showMessageOkDialog(context,
-                        title: 'Сохранение повестки',
-                        message: TextSpan(
-                          text:
-                              'В ходе сохранение повестки возникла ошибка: {$e}',
-                        ),
-                        okButtonText: 'Ок');
-                  }
+                onPressed: () async {
+                  await selectArchiveFolder();
                 },
-                child: const Icon(Icons.save),
+                child: const Icon(Icons.archive),
+              ),
+            ),
+          ],
+        ),
+        bottom: TabBar(
+          controller: _tabController,
+          onTap: (index) async {
+            if (index == 1) {
+              await saveAndCheck();
+            }
+
+            _tabController.index = index;
+            setState(() {});
+          },
+          tabs: [
+            const Tab(
+              icon: Icon(Icons.list),
+              text: 'Повестка',
+            ),
+            Tab(
+              icon: Icon(
+                Icons.save,
+                color: _agendaCheckResult == true ? Colors.white : Colors.red,
+              ),
+              child: Text(
+                'Сохранить',
+                style: TextStyle(
+                    color:
+                        _agendaCheckResult == true ? Colors.white : Colors.red),
               ),
             ),
           ],
         ),
       ),
-      body: Column(
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          getAgendaTab(),
+          getCheckTab(),
+        ],
+      ),
+    );
+  }
+
+  Widget getAgendaTab() {
+    return Tab(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
@@ -145,15 +182,15 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Expanded(
                 child: TextFormField(
-                  controller: _tecFile,
+                  controller: _tecDirectory,
                   readOnly: true,
                   decoration: const InputDecoration(
-                    hintText: 'Файл повестки заседания',
+                    hintText: 'Директория повестки заседания',
                     hintStyle: TextStyle(fontStyle: FontStyle.italic),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Выберите файл повестки';
+                      return 'Выберите директорию повестки';
                     }
                     return null;
                   },
@@ -164,9 +201,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               TextButton(
                 onPressed: () async {
-                  await selectFile();
+                  await selectFolder();
                 },
-                child: const Text('Выберите файл повестки'),
+                child: const Text('Директория повестки'),
               ),
               Container(
                 width: 10,
@@ -195,16 +232,223 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<void> selectFile() async {
+  Widget getCheckTab() {
+    Timer(const Duration(milliseconds: 500), () {
+      if (_scrollController.positions.isNotEmpty) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent + 100,
+          duration: const Duration(milliseconds: 10),
+          curve: Curves.fastOutSlowIn,
+        );
+      }
+    });
+
+    return Tab(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: _checkDialogItems.isEmpty
+                  ? const Center(
+                      child: Text('Нет данных'),
+                    )
+                  : Scrollbar(
+                      thumbVisibility: true,
+                      controller: _scrollController,
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        shrinkWrap: true,
+                        itemCount: _checkDialogItems.length,
+                        itemBuilder: (buildContext, index) {
+                          if (_checkDialogItems.length <= index) {
+                            return Container();
+                          }
+                          return _checkDialogItems[index];
+                        },
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> showSpinner(String message) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SizedBox(
+            height: 50,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(),
+                ),
+                const CircularProgressIndicator(),
+                Container(
+                  width: 20,
+                ),
+                Text(
+                  message,
+                  style: TextStyle(fontSize: 18),
+                ),
+                Expanded(
+                  child: Container(),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> selectArchiveFolder() async {
+    final file = DirectoryPicker()..title = 'Архивировать повестку в папку';
+
+    final result = file.getDirectory();
+    if (result == null) {
+      return;
+    }
+
+    showSpinner('Сохранение');
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    var copyFrom = Directory(_tecDirectory.text);
+    var copyTo = Directory(result.path);
+    var newAgendaDirectory = Directory(
+        '${copyTo.path}\\${DateFormat('dd.MM.yyyy-HH.mm.ss').format(DateTime.now())}');
+
     try {
-      await FilePickerCross.importFromStorage(
-              type: FileTypeCross.custom,
-              fileExtension: AgendaListUtil.fileExtension)
-          .then((filePicker) {
-        _tecFile.text = filePicker.path;
-        AgendaListUtil.loadCsvQuestions(filePicker.path);
-      }).catchError((onError) {});
-    } catch (error) {}
+      if (!await copyFrom.exists()) {
+        await Utility().showMessageOkDialog(context,
+            title: 'Архивация повестки',
+            message: TextSpan(
+              text:
+                  'В ходе архивации повестки возникла ошибка: директория повестки ${copyFrom.path} не существует. Копирование отменено.',
+            ),
+            okButtonText: 'Ок');
+
+        Navigator.of(context).pop();
+        return;
+      }
+      if (!await copyTo.exists()) {
+        await Utility().showMessageOkDialog(context,
+            title: 'Архивация повестки',
+            message: TextSpan(
+              text:
+                  'В ходе архивации повестки возникла ошибка: директория назначения ${copyTo.path} не существует. Копирование отменено.',
+            ),
+            okButtonText: 'Ок');
+
+        Navigator.of(context).pop();
+        return;
+      } else {
+        if (path.isWithin(copyFrom.path, newAgendaDirectory.path)) {
+          await Utility().showMessageOkDialog(context,
+              title: 'Архивация повестки',
+              message: TextSpan(
+                text:
+                    'В ходе архивации повестки возникла ошибка: директория назначения ${newAgendaDirectory.path} является дочерней директорией повестки ${copyFrom.path}. Копирование отменено.',
+              ),
+              okButtonText: 'Ок');
+        } else {
+          newAgendaDirectory.createSync();
+
+          copyDirectorySync(copyFrom, newAgendaDirectory);
+        }
+
+        Navigator.of(context).pop();
+      }
+    } catch (error) {
+      await Utility().showMessageOkDialog(context,
+          title: 'Архивация повестки',
+          message: TextSpan(
+            text:
+                'В ходе архивации повестки из директории:${copyFrom.path} в директорию:${newAgendaDirectory.path} возникла ошибка: $error',
+          ),
+          okButtonText: 'Ок');
+    }
+  }
+
+  void copyDirectorySync(Directory source, Directory destination) {
+    /// create destination folder if not exist
+    if (!destination.existsSync()) {
+      destination.createSync(recursive: true);
+    }
+
+    /// get all files from source (recursive: false is important here)
+    source.listSync(recursive: false).forEach((entity) {
+      final newPath = destination.path +
+          Platform.pathSeparator +
+          path.basename(entity.path);
+      if (entity is File) {
+        entity.copySync(newPath);
+      } else if (entity is Directory) {
+        copyDirectorySync(entity, Directory(newPath));
+      }
+    });
+  }
+
+  Future<void> selectFolder() async {
+    try {
+      final file = DirectoryPicker()..title = 'Выберите директорию повестки';
+
+      final result = file.getDirectory();
+      if (result == null) {
+        return;
+      }
+
+      showSpinner("Загрузка повестки");
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      _editedQuestion = Question();
+      _tecDirectory.text = result.path;
+
+      _agendaCheckResult = await checkAgenda(true, true);
+
+      if (!_agendaCheckResult) {
+        AgendaListUtil.questions.clear();
+        AgendaListUtil.isLoaded = false;
+        _tabController.index = 1;
+      } else {
+        AgendaListUtil.loadQuestions(getAgendaFilePath());
+      }
+
+      Navigator.of(context).pop();
+    } catch (error) {
+      await Utility().showMessageOkDialog(context,
+          title: 'Загрузка повестки',
+          message: TextSpan(
+            text:
+                'В ходе загрузки повестки ${_tecDirectory.text} возникла ошибка: $error',
+          ),
+          okButtonText: 'Ок');
+    }
+
+    setState(() {});
+  }
+
+  String getAgendaFilePath() {
+    String result = '';
+    if (Directory(_tecDirectory.text).existsSync() &&
+        Directory(_tecDirectory.text)
+            .listSync()
+            .any((element) => path.extension(element.path) == '.txt')) {
+      result = Directory(_tecDirectory.text)
+          .listSync()
+          .firstWhere((element) => path.extension(element.path) == '.txt')
+          .path;
+    }
+
+    return result;
   }
 
   Widget getQuestionsTable() {
@@ -246,12 +490,14 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                         onPressed: () async {
-                          if (!onSaveQuestion()) {
+                          if (!await saveAndCheck()) {
                             return;
                           }
 
                           await AgendaListUtil.onNewItemAdd(
                               AgendaListUtil.questions.length);
+
+                          await saveAndCheck();
                         },
                         child: const Icon(
                           Icons.add,
@@ -274,8 +520,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 BoxDecoration(border: Border.all(color: Colors.black26)),
             child: DragAndDropLists(
               scrollController: _questionsScrollController,
-              onItemReorder: (var a, var b, var c, var d) {
+              onItemReorder: (var a, var b, var c, var d) async {
+                if (!await saveAndCheck()) {
+                  return;
+                }
                 AgendaListUtil.onItemReorder(a, b, c, d);
+                if (_editedQuestion.id != null) {
+                  editQuestion(_editedQuestion);
+                }
+
+                await saveAndCheck();
                 setState(() {});
               },
               onListReorder: (var a, var b) {
@@ -283,7 +537,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               onItemAdd: (DragAndDropItem newItem, int listIndex,
                   int itemIndex) async {
-                if (!onSaveQuestion()) {
+                if (!await saveAndCheck()) {
                   return;
                 }
 
@@ -293,6 +547,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (newQuestion != null) {
                   editQuestion(newQuestion);
                 }
+
+                await saveAndCheck();
               },
               itemDragHandle: const DragHandle(
                 onLeft: true,
@@ -366,7 +622,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             14,
                                             isAutoSize: true,
                                             textAlign: TextAlign.left,
-                                            showHiddenSections: true,
+                                            showHiddenSections: false,
                                           ),
                                         ),
                                       ]),
@@ -399,8 +655,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 .transparent)),
                                                   ),
                                                 ),
-                                                onPressed: () {
-                                                  if (!onSaveQuestion()) {
+                                                onPressed: () async {
+                                                  if (!await saveAndCheck()) {
                                                     return;
                                                   }
 
@@ -458,12 +714,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     return;
                                                   }
 
+                                                  if (_editedQuestion.id ==
+                                                      element.id) {
+                                                    _editedQuestion =
+                                                        Question();
+                                                  }
+
                                                   AgendaListUtil.questions
                                                       .remove(element);
 
                                                   // remove question folder
                                                   var questionDirectory = Directory(
-                                                      '${File(_tecFile.text).parent.path}\\${element.folder}');
+                                                      '${Directory(_tecDirectory.text).path}\\${element.folder}');
 
                                                   if (questionDirectory
                                                       .existsSync()) {
@@ -476,6 +738,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     AgendaListUtil
                                                         .normalizeList(false);
                                                   });
+
+                                                  await saveAndCheck();
                                                 },
                                                 child: const Icon(Icons.delete,
                                                     color: Colors.black),
@@ -506,7 +770,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               ),
                                             ),
                                             onPressed: () async {
-                                              if (!onSaveQuestion()) {
+                                              if (!await saveAndCheck()) {
                                                 return;
                                               }
 
@@ -518,6 +782,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                               if (newQuestion != null) {
                                                 editQuestion(newQuestion);
                                               }
+
+                                              await saveAndCheck();
                                             },
                                             child: const Icon(Icons.add),
                                           ),
@@ -558,32 +824,72 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  bool onSaveQuestion() {
+  Future<bool> onSaveQuestion() async {
+    var result = false;
+
     if (_editedQuestion.id == null) {
-      return true;
+      result = true;
+    } else if (_formKey.currentState != null &&
+        !_formKey.currentState!.validate()) {
+      result = false;
+    } else {
+      _editedQuestion.name = _tecQuestionName.text;
+
+      _editedQuestion.descriptions = <QuestionDescriptionItem>[];
+      for (int i = 0; i < _tecDescriptionCaptions.length; i++) {
+        _editedQuestion.descriptions.add(QuestionDescriptionItem(
+          caption: _tecDescriptionCaptions[i].text,
+          text: _tecDescriptionTexts[i]
+              .text
+              .replaceAll('\r\n', ' ')
+              .replaceAll('\r', ' ')
+              .replaceAll('\n', ' '),
+          showOnStoreboard: !(i == 1 || i == 3),
+          showInReports: true,
+        ));
+      }
+
+      //_editedQuestion.orderNum = int.parse(_tecQuestionPosition.text);
+
+      result = true;
     }
-    if (!_formKey.currentState!.validate()) {
+
+    return result;
+  }
+
+  Future<bool> saveAndCheck() async {
+    var result = false;
+
+    if (!AgendaListUtil.isLoaded) {
+      return result;
+    }
+
+    if (!await onSaveQuestion()) {
+      addDialogResultItem(
+          'При сохранении редактируемого вопроса повестки возникли ошибки',
+          false);
+
+      setState(() {});
+      return result;
+    }
+
+    _agendaCheckResult = await checkAgenda(false, false);
+
+    if (!_agendaCheckResult) {
+      addDialogResultItem(
+          'При проверке повестки возникли ошибки, сохранение отменено', false);
+      setState(() {});
       return false;
     }
 
-    _editedQuestion.name = _tecQuestionName.text;
-
-    _editedQuestion.descriptions = <QuestionDescriptionItem>[];
-    for (int i = 0; i < _tecDescriptionCaptions.length; i++) {
-      _editedQuestion.descriptions.add(QuestionDescriptionItem(
-        caption: _tecDescriptionCaptions[i].text,
-        text: _tecDescriptionTexts[i]
-            .text
-            .replaceAll('\r\n', ' ')
-            .replaceAll('\r', ' ')
-            .replaceAll('\n', ' '),
-        showOnStoreboard: true,
-        showInReports: true,
-      ));
+    if (!await AgendaListUtil.saveQuestionList()) {
+      addDialogResultItem('При сохранении повестки возникли ошибки', false);
+      setState(() {});
+      return false;
     }
 
-    _editedQuestion.orderNum = int.parse(_tecQuestionPosition.text);
-
+    addDialogResultItem('Файл повестки успешно сохранен', true);
+    setState(() {});
     return true;
   }
 
@@ -721,8 +1027,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return DragAndDropLists(
       disableScrolling: true,
       lastListTargetSize: 0.0,
-      onItemReorder: (var a, var b, var c, var d) {
+      onItemReorder: (var a, var b, var c, var d) async {
         AgendaListUtil.onFilesReorder(_editedQuestion, a, b, c, d);
+        await saveAndCheck();
         setState(() {});
       },
       onListReorder: (var a, var b) {},
@@ -745,6 +1052,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           Container(
                             width: 30,
+                          ),
+                          Expanded(
+                            child: Container(
+                              alignment: Alignment.centerLeft,
+                              height: 55,
+                              child: Text(element.fileName),
+                            ),
                           ),
                           Expanded(
                             child: Container(
@@ -836,37 +1150,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> addSelectedQuestionFile() async {
-    FilePickerCross fileToAdd = await FilePickerCross.importFromStorage(
-            type: FileTypeCross.custom, fileExtension: 'pdf')
-        .catchError((onError) {});
+    final fileToAdd = OpenFilePicker()
+      ..defaultFilterIndex = 0
+      ..defaultExtension = 'pdf'
+      ..title = 'Загрузка файла';
 
-    showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(),
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child: Text("Загрузка файла ${fileToAdd.fileName}")),
-              ],
-            ),
-          );
-        });
+    final result = fileToAdd.getFile();
+    if (result == null) {
+      return;
+    }
 
-    String formattedDescription = fileToAdd.fileName.endsWith('.pdf')
-        ? fileToAdd.fileName.substring(0, fileToAdd.fileName.length - 4)
-        : fileToAdd.fileName;
+    showSpinner("Загрузка файла ${path.basename(result.path)}");
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    String formattedDescription = path.basenameWithoutExtension(result.path);
 
     String newFileName =
         "Вопрос${_editedQuestion.orderNum.toString().padLeft(2, '0')}_файл${(_editedQuestion.files.length + 1).toString().padLeft(2, '0')}.pdf";
     var questionFile = QuestionFile(
         fileName: newFileName,
         realPath:
-            '${File(_tecFile.text).parent.path}\\${_editedQuestion.folder}',
+            '${Directory(_tecDirectory.text).path}\\${_editedQuestion.folder}',
         version: Uuid().v4(),
         description: formattedDescription,
         relativePath: _editedQuestion.folder,
@@ -876,8 +1181,8 @@ class _MyHomePageState extends State<MyHomePage> {
       _editedQuestion.files.add(questionFile);
     });
 
-    await File(fileToAdd.path).copy(
-        '${File(_tecFile.text).parent.path}\\${_editedQuestion.folder}\\$newFileName');
+    await File(result.path).copy(
+        '${Directory(_tecDirectory.text).path}\\${_editedQuestion.folder}\\$newFileName');
 
     AgendaListUtil.normalizeFiles(_editedQuestion, true);
 
@@ -895,8 +1200,14 @@ class _MyHomePageState extends State<MyHomePage> {
     _editedQuestion.files.remove(file);
     try {
       File('${file.realPath}\\${file.fileName}').deleteSync();
-    } catch (exc) {
-      print('error:' + exc.toString());
+    } catch (error) {
+      Utility().showMessageOkDialog(context,
+          title: 'Удаление файла',
+          message: TextSpan(
+            text:
+                'В ходе удаления файла ${file.fileName} возникла ошибка: $error',
+          ),
+          okButtonText: 'Ок');
     }
 
     AgendaListUtil.normalizeFiles(_editedQuestion, false);
@@ -957,6 +1268,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   file.description = tecEditFileDescription.text;
                 });
 
+                AgendaListUtil.normalizeFiles(_editedQuestion, false);
+
                 Navigator.of(context).pop();
               },
             ),
@@ -980,6 +1293,9 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.all(8),
             itemCount: _editedQuestion.descriptions.length,
             itemBuilder: (BuildContext context, int index) {
+              if (index == 1 || index == 3) {
+                return Container();
+              }
               return Container(
                 padding: const EdgeInsets.all(5),
                 margin: const EdgeInsets.all(5),
@@ -1042,155 +1358,99 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<void> processCheck() async {
-    _checkDialogItems = <Widget>[];
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, setStateForDialog) {
-            _setStateForDialog = setStateForDialog;
-            return Dialog(
-              elevation: 0,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(),
-                      ),
-                      !_isCheckEnded
-                          ? const CircularProgressIndicator()
-                          : Container(),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                        child: Text(
-                          "Проверка",
-                          style: TextStyle(fontSize: 22),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: Scrollbar(
-                        thumbVisibility: true,
-                        controller: _scrollController,
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          shrinkWrap: true,
-                          itemCount: _checkDialogItems.length,
-                          itemBuilder: (buildContext, index) {
-                            return _checkDialogItems[index];
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                              backgroundColor:
-                                  !_isCheckEnded ? Colors.grey : Colors.blue),
-                          onPressed: !_isCheckEnded
-                              ? null
-                              : () {
-                                  Navigator.pop(context);
-                                  _setStateForDialog = setState;
-                                },
-                          child: const Text('Ок'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          });
-        });
+  Future<bool> checkAgenda(bool isCheckFile, bool isCreateNew) async {
+    _checkDialogItems.clear();
 
-    bool agendaCheckResult;
-    try {
-      agendaCheckResult = await checkAgenda();
-    } catch (exception) {
-      agendaCheckResult = false;
-    }
-
-    if (agendaCheckResult) {
-      await addDialogResultItem('Проверка повестки завершилась успешно', true);
-    } else {
-      await addDialogResultItem(
-          'В ходе проверки повестки возникли проблемы', false);
-    }
-  }
-
-  Future<bool> checkAgenda() async {
-    // Проверяем доступ к файлу загрузки
-    final agendaFile = File(_tecFile.text);
-    if (!agendaFile.existsSync()) {
-      await addDialogResultItem('Отсутствует доступ к файлу повестки', false);
+    // Проверяем доступ к директории повестки
+    final agendaDirectory = Directory(_tecDirectory.text);
+    if (!agendaDirectory.existsSync()) {
+      addDialogResultItem('Отсутствует доступ к директории повестки', false);
       return false;
     } else {
-      await addDialogResultItem('Файл повестки доступен для загрузки', true);
+      addDialogResultItem('Директория повестки доступна для загрузки', true);
     }
 
-    var loadDir = agendaFile.parent;
-    // Проверяем наличие файла повестки
-    var agendaFilePath = '';
-    var contents = loadDir.listSync();
-    var documentFolders = <Directory>[];
-    for (var fileOrDir in contents) {
-      if (fileOrDir is File && fileOrDir.path.endsWith('.txt')) {
-        agendaFilePath = fileOrDir.path;
+    // Проверяем доступ к файлу повестки
+    File? agendaFile;
+    if (getAgendaFilePath().isNotEmpty) {
+      agendaFile = File(getAgendaFilePath());
+    }
+
+    if (isCreateNew && agendaDirectory.listSync().isEmpty) {
+      var noButtonPressed = false;
+
+      await Utility().showYesNoDialog(
+        context,
+        title: "Директория пуста",
+        message: TextSpan(text: 'Создать повестку в этой директории?'),
+        yesButtonText: 'Да',
+        yesCallBack: () {
+          Navigator.of(context).pop();
+        },
+        noButtonText: 'Нет',
+        noCallBack: () {
+          noButtonPressed = true;
+          Navigator.of(context).pop();
+        },
+      );
+
+      if (noButtonPressed) {
+        addDialogResultItem('Отсутствует доступ к файлу повестки', false);
+        return false;
       }
 
-      if (fileOrDir is Directory) {
-        documentFolders.add(fileOrDir);
+      copyDirectorySync(
+          Directory(
+              '${Directory.current.path}\\data\\flutter_assets\\assets\\data\\povestka_example'),
+          Directory(_tecDirectory.text));
+
+      if (getAgendaFilePath().isNotEmpty) {
+        agendaFile = File(getAgendaFilePath());
       }
     }
 
-    if (agendaFilePath == '') {
-      await addDialogResultItem('Директория не содержит файла повестки', false);
+    if (agendaFile == null || !agendaFile.existsSync()) {
+      addDialogResultItem('Отсутствует доступ к файлу повестки', false);
       return false;
     } else {
-      await addDialogResultItem('Проверка наличия файла повестки', true);
+      addDialogResultItem('Файл повестки доступен для загрузки', true);
+    }
+
+    if (agendaFile.path.endsWith('.${AgendaListUtil.fileExtension}')) {
+      addDialogResultItem('Проверка формата файла повестки', true);
+    } else {
+      addDialogResultItem(
+          'Файл повестки должен иметь текстовый формат .${AgendaListUtil.fileExtension}',
+          false);
+      return false;
     }
 
     var isStructureCheckSuccess = false;
 
-    isStructureCheckSuccess =
-        await checkTxtStructure(agendaFilePath, documentFolders);
+    isStructureCheckSuccess = isCheckFile
+        ? await checkAgendaFileStructure(agendaFile.path)
+        : await checkAgendaListStructure(agendaFile.path);
+
+    if (isStructureCheckSuccess) {
+      addDialogResultItem('Проверка повестки завершилась успешно', true);
+    } else {
+      addDialogResultItem('В ходе проверки повестки возникли ошибки', false);
+    }
 
     return isStructureCheckSuccess;
   }
 
-  Future<void> clearDialogItems() async {
-    _checkDialogItems.clear();
-
-    _setStateForDialog(() {});
-
-    if (_scrollController.positions.isNotEmpty) {
-      await _scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 10),
-        curve: Curves.fastOutSlowIn,
-      );
+  Future<bool> checkAgendaFileStructure(String agendaFilePath) async {
+    // Получаем список папок повестки
+    var contents = File(agendaFilePath).parent.listSync();
+    var documentFolders = <Directory>[];
+    for (var fileOrDir in contents) {
+      if (fileOrDir is Directory) {
+        documentFolders.add(fileOrDir);
+      }
     }
-  }
+    var usedDocumentFolders = <Directory>[];
 
-  Future<bool> checkTxtStructure(
-      String agendaFilePath, List<Directory> documentFolders) async {
     // read file content
     var agenFileBytes = await File(agendaFilePath).readAsBytes();
     var agendaFileContent =
@@ -1199,80 +1459,97 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // check agenda file
     if (agendaFileContent.isEmpty) {
-      await addDialogResultItem('Файл повестки пуст', false);
-      return false;
+      addDialogResultItem('Файл повестки пуст', true);
+      return true;
     }
 
     List<String> questions = agendaFileContent.split('\n');
     questions.removeWhere((element) => element.trim().isEmpty);
-
-    if (questions.length - 1 <= 0) {
-      await addDialogResultItem('Файл повестки не содержит вопросов', false);
-      return false;
+    if (questions.isNotEmpty) {
+      questions.removeAt(0);
     }
 
-    questions.removeAt(0);
-
-    if (questions.length != documentFolders.length) {
-      await addDialogResultItem(
-          'Количество вопросов[${questions.length}] и директорий[${documentFolders.length}] с документами не совпадают',
-          false);
-      return false;
-    } else {
-      await addDialogResultItem(
-          'Количество вопросов и директорий совпадают', true);
+    if (questions.isEmpty && documentFolders.isEmpty) {
+      addDialogResultItem('Список вопросов повестки пуст', true);
+      return true;
     }
 
     // Проверяем вопросы
     var isStructureCheckSuccess = true;
+
+    if (questions.length != documentFolders.length) {
+      addDialogResultItem(
+          'Количество вопросов[${questions.length}] и директорий[${documentFolders.length}] с документами не совпадают',
+          false);
+      isStructureCheckSuccess = false;
+    } else {
+      addDialogResultItem('Количество вопросов и директорий совпадают', true);
+    }
+
+    var additionalQuestionCount = 0;
+    var errorCount = 0;
     for (int i = 0; i < questions.length; i++) {
+      // check question format
       RegExp regExp = RegExp(
-          r'("[^"]*"),("?[^"]+"?),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*")');
+          r'("[^"]*"),("?[^"]+"?),("[^"]*"),(".*"),(".*"),(".*"),(".*")');
 
       if (!regExp.hasMatch(questions[i])) {
         isStructureCheckSuccess = false;
 
-        await addDialogResultItem(
-            'Описание вопроса на строке $i не распознано', false);
+        addDialogResultItem(
+            'Описание вопроса на строке ${i + 2} не распознано', false);
+        errorCount++;
         continue;
       }
 
       var isQuestionCorrect = true;
-      var questionNumberData =
+      var isQuestionAdditional = false;
+      // check question number sequence
+      var questionNumber =
           regExp.firstMatch(questions[i])?.group(2)?.replaceAll('"', '') ?? '';
 
-      var questionNumber = int.tryParse(questionNumberData);
-      var expectedQuestionNumber = AgendaListUtil.getQuestionNumber(i);
-      if (questionNumber != null && questionNumber != expectedQuestionNumber) {
+      if (questionNumber.contains(' д')) {
+        isQuestionAdditional = true;
+        additionalQuestionCount++;
+      }
+
+      var expectedQuestionNumber = isQuestionAdditional
+          ? '$additionalQuestionCount д'
+          : (i - additionalQuestionCount - errorCount).toString();
+
+      if (questionNumber != expectedQuestionNumber) {
         isQuestionCorrect = false;
         isStructureCheckSuccess = false;
 
-        await addDialogResultItem(
+        addDialogResultItem(
             'Номер вопроса $questionNumber не соответвует ожидаемому $expectedQuestionNumber',
             false);
       }
 
+      // check question document folder exists
       bool isDocumentFolderExists = documentFolders
-          .any((element) => path.basename(element.path) == questionNumberData);
+          .any((element) => path.basename(element.path) == questionNumber);
 
       if (!isDocumentFolderExists) {
         isQuestionCorrect = false;
         isStructureCheckSuccess = false;
 
-        await addDialogResultItem(
-            'Не найдена директория для вопроса $questionNumberData', false);
+        addDialogResultItem(
+            'Не найдена директория для вопроса $questionNumber', false);
       } else {
         var documentFolder = documentFolders.firstWhere(
-            (element) => path.basename(element.path) == questionNumberData);
+            (element) => path.basename(element.path) == questionNumber);
+
+        usedDocumentFolders.add(documentFolder);
 
         var descriptionFile = File(
-            '${File(agendaFilePath).parent.path}\\$questionNumberData\\Описание.txt');
+            '${File(agendaFilePath).parent.path}\\$questionNumber\\Description.txt');
 
         if (!await descriptionFile.exists() && questions[i].isNotEmpty) {
           isQuestionCorrect = false;
           isStructureCheckSuccess = false;
 
-          await addDialogResultItem(
+          addDialogResultItem(
               'Отсутствуeт файл описания документов: ${descriptionFile.path}',
               false);
           continue;
@@ -1291,7 +1568,7 @@ class _MyHomePageState extends State<MyHomePage> {
           isQuestionCorrect = false;
           isStructureCheckSuccess = false;
 
-          await addDialogResultItem(
+          addDialogResultItem(
               'Количество документов[${(documentFolderContents.length - 1)}] и их описаний[${descriptions.length}] не совпадают ${documentFolder.path}',
               false);
           continue;
@@ -1302,7 +1579,7 @@ class _MyHomePageState extends State<MyHomePage> {
           var fullPath = fileOrDir.path;
 
           if (fileOrDir is File &&
-              path.basename(fileOrDir.path) == 'Описание.txt') {
+              path.basename(fileOrDir.path) == 'Description.txt') {
             continue;
           }
 
@@ -1311,20 +1588,19 @@ class _MyHomePageState extends State<MyHomePage> {
             isQuestionCorrect = false;
             isStructureCheckSuccess = false;
 
-            await addDialogResultItem(
-                'Не поддерживается формат $fullPath', false);
+            addDialogResultItem('Не поддерживается формат $fullPath', false);
           } else {
             realFileNames.add(path.basename(fileOrDir.path));
           }
 
           String expectedFileName =
-              AgendaListUtil.getFileName(questionNumberData, j + 1);
+              AgendaListUtil.getFileName(questionNumber, j + 1);
 
           if (realFileNames.last != expectedFileName) {
             isQuestionCorrect = false;
             isStructureCheckSuccess = false;
 
-            await addDialogResultItem(
+            addDialogResultItem(
                 'Имя файла: ${realFileNames.last} не соответвует ожидаемому: $expectedFileName',
                 false);
           }
@@ -1336,8 +1612,8 @@ class _MyHomePageState extends State<MyHomePage> {
           isQuestionCorrect = false;
           isStructureCheckSuccess = false;
 
-          await addDialogResultItem(
-              'Несовпадает количество файлов в описании вопроса и директории $questionNumberData',
+          addDialogResultItem(
+              'Несовпадает количество файлов в описании вопроса и директории $questionNumber',
               false);
         }
 
@@ -1346,33 +1622,193 @@ class _MyHomePageState extends State<MyHomePage> {
             isQuestionCorrect = false;
             isStructureCheckSuccess = false;
 
-            await addDialogResultItem(
-                'Не найден файл $questionNumberData\\$fileDescription', false);
+            addDialogResultItem(
+                'Не найден файл $questionNumber\\$fileDescription', false);
           } else {
-            await addDialogResultItem(
-                'Проверка файла $questionNumberData\\$fileDescription ', true);
+            addDialogResultItem(
+                'Проверка файла $questionNumber\\$fileDescription ', true);
           }
         }
       }
 
-      await addDialogResultItem(
-          'Проверка вопроса $questionNumberData', isQuestionCorrect);
+      addDialogResultItem(
+          'Проверка вопроса $questionNumber', isQuestionCorrect);
+    }
+
+    for (int i = 0; i < documentFolders.length; i++) {
+      if (!usedDocumentFolders.contains(documentFolders[i])) {
+        addDialogResultItem(
+            'Директория "${path.basename(documentFolders[i].path)}" не используется',
+            false);
+      }
     }
 
     return isStructureCheckSuccess;
   }
 
-  Future<void> addDialogResultItem(String itemText, bool isOk) async {
-    _checkDialogItems.add(getResultDialogItem(itemText, isOk));
-    _setStateForDialog(() {});
-
-    if (_scrollController.positions.isNotEmpty) {
-      await _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent + 100,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.fastOutSlowIn,
-      );
+  Future<bool> checkAgendaListStructure(String agendaFilePath) async {
+    // Получаем список папок повестки
+    var contents = File(agendaFilePath).parent.listSync();
+    var documentFolders = <Directory>[];
+    for (var fileOrDir in contents) {
+      if (fileOrDir is Directory) {
+        documentFolders.add(fileOrDir);
+      }
     }
+    var usedDocumentFolders = <Directory>[];
+
+    var isStructureCheckSuccess = true;
+    if (AgendaListUtil.questions.length != documentFolders.length) {
+      addDialogResultItem(
+          'Количество вопросов[${AgendaListUtil.questions.length}] и директорий[${documentFolders.length}] с документами не совпадают',
+          false);
+      isStructureCheckSuccess = false;
+    } else {
+      addDialogResultItem('Количество вопросов и директорий совпадают', true);
+    }
+
+    // Проверяем вопросы
+    for (int i = 0; i < AgendaListUtil.questions.length; i++) {
+      var isQuestionCorrect = true;
+
+      var questionNumber =
+          int.parse(AgendaListUtil.questions[i].folder.replaceAll(' д', ''));
+      var expectedQuestionNumber = AgendaListUtil.getQuestionNumber(i);
+      if (questionNumber != expectedQuestionNumber) {
+        isQuestionCorrect = false;
+        isStructureCheckSuccess = false;
+
+        addDialogResultItem(
+            'Номер вопроса $questionNumber не соответвует ожидаемому $expectedQuestionNumber',
+            false);
+      }
+
+      bool isDocumentFolderExists = documentFolders.any((element) =>
+          path.basename(element.path) == AgendaListUtil.questions[i].folder);
+
+      if (!isDocumentFolderExists) {
+        isQuestionCorrect = false;
+        isStructureCheckSuccess = false;
+
+        addDialogResultItem(
+            'Не найдена директория для вопроса ${AgendaListUtil.questions[i].folder}',
+            false);
+      } else {
+        var documentFolder = documentFolders.firstWhere((element) =>
+            path.basename(element.path) == AgendaListUtil.questions[i].folder);
+
+        usedDocumentFolders.add(documentFolder);
+
+        var descriptionFile = File(
+            '${File(agendaFilePath).parent.path}\\${AgendaListUtil.questions[i].folder}\\Description.txt');
+
+        if (!await descriptionFile.exists()) {
+          isQuestionCorrect = false;
+          isStructureCheckSuccess = false;
+
+          addDialogResultItem(
+              'Отсутствуeт файл описания документов: ${descriptionFile.path}',
+              false);
+          continue;
+        }
+
+        var realFileNames = <String>[];
+        var documentFolderContents = documentFolder.listSync();
+
+        var descriptionsBytes = await descriptionFile.readAsBytes();
+        var descriptionsFileContent =
+            String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
+        Map<String, dynamic> descriptions =
+            json.decode(descriptionsFileContent.substring(1));
+
+        if (descriptions.length != documentFolderContents.length - 1) {
+          isQuestionCorrect = false;
+          isStructureCheckSuccess = false;
+
+          addDialogResultItem(
+              'Количество документов[${(documentFolderContents.length - 1)}] и их описаний[${descriptions.length}] не совпадают ${documentFolder.path}',
+              false);
+          continue;
+        }
+
+        var j = 0;
+        for (var fileOrDir in documentFolderContents) {
+          var fullPath = fileOrDir.path;
+
+          if (fileOrDir is File &&
+              path.basename(fileOrDir.path) == 'Description.txt') {
+            continue;
+          }
+
+          if (fileOrDir is Directory ||
+              path.extension(fileOrDir.path) != '.pdf') {
+            isQuestionCorrect = false;
+            isStructureCheckSuccess = false;
+
+            addDialogResultItem('Не поддерживается формат $fullPath', false);
+          } else {
+            realFileNames.add(path.basename(fileOrDir.path));
+          }
+
+          String expectedFileName = AgendaListUtil.getFileName(
+              AgendaListUtil.questions[i].folder, j + 1);
+
+          if (realFileNames.last != expectedFileName) {
+            isQuestionCorrect = false;
+            isStructureCheckSuccess = false;
+
+            addDialogResultItem(
+                'Имя файла: ${realFileNames.last} не соответвует ожидаемому: $expectedFileName',
+                false);
+          }
+
+          j++;
+        }
+
+        if (descriptions.length != realFileNames.length) {
+          isQuestionCorrect = false;
+          isStructureCheckSuccess = false;
+
+          addDialogResultItem(
+              'Несовпадает количество файлов в описании вопроса и директории ${AgendaListUtil.questions[i].folder}',
+              false);
+        }
+
+        for (var fileDescription in descriptions.keys) {
+          if (!realFileNames.contains(fileDescription)) {
+            isQuestionCorrect = false;
+            isStructureCheckSuccess = false;
+
+            addDialogResultItem(
+                'Не найден файл ${AgendaListUtil.questions[i].folder}\\$fileDescription',
+                false);
+          } else {
+            addDialogResultItem(
+                'Проверка файла ${AgendaListUtil.questions[i].folder}\\$fileDescription ',
+                true);
+          }
+        }
+      }
+
+      addDialogResultItem(
+          'Проверка вопроса ${AgendaListUtil.questions[i].folder}',
+          isQuestionCorrect);
+    }
+
+    for (int i = 0; i < documentFolders.length; i++) {
+      if (!usedDocumentFolders.contains(documentFolders[i])) {
+        isStructureCheckSuccess = false;
+        addDialogResultItem(
+            'Директория "${path.basename(documentFolders[i].path)}" не используется',
+            false);
+      }
+    }
+
+    return isStructureCheckSuccess;
+  }
+
+  void addDialogResultItem(String itemText, bool isOk) {
+    _checkDialogItems.add(getResultDialogItem(itemText, isOk));
   }
 
   Widget getResultDialogItem(String text, bool isOk) {
@@ -1403,7 +1839,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    _tecFile.dispose();
+    _tecDirectory.dispose();
 
     _scrollController.dispose();
     _questionsScrollController.dispose();

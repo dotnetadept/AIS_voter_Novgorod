@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:ais_model/ais_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -244,7 +245,7 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
   }
 
   Widget guestPopupItemBuilder(
-      BuildContext context, String item, bool isSelected) {
+      BuildContext context, String item, bool isDisabled, bool isSelected) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 8),
       child: ListTile(
@@ -254,39 +255,38 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
             Expanded(
               child: Text(item.toString()),
             ),
-            TextButton(
-              onPressed: () {
-                widget.group.guests = widget.group.guests
-                    .replaceAll(',${item.toString()}', '')
-                    .replaceAll('${item.toString()}', '');
+            // TextButton(
+            //   onPressed: () {
+            //     widget.group.guests = widget.group.guests
+            //         .replaceAll(',${item.toString()}', '')
+            //         .replaceAll('${item.toString()}', '');
 
-                if (widget.saveGroup != null) {
-                  widget.saveGroup!(widget.group);
-                }
-                if (widget.removeGuest != null) {
-                  widget.removeGuest!(item.toString());
-                }
-              },
-              child: Icon(Icons.clear),
-            ),
+            //     if (widget.saveGroup != null) {
+            //       widget.saveGroup!(widget.group);
+            //     }
+            //     if (widget.removeGuest != null) {
+            //       widget.removeGuest!(item.toString());
+            //     }
+            //   },
+            //   child: Icon(Icons.clear),
+            //),
           ],
         ),
       ),
     );
   }
 
-  Widget guestDropDownBuilder(
-      BuildContext context, String item, String itemDesignation) {
+  Widget guestDropDownBuilder(BuildContext context, String? item) {
     var textSize = (widget.isOperatorView
             ? widget.settings.operatorSchemeSettings.cellTextSize
             : widget.settings.managerSchemeSettings.cellTextSize)
         .toDouble();
     return Container(
-      height: textSize + 8,
+      height: textSize + 6,
       child: (item == null)
           ? Container()
           : Padding(
-              padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
               child: Text(
                 item.toString(),
                 style: TextStyle(fontSize: textSize),
@@ -424,20 +424,20 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
     buttons.add(Expanded(child: Container()));
 
     if (widget.isOperatorView) {
-      buttons.add(
-        Container(
-          margin: EdgeInsets.fromLTRB(
-            0,
-            0,
-            cellPadding,
-            0,
-          ),
-          child: Text(
-            terminalId,
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      );
+      // buttons.add(
+      //   Container(
+      //     margin: EdgeInsets.fromLTRB(
+      //       0,
+      //       0,
+      //       cellPadding,
+      //       0,
+      //     ),
+      //     child: Text(
+      //       terminalId,
+      //       style: TextStyle(color: Colors.white),
+      //     ),
+      //   ),
+      // );
 
       buttons.add(
         Container(
@@ -519,42 +519,137 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
         ? widget.settings.operatorSchemeSettings.cellTextSize.toDouble()
         : widget.settings.managerSchemeSettings.cellTextSize.toDouble();
 
+    var textFieldHeight =
+        textSize + 6 + cellPadding + 1 - (widget.isOperatorView ? 2 : 3);
+
     Widget cell = Column(
       children: [
         Container(
+          margin: EdgeInsets.fromLTRB(cellPadding,
+              cellPadding + (widget.isOperatorView ? 0 : 0), cellPadding, 0.0),
+          width: cellWidth,
+          height: textFieldHeight,
           decoration: BoxDecoration(
             color: userColor,
           ),
-          child: Container(
-            margin: EdgeInsets.fromLTRB(
-                cellPadding, cellPadding, cellPadding, cellPadding),
-            padding: EdgeInsets.fromLTRB(0, 0, 0, cellPadding),
-            width: cellWidth,
-            height: textSize + 6,
-            decoration: BoxDecoration(
-              color: userColor,
-            ),
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-              child: Tooltip(
-                preferBelow: !widget.isOperatorView,
-                waitDuration: Duration(seconds: widget.isOperatorView ? 2 : 0),
-                message: guest,
-                child: Text(
-                  '$guest',
-                  maxLines:
-                      overflowOption == 'Обрезать текст' ? maxLines : null,
-                  overflow: textOverflowOption,
-                  //textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: textSize,
-                    color:
-                        Color(widget.settings.palletteSettings.cellTextColor),
+          child: widget.isOperatorView
+              ? DropdownSearch<String>(
+                  // mode: Mode.DIALOG,
+                  // showSearchBox: true,
+                  // showClearButton: true,
+                  items: (filter, infiniteScrollProps) => guests,
+                  // label: isProxy ? 'Доверенное лицо' : 'Доверитель',
+                  // popupTitle: Container(
+                  //     alignment: Alignment.center,
+                  //     color: Colors.blueAccent,
+                  //     padding: EdgeInsets.all(10),
+                  //     child: Text(
+                  //       isProxy ? 'Доверенное лицо' : 'Доверитель',
+                  //       style: TextStyle(
+                  //           fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+                  //     )),
+                  // hint: isProxy ? 'Выберите Доверенное лицо' : 'Выберите Доверителя',
+                  selectedItem: guest,
+                  onChanged: (value) {
+                    setState(() {
+                      widget.addGuest(value ?? "", terminalId);
+                    });
+                  },
+                  // validator: (value) {
+                  //   if (value == null) {
+                  //     return isProxy
+                  //         ? 'Выберите Доверенное лицо'
+                  //         : 'Выберите Доверителя';
+                  //   }
+                  //   return null;
+                  // },
+                  dropdownBuilder: guestDropDownBuilder,
+                  suffixProps: DropdownSuffixProps(
+                    clearButtonProps: ClearButtonProps(
+                        isVisible: !guest.isEmpty,
+                        padding: EdgeInsets.fromLTRB(0.0, 0.0, 10, 10),
+                        iconSize: iconSize,
+                        alignment: Alignment.center,
+                        constraints: BoxConstraints(maxWidth: iconSize + 8)),
+                    dropdownButtonProps: DropdownButtonProps(
+                        isVisible: guest.isEmpty,
+                        padding: EdgeInsets.fromLTRB(0.0, 0.0, 10, 10),
+                        iconSize: iconSize,
+                        alignment: Alignment.center,
+                        constraints: BoxConstraints(maxWidth: iconSize + 8)),
+                  ),
+                  decoratorProps: DropDownDecoratorProps(
+                    decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.fromLTRB(cellPadding, 12, 0, 0),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+
+                  popupProps: PopupProps.menu(
+                      itemBuilder: guestPopupItemBuilder,
+                      showSearchBox: true,
+                      fit: FlexFit.loose,
+                      constraints:
+                          BoxConstraints(minWidth: 500, maxHeight: 800),
+                      containerBuilder: (acontext, popupWidget) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Container(
+                                alignment: Alignment.center,
+                                color: Colors.blueAccent,
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  'Гости',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 20),
+                                )),
+                            Flexible(
+                              child: popupWidget,
+                            ),
+                          ],
+                        );
+                      }),
+                  compareFn: (item1, item2) {
+                    return item1 == item2;
+                  },
+                  //emptyBuilder: emptyBuilder,
+                )
+              : Container(
+                  margin: EdgeInsets.fromLTRB(cellPadding, 0, cellPadding, 0),
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, cellPadding),
+                  width: cellWidth,
+                  height: textSize + 2,
+                  decoration: BoxDecoration(
+                    color: userColor,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    child: Tooltip(
+                      preferBelow: !widget.isOperatorView,
+                      waitDuration:
+                          Duration(seconds: widget.isOperatorView ? 2 : 0),
+                      message: guest,
+                      child: Text(
+                        '$guest',
+                        maxLines: overflowOption == 'Обрезать текст'
+                            ? maxLines
+                            : null,
+                        overflow: textOverflowOption,
+                        //textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: textSize,
+                          color: Color(
+                              widget.settings.palletteSettings.cellTextColor),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
         ),
         widget.isOperatorView
             ? Container()
@@ -582,8 +677,8 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
             .toDouble();
 
     return Container(
-      padding: EdgeInsets.fromLTRB(horisontalPadding, verticalPadding,
-          horisontalPadding, verticalPadding),
+      padding: EdgeInsets.fromLTRB(horisontalPadding / 2, verticalPadding,
+          horisontalPadding / 2, verticalPadding),
       child: Container(
           decoration: BoxDecoration(
             color: cellBackground,
@@ -1075,11 +1170,19 @@ class _WorkplacesSchemeStateWidgetState extends State<WorkplacesSchemeWidget> {
   double getCellHeight() {
     double cellheight = 0.0;
 
-    cellheight = 2 +
-        widget.settings.operatorSchemeSettings.cellBorder * 4 +
-        widget.settings.operatorSchemeSettings.cellInnerPadding * 5 +
-        widget.settings.operatorSchemeSettings.cellTextSize +
-        widget.settings.operatorSchemeSettings.iconSize.toDouble();
+    if (widget.isOperatorView) {
+      cellheight = 1 +
+          widget.settings.operatorSchemeSettings.cellBorder * 4 +
+          widget.settings.operatorSchemeSettings.cellInnerPadding * 5 +
+          widget.settings.operatorSchemeSettings.cellTextSize +
+          widget.settings.operatorSchemeSettings.iconSize.toDouble();
+    } else {
+      cellheight = 2 +
+          widget.settings.managerSchemeSettings.cellBorder * 4 +
+          widget.settings.managerSchemeSettings.cellInnerPadding * 5 +
+          widget.settings.managerSchemeSettings.cellTextSize +
+          widget.settings.managerSchemeSettings.iconSize.toDouble();
+    }
 
     return cellheight;
   }

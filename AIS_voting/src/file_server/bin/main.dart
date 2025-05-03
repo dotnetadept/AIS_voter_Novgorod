@@ -9,7 +9,7 @@ Future main() async {
 
   print('Запуск $APP_NAME v1.927');
 
-  await app.start(); //numberOfInstances: 3
+  await app.start(numberOfInstances: 3); //numberOfInstances: 3
 
   print('Ip адресс: $ADDRESS');
   print('HTTP порт: $HTTP_SERVER_PORT');

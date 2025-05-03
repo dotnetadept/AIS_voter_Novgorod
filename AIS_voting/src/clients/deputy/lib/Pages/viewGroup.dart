@@ -521,120 +521,120 @@ class _ViewGroupPageState extends State<ViewGroupPage> {
                   ],
                 ),
               ),
-              Container(
-                width: 1,
-                color: Colors.black,
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      color: Colors.lightBlue,
-                      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                      child: Row(
-                        children: [
-                          Container(width: 5),
-                          Expanded(
-                            child: Text(
-                              'ЗАПИСАВШИЕСЯ ГОСТИ',
-                              maxLines: 2,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Tooltip(
-                            message:
-                                'Очистить список записавшихся на выступление',
-                            child: GestureDetector(
-                              onPanDown: (DragDownDetails d) =>
-                                  {removeAskWordAll()},
-                              child: TextButton(
-                                style: ButtonStyle(
-                                  backgroundColor: WidgetStateProperty.all(
-                                      Colors.indigoAccent),
-                                  padding: WidgetStateProperty.all(
-                                      EdgeInsets.fromLTRB(0, 15, 0, 15)),
-                                  shape: WidgetStateProperty.all(
-                                    CircleBorder(
-                                      side:
-                                          BorderSide(color: Colors.transparent),
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  removeAskWordAll();
-                                },
-                                child: Icon(Icons.clear),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey.withOpacity(0.5),
-                            width: 1,
-                          ),
-                          color: Colors.white.withOpacity(0.5),
-                        ),
-                        child: getAskWordGuestList(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   width: 1,
+              //   color: Colors.black,
+              // ),
+              // Expanded(
+              //   child: Column(
+              //     children: [
+              //       Container(
+              //         color: Colors.lightBlue,
+              //         padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+              //         child: Row(
+              //           children: [
+              //             Container(width: 5),
+              //             Expanded(
+              //               child: Text(
+              //                 'ЗАПИСАВШИЕСЯ ГОСТИ',
+              //                 maxLines: 2,
+              //                 textAlign: TextAlign.center,
+              //                 style: TextStyle(
+              //                     fontSize: 14,
+              //                     color: Colors.white,
+              //                     fontWeight: FontWeight.bold),
+              //               ),
+              //             ),
+              //             Tooltip(
+              //               message:
+              //                   'Очистить список записавшихся на выступление',
+              //               child: GestureDetector(
+              //                 onPanDown: (DragDownDetails d) =>
+              //                     {removeAskWordAll()},
+              //                 child: TextButton(
+              //                   style: ButtonStyle(
+              //                     backgroundColor: WidgetStateProperty.all(
+              //                         Colors.indigoAccent),
+              //                     padding: WidgetStateProperty.all(
+              //                         EdgeInsets.fromLTRB(0, 15, 0, 15)),
+              //                     shape: WidgetStateProperty.all(
+              //                       CircleBorder(
+              //                         side:
+              //                             BorderSide(color: Colors.transparent),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                   onPressed: () {
+              //                     removeAskWordAll();
+              //                   },
+              //                   child: Icon(Icons.clear),
+              //                 ),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //       Expanded(
+              //         child: Container(
+              //           decoration: BoxDecoration(
+              //             border: Border.all(
+              //               color: Colors.grey.withOpacity(0.5),
+              //               width: 1,
+              //             ),
+              //             color: Colors.white.withOpacity(0.5),
+              //           ),
+              //           child: getAskWordGuestList(),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         ),
-        Expanded(
-          child: Row(
-            children: [
-              TableUtils()
-                  .getUnregistredTable(_unregistredTableScrollController),
-              Container(
-                width: 1,
-                color: Colors.black,
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      color: Colors.lightBlue,
-                      height: 45,
-                      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                      child: Row(
-                        children: [
-                          Container(width: 5),
-                          Expanded(
-                            child: Text(
-                              'ВКЛЮЧЕНЫ МИКРОФОНЫ ${AppState().getServerState().activeMics.length}',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Container(width: 5),
-                        ],
-                      ),
-                    ),
-                    TableUtils().getMicsEnabledTable(
-                        _micsEnabledTableScrollController, (terminalId) {
-                      _connection.setSpeaker(terminalId, false);
-                    }),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+        // Expanded(
+        //   child: Row(
+        //     children: [
+        //       TableUtils()
+        //           .getUnregistredTable(_unregistredTableScrollController),
+        //       Container(
+        //         width: 1,
+        //         color: Colors.black,
+        //       ),
+        //       Expanded(
+        //         child: Column(
+        //           children: [
+        //             Container(
+        //               color: Colors.lightBlue,
+        //               height: 45,
+        //               padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+        //               child: Row(
+        //                 children: [
+        //                   Container(width: 5),
+        //                   Expanded(
+        //                     child: Text(
+        //                       'ВКЛЮЧЕНЫ МИКРОФОНЫ ${AppState().getServerState().activeMics.length}',
+        //                       textAlign: TextAlign.center,
+        //                       style: TextStyle(
+        //                           fontSize: 14,
+        //                           color: Colors.white,
+        //                           fontWeight: FontWeight.bold),
+        //                     ),
+        //                   ),
+        //                   Container(width: 5),
+        //                 ],
+        //               ),
+        //             ),
+        //             TableUtils().getMicsEnabledTable(
+        //                 _micsEnabledTableScrollController, (terminalId) {
+        //               _connection.setSpeaker(terminalId, false);
+        //             }),
+        //           ],
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }

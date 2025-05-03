@@ -64,6 +64,7 @@ class _StoreboardAppState extends State<StoreboardApp> {
             title: 'Табло АИС Голосование',
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
+              useMaterial3: false,
               primarySwatch: Colors.blue,
               visualDensity: VisualDensity.adaptivePlatformDensity,
               textTheme: GoogleFonts.ubuntuTextTheme(

@@ -1315,6 +1315,9 @@ class QuestionListChangeDialog {
         return null;
       },
       dropdownBuilder: userDropDownItemBuilder,
+      compareFn: (item1, item2) {
+        return item1 == item2;
+      },
       //popupItemBuilder: userItemBuilder,
       //emptyBuilder: emptyBuilder,
     );

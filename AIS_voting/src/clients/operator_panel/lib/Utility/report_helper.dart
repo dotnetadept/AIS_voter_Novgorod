@@ -163,6 +163,8 @@ class ReportHelper {
         var fileToPrint = fileNameNamed.replaceAll('.docx', '.pdf');
         Process.run('lp', <String>[fileToPrint]);
       }
+
+      isReportCompleted = true;
     } catch (exc) {
       isReportCompleted = false;
       Utility().showMessageOkDialog(context,
@@ -298,9 +300,9 @@ class ReportHelper {
             questionIndex++) {
           var currentQuestion = meeting.agenda!.questions[questionIndex];
 
-          if (currentQuestion.orderNum == 0) {
-            continue;
-          }
+          //if (currentQuestion.orderNum == 0) {
+          //  continue;
+          //}
 
           agendaInfo.add(PlainContent("question_info")
             ..add(TextContent("question_content",
@@ -320,9 +322,9 @@ class ReportHelper {
           var currentQuestion = meeting.agenda!.questions.firstWhere(
               (element) => element.id == currentQuestionSession.questionId);
 
-          if (currentQuestion.orderNum == 0) {
-            continue;
-          }
+          //if (currentQuestion.orderNum == 0) {
+          //  continue;
+          //}
 
           var isUnanimously = currentQuestionSession.usersCountVotedYes ==
                   currentQuestionSession.usersCountVoted ||
@@ -374,6 +376,8 @@ class ReportHelper {
         var fileToPrint = fileNameNamed.replaceAll('.docx', '.pdf');
         Process.run('lp', <String>[fileToPrint]);
       }
+
+      isReportCompleted = true;
     } catch (exc) {
       isReportCompleted = false;
       Utility().showMessageOkDialog(context,

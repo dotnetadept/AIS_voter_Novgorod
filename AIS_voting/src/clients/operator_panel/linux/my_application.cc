@@ -35,16 +35,16 @@ static void my_application_activate(GApplication* application) {
     gdk_monitor_get_geometry(monitor, &geo);
 
     if(geo.width > 0 && geo.height >0){
-      gtk_window_set_default_size(window, geo.width, geo.height-28);
-      printf ("Width: %u x Height:%u\n", geo.width, geo.height-28);
+      gtk_window_set_default_size(window, geo.width, geo.height);
+      printf ("Width: %u x Height:%u\n", geo.width, geo.height);
       isResolutionSet = true;
       break;
     }
   }
 
   if(!isResolutionSet) {
-     gtk_window_set_default_size(window, 1920, 1080-28);
-     printf ("Set default Width: %u x Height:%u\n", 1920, 1080-28);
+     gtk_window_set_default_size(window, 1920, 1080);
+     printf ("Set default Width: %u x Height:%u\n", 1920, 1080);
   }
 
   

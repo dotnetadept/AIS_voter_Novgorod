@@ -814,7 +814,9 @@ class WebSocketConnection with ChangeNotifier {
 
     // process further navigation on systemStateChange
     if (_previousSystemState == AppState().getServerState().systemState &&
-        _previousRegistredState == AppState().getIsRegistred()) {
+        _previousRegistredState == AppState().getIsRegistred() &&
+        AppState().getCurrentPage() != '/viewVideo' &&
+        AppState().getCurrentPage() != '/viewStream') {
       return;
     } else {
       _previousSystemState = AppState().getServerState().systemState;
@@ -833,6 +835,27 @@ class WebSocketConnection with ChangeNotifier {
         SystemState.MeetingCompleted) {
       onUserExit();
 
+      return;
+    }
+
+    //check is current user in proxy list
+    var managerId = AppState()
+        .getCurrentMeeting()!
+        .group!
+        .groupUsers
+        .firstWhereOrNull((element) => element.isManager == true)
+        ?.user
+        .id;
+    var managerProxy = AppState().getProxies().firstWhereOrNull((element) =>
+        element.proxy?.id == managerId &&
+        element.isActive == true &&
+        element.isInitialVotes == true);
+
+    var isCurrentUserProxy = managerProxy?.subjects
+        .any((e) => e.user.id == AppState().getCurrentUser()?.id);
+
+    if (isCurrentUserProxy == true) {
+      navigateToPage('/viewAgenda');
       return;
     }
 

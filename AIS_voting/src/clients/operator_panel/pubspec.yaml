@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.05.17
 
 environment:
-  sdk: '>=2.12.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   cupertino_icons: ^1.0.0
@@ -19,17 +19,11 @@ dependencies:
   enum_to_string: any
   flutter_colorpicker: any
   global_configuration: any
-    #path: '../client_plugins/global_configuration-1.6.0'
   csv: any
   ntp: ^2.0.0
   media_kit: any
   media_kit_libs_audio: any
-  #searchable_dropdown:
-  #  git:
-  #      url: https://github.com/matheusfajardo/searchable_dropdown
-  #      ref: master
-  dropdown_search: 6.0.2 #^5.0.6
-    #path: '../client_plugins/dropdown_search-0.6.3'
+  dropdown_search: 6.0.2
   ais_model:
     path: '../client_plugins/ais_model'
   ais_utils:
@@ -38,14 +32,18 @@ dependencies:
   google_fonts: any
   aligned_dialog: ^0.0.6
   drag_and_drop_lists: any
-  #  path: '../client_plugins/DragAndDropLists-master'
   transparent_pointer: ^1.0.0
   file_selector: any
   package_info_plus: any
   select2dot1: ^2.0.7
-  docx_template: 0.3.4
   collection: ^1.18.0
+  docx_template:
+    path: '../client_plugins/docx_template_dart-master'
     
+dependency_overrides:
+  archive:
+    git: https://github.com/alihassan143/archive.git
+   
 flutter:
   uses-material-design: true
   assets:

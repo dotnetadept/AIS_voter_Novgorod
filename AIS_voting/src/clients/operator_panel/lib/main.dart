@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:ntp/ntp.dart';
@@ -135,7 +134,7 @@ class _OperatorPageState extends State<OperatorPage> {
   late Settings _settings;
   late int _timeOffset;
 
-  late List<Meeting> _meetings;
+  List<Meeting> _meetings = <Meeting>[];
   late List<MeetingSession> _meetingSessions;
   late List<VotingMode> _votingModes;
   late List<User> _users;
@@ -190,10 +189,6 @@ class _OperatorPageState extends State<OperatorPage> {
                 _meetings = (json.decode(response.body) as List)
                     .map((data) => Meeting.fromJson(data))
                     .toList();
-
-                // if (_connection.getServerState != null) {
-                //   setServerState(_connection.getServerState);
-                // }
               })
             })
         .then((value) => http
@@ -328,19 +323,15 @@ class _OperatorPageState extends State<OperatorPage> {
             ? null
             : DateTime.parse(json.decode(serverState.params)['lastUpdated']);
 
-    if (
-        //_connection.getServerState != null &&
-        selectedMeetingId == null &&
-            _prevSystemState != serverState.systemState) {
+    if (selectedMeetingId == null &&
+        _prevSystemState != serverState.systemState) {
       _selectedMeeting = null;
       _selectedQuestion = null;
       _lockedQuestion = null;
     }
 
-    if (
-        //_connection.getServerState != null &&
-        _meetings != null && selectedMeetingId != null) {
-      // refresh selected meeting if changed
+    // refresh selected meeting if changed
+    if (!_meetings.isEmpty && selectedMeetingId != null) {
       if (_selectedMeeting?.id != selectedMeetingId && _meetings.isNotEmpty) {
         _selectedMeeting = _meetings
             .firstWhereOrNull((element) => element.id == selectedMeetingId);
@@ -457,24 +448,27 @@ class _OperatorPageState extends State<OperatorPage> {
 
   void _onSetGuestSpeaker(String terminalId) async {
     var selectedInterval = AppState().getSelectedInterval();
-    var speakerSession = SpeakerSession();
 
     var guestName = _connection.getServerState.guestsPlaces
             .firstWhereOrNull((element) => element.terminalId == terminalId)
             ?.name ??
         'Гость[$terminalId]';
-    speakerSession.type = 'Выступление:';
 
+    var speakerSession = SpeakerSession();
+    speakerSession.id = 0;
+    speakerSession.type = 'Выступление:';
     speakerSession.name = guestName;
     speakerSession.terminalId = terminalId;
     speakerSession.interval = selectedInterval?.duration;
     speakerSession.autoEnd = selectedInterval?.isAutoEnd;
+    speakerSession.startDate = DateTime.now();
+
     _connection.setCurrentSpeaker(speakerSession, selectedInterval?.startSignal,
         selectedInterval?.endSignal);
   }
 
   void _onSetCurrentSpeakerSound(
-      SpeakerSession speakerSession, Signal startSignal, Signal endSignal) {
+      SpeakerSession speakerSession, Signal? startSignal, Signal? endSignal) {
     SoundPlayer.playSignal(startSignal, isInternal: false);
 
     _connection.setCurrentSpeaker(speakerSession, startSignal, endSignal);
@@ -596,6 +590,9 @@ class _OperatorPageState extends State<OperatorPage> {
                     popupProps: PopupProps.menu(
                       itemBuilder: userPopupItemBuilder,
                     ),
+                    compareFn: (item1, item2) {
+                      return item1 == item2;
+                    },
                   ),
                 ],
               ),
@@ -803,9 +800,7 @@ class _OperatorPageState extends State<OperatorPage> {
   }
 
   Widget body() {
-    if (!AppState().getIsLoadingComplete() ||
-        _connection.getServerState == null ||
-        _settings == null) {
+    if (!AppState().getIsLoadingComplete() || _settings == null) {
       return Row(
         children: [
           Expanded(
@@ -841,9 +836,10 @@ class _OperatorPageState extends State<OperatorPage> {
                   group: _selectedMeeting?.group,
                   isOperatorView: true,
                   isSmallView: isSmallView),
-          (_selectedMeeting?.group == null ||
-                  _connection.getServerState == null)
-              ? Container()
+          (_selectedMeeting?.group == null)
+              ? Expanded(
+                  child: Container(),
+                )
               : _settings.operatorSchemeSettings.useTableView
                   ? TableSchemeWidget(
                       settings: _settings,

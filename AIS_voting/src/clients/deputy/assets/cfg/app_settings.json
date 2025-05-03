@@ -13,7 +13,7 @@
     "agenda_view_top_panel_show_exit_button":"true",
 
     "agenda_view_first_question_page": "false",
-    "agenda_view_selected_question_page":"true",
+    "agenda_view_selected_question_page":"false",
     "agenda_view_first_question_page_show_top_panel":"true",
     "agenda_view_use_navigation":"true",
     "agenda_view_show_unregistred":"false",
@@ -28,7 +28,7 @@
     "ntp_timeout": "500",
     "use_manual_login": "false",
 
-    "oven_media_server": "192.168.15.103",
+    "oven_media_server": "192.168.216.202",
     "oven_signaling_port": "3333",
     "player_show_fps": "true",
     "player_show_reload": "false",

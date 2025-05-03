@@ -1,10 +1,10 @@
 name: storeboard
-description: AIS storeboard client.
+description: AIS Voter Storeboard client.
 publish_to: 'none'
 version: 1.04.26
 
 environment:
-  sdk: '>=2.12.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -22,19 +22,19 @@ dependencies:
   window_size:
     path: '../client_plugins/window_size'
   google_fonts: any
-  dropdown_search: ^0.6.0
+  dropdown_search: 6.0.2
   media_kit: any
   media_kit_libs_audio: any
   uuid: any
   package_info_plus: ^4.2.0
-  flutter_webrtc: #^0.9.48+hotfix.1
-    path: '../client_plugins/flutter-webrtc-main'
+  flutter_webrtc: any
+    #path: '../client_plugins/flutter-webrtc-main'
   statsfl: ^2.3.0
   collection: ^1.18.0
-  
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+
+dependency_overrides:
+   win32: 5.5.4
+   archive: 3.6.1
 
 flutter:
   uses-material-design: true

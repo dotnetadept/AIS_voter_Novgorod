@@ -1,10 +1,10 @@
 name: loader
-description: A new Flutter project.
+description: AIS VOTER Agenda loader
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.12.0 <4.0.0'
+  sdk: '>=2.17.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -17,21 +17,15 @@ dependencies:
   path: any
   intl: any
   global_configuration: any
-    #path: '../client_plugins/global_configuration-1.6.0'
   ais_model:
     path: '../client_plugins/ais_model'
   ais_utils:
     path: '../client_plugins/ais_utils'
-  dropdown_search: ^5.0.6
-    #path: '../client_plugins/dropdown_search-0.6.3'
   collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-#dependency_overrides:
-#  path_provider: 2.0.0
 
 flutter:
   uses-material-design: true

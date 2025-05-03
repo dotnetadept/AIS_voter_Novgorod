@@ -34,6 +34,7 @@ class ProxiesController extends ResourceController {
     final query = Query<Proxy>(context)
       ..values.proxy = proxy.proxy
       ..values.isActive = proxy.isActive
+      ..values.isInitialVotes = proxy.isInitialVotes
       ..values.lastUpdated = proxy.lastUpdated
       ..values.createdDate = proxy.createdDate;
 
@@ -59,6 +60,7 @@ class ProxiesController extends ResourceController {
     var query = Query<Proxy>(context)
       ..values.proxy = proxy.proxy
       ..values.isActive = proxy.isActive
+      ..values.isInitialVotes = proxy.isInitialVotes
       ..values.lastUpdated = proxy.lastUpdated
       ..values.createdDate = proxy.createdDate
       ..where((g) => g.id).equalTo(id);

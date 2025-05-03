@@ -61,10 +61,10 @@ class SetStoreboardDialog {
   int _currentTabIndex = 0;
   bool _wasError = false;
 
-  late Function _setStateForDialog;
+  void Function(void Function())? _setStateForDialog;
 
   final Function(
-          SpeakerSession speakerSession, Signal startSignal, Signal endSignal)
+          SpeakerSession speakerSession, Signal? startSignal, Signal? endSignal)
       _setCurrentSpeaker;
   final Function(StoreboardState state, String params) _setStoreboardState;
   final Function(String terminalID, bool isOn) _setSpeaker;
@@ -159,7 +159,7 @@ class SetStoreboardDialog {
 
     _tecSpeakerTime.addListener(() {
       if (_setStateForDialog != null) {
-        _setStateForDialog(() {
+        _setStateForDialog!(() {
           if (isAutoEndWidgetDisabled()) {
             _autoEnd = false;
             _setAutoEnd(_autoEnd);
@@ -242,7 +242,8 @@ class SetStoreboardDialog {
     _selectDataController = SelectDataController(
       data: _exampleData,
       isMultiSelect: false,
-      initSelected: <SingleItemCategoryModel>[selected],
+      initSelected:
+          selected == null ? null : <SingleItemCategoryModel>[selected],
     );
   }
 
@@ -266,7 +267,7 @@ class SetStoreboardDialog {
   }
 
   void update(Map<String, String> activeMics, List<int> waitingMics) {
-    _setStateForDialog(() {
+    _setStateForDialog!(() {
       updateMics(activeMics, waitingMics);
     });
   }
@@ -600,7 +601,7 @@ class SetStoreboardDialog {
           }));
     }
     if (_currentTabIndex == 1) {
-      _setStateForDialog(() {
+      _setStateForDialog!(() {
         _wasError = _selectDataController.selectedList.length == 0;
       });
       if (_formKeySetSpeaker.currentState?.validate() == false || _wasError) {
@@ -617,15 +618,17 @@ class SetStoreboardDialog {
       }
 
       var speakerSession = SpeakerSession();
-
+      speakerSession.id = 0;
       speakerSession.terminalId = _terminalId ?? "000";
       speakerSession.type = _speakerType;
       speakerSession.name =
           _selectDataController.selectedList.first.nameSingleItem;
       speakerSession.interval = seconds;
       speakerSession.autoEnd = _autoEnd == true;
-      _setCurrentSpeaker(speakerSession, _selectedInterval!.startSignal!,
-          _selectedInterval!.endSignal!);
+      speakerSession.startDate = DateTime.now();
+
+      _setCurrentSpeaker(speakerSession, _selectedInterval!.startSignal,
+          _selectedInterval!.endSignal);
     }
 
     if (_currentTabIndex == 2) {
@@ -1042,7 +1045,7 @@ class SetStoreboardDialog {
                               ),
                             ),
                             onPressed: () {
-                              _setStateForDialog(() {
+                              _setStateForDialog!(() {
                                 _autoEnd = false;
                                 _setAutoEnd(_autoEnd);
                                 _tecSpeakerTime.text = '0';
@@ -1089,7 +1092,7 @@ class SetStoreboardDialog {
             selected: _selectedInterval == _intervals[index],
             selectedColor: Colors.blue,
             onSelected: (bool selected) {
-              _setStateForDialog(() {
+              _setStateForDialog!(() {
                 if (selected == true) {
                   _selectedInterval = _intervals[index];
                 } else {
@@ -1130,7 +1133,7 @@ class SetStoreboardDialog {
             onChanged: isAutoEndWidgetDisabled()
                 ? null
                 : (bool? value) {
-                    _setStateForDialog(() {
+                    _setStateForDialog!(() {
                       _autoEnd = value;
                       _setAutoEnd(_autoEnd);
                     });

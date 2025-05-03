@@ -76,7 +76,7 @@ class VotingDialog {
         context: _context,
         barrierDismissible: false,
         barrierColor: Colors.black12,
-        offset: Offset(-353, -90),
+        offset: Offset(-_settings.storeboardSettings.width / 2, 0),
         targetAnchor: Alignment.centerRight,
         builder: (BuildContext context) {
           return StatefulBuilder(
@@ -102,15 +102,17 @@ class VotingDialog {
 
               return ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth: 705,
-                  minWidth: 705,
-                  maxHeight: 620,
-                  minHeight: 620,
+                  maxWidth: _settings.storeboardSettings.width.toDouble(),
+                  minWidth: _settings.storeboardSettings.width.toDouble(),
+                  maxHeight:
+                      1080 - _settings.storeboardSettings.height.toDouble(),
+                  minHeight:
+                      1080 - _settings.storeboardSettings.height.toDouble(),
                 ),
                 child: AlertDialog(
                   insetPadding: EdgeInsets.zero,
                   contentPadding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  titlePadding: EdgeInsets.all(10),
+                  titlePadding: EdgeInsets.all(0),
                   actionsPadding: EdgeInsets.all(10),
                   title: Row(
                     children: [
@@ -165,12 +167,13 @@ class VotingDialog {
                               ),
                               Expanded(
                                 child: Text(
-                                  'Голосование: ${_lockedQuestion.toString()}',
+                                  'Голосование: \r\n${_lockedQuestion.toString()}',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 28),
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 28,
+                                  ),
                                 ),
                               ),
                               Tooltip(
@@ -308,20 +311,16 @@ class VotingDialog {
                             Expanded(
                               child: Container(),
                             ),
-                            getInitialChoisesButton(
-                              context,
-                              setStateForDialog,
-                            )
                           ],
                         ),
                         Container(
-                          height: 5,
+                          height: 10,
                         ),
                         Row(
                           children: [
                             Expanded(
                               child: Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 20, 10),
+                                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
                                 child: TextFormField(
                                   controller: _tecInterval,
                                   decoration: InputDecoration(
@@ -340,33 +339,39 @@ class VotingDialog {
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                                child: TextFormField(
-                                  controller: _tecTempAskWordQueueInterval,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Время записи в очередь, с:',
+                            (!_settings.deputySettings.useTempAskWordQueue)
+                                ? Container()
+                                : Expanded(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(20, 0, 0, 10),
+                                      child: TextFormField(
+                                        controller:
+                                            _tecTempAskWordQueueInterval,
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText:
+                                              'Время записи в очередь, с:',
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Введите время записи в очередь';
+                                          }
+                                          if (int.tryParse(value) == null) {
+                                            return 'Введите целое число';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
                                   ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Введите время записи в очередь';
-                                    }
-                                    if (int.tryParse(value) == null) {
-                                      return 'Введите целое число';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                         Expanded(
                           child: Row(
                             children: [
                               Expanded(
+                                flex: 10,
                                 child: Column(
                                   children: [
                                     getVotingModesHeader(),
@@ -377,6 +382,7 @@ class VotingDialog {
                                 ),
                               ),
                               Expanded(
+                                flex: 18,
                                 child: Column(
                                   children: [
                                     getDecisionModesHeader(),
@@ -400,14 +406,14 @@ class VotingDialog {
                           child: Row(
                             children: [
                               Padding(
-                                padding: EdgeInsets.fromLTRB(5, 0, 14, 10),
+                                padding: EdgeInsets.fromLTRB(0, 0, 14, 10),
                                 child: TextButton(
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         'Закрыть',
-                                        style: TextStyle(fontSize: 24),
+                                        style: TextStyle(fontSize: 23),
                                       ),
                                     ],
                                   ),
@@ -429,7 +435,7 @@ class VotingDialog {
                                                 Text(
                                                   'Очередь',
                                                   style:
-                                                      TextStyle(fontSize: 24),
+                                                      TextStyle(fontSize: 23),
                                                 ),
                                               ],
                                             ),
@@ -489,7 +495,7 @@ class VotingDialog {
                                                 Text(
                                                   'Остановить',
                                                   style:
-                                                      TextStyle(fontSize: 24),
+                                                      TextStyle(fontSize: 23),
                                                 ),
                                               ],
                                             ),
@@ -514,17 +520,19 @@ class VotingDialog {
                         ),
                         _isVotingStarted
                             ? Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 5, 10),
+                                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
                                 child: TextButton(
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         'Завершить голосование',
-                                        style: TextStyle(fontSize: 24),
+                                        style: TextStyle(fontSize: 23),
                                       ),
                                       Container(width: 4),
-                                      Icon(Icons.touch_app),
+                                      Icon(
+                                        Icons.touch_app,
+                                      ),
                                     ],
                                   ),
                                   onPressed: () async {
@@ -533,6 +541,9 @@ class VotingDialog {
                                         json.encode({
                                           'question_id': _lockedQuestion!.id,
                                         }));
+
+                                    _initialChoices.clear();
+                                    _isInitialChoisesSet = false;
 
                                     setStateForDialog(() {
                                       _isVotingStarted = false;
@@ -548,7 +559,7 @@ class VotingDialog {
                                     children: [
                                       Text(
                                         'Начать голосование',
-                                        style: TextStyle(fontSize: 24),
+                                        style: TextStyle(fontSize: 23),
                                       ),
                                       Container(width: 28),
                                       Icon(Icons.touch_app),
@@ -559,6 +570,18 @@ class VotingDialog {
                                         true) {
                                       return;
                                     }
+
+                                    _connection.setClearDecisions();
+
+                                    await InitialVotesDialog(
+                                      context,
+                                      _settings,
+                                      _selectedMeeting,
+                                      _lockedQuestion,
+                                      _proxies,
+                                      Map<String, String>.from(_initialChoices),
+                                      setInitialChoices,
+                                    ).openDialog();
 
                                     var interval =
                                         int.tryParse(_tecInterval.text);
@@ -597,6 +620,10 @@ class VotingDialog {
                               ),
                       ],
                     ),
+                    // getInitialChoisesButton(
+                    //   context,
+                    //   setStateForDialog,
+                    // ),
                   ],
                 ),
               );
@@ -648,48 +675,51 @@ class VotingDialog {
     );
   }
 
-  Widget getInitialChoisesButton(BuildContext context, Function setState) {
-    return TextButton(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Tooltip(
-            message: _isInitialChoisesSet
-                ? 'Голосование оператором: есть'
-                : 'Голосование оператором: нет',
-            child: Row(
-              children: [
-                Text(
-                  'Голосование оператором',
-                  style: TextStyle(fontSize: 18),
-                ),
-                Container(
-                  width: 10,
-                ),
-                Icon(
-                  Icons.touch_app,
-                  color: _isInitialChoisesSet ? Colors.green : Colors.white,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      onPressed: () {
-        InitialVotesDialog(
-          context,
-          _settings,
-          _selectedMeeting,
-          _lockedQuestion,
-          _proxies,
-          Map<String, String>.from(_initialChoices),
-          setInitialChoices,
-        ).openDialog().then((e) {
-          setState(() {});
-        });
-      },
-    );
-  }
+  // Widget getInitialChoisesButton(BuildContext context, Function setState) {
+  //   return TextButton(
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Tooltip(
+  //           message: _isInitialChoisesSet
+  //               ? 'Предварительное голосование: есть'
+  //               : 'Предварительное голосование: нет',
+  //           child: Row(
+  //             children: [
+  //               Text(
+  //                 'Предварительное голосование',
+  //                 style: TextStyle(fontSize: 23),
+  //               ),
+  //               Container(
+  //                 width: 10,
+  //               ),
+  //               Icon(
+  //                 Icons.touch_app,
+  //                 color: _isInitialChoisesSet ? Colors.green : Colors.white,
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //     onPressed:
+  //         _connection.getServerState.systemState == SystemState.QuestionVoting
+  //             ? null
+  //             : () {
+  //                 InitialVotesDialog(
+  //                   context,
+  //                   _settings,
+  //                   _selectedMeeting,
+  //                   _lockedQuestion,
+  //                   _proxies,
+  //                   Map<String, String>.from(_initialChoices),
+  //                   setInitialChoices,
+  //                 ).openDialog().then((e) {
+  //                   setState(() {});
+  //                 });
+  //               },
+  //   );
+  // }
 
   void setInitialChoices(Map<String, String> initalChoices) {
     _initialChoices = initalChoices;
@@ -701,8 +731,9 @@ class VotingDialog {
       children: [
         Expanded(
           child: Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
-            padding: EdgeInsets.fromLTRB(10, 18, 10, 17),
+            margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+            padding: EdgeInsets.fromLTRB(10, 3, 10, 0),
+            height: 65,
             color: Colors.lightBlue,
             child: Text(
               'Режимы голосования',
@@ -722,7 +753,7 @@ class VotingDialog {
       return Container();
     }
     return Container(
-      padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+      padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
       child: Scrollbar(
         thumbVisibility: true,
         controller: _votingOptionsScrollController,
@@ -864,6 +895,7 @@ class VotingDialog {
     return RadioListTile<DecisionMode>(
       title: Text('${DecisionModeHelper.getStringValue(mode)} ($successValue)'),
       value: mode,
+      contentPadding: EdgeInsets.all(1),
       groupValue: _selectedDecisionMode,
       onChanged: (DecisionMode? value) {
         if (value != null) {

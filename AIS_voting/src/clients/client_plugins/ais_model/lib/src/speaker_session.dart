@@ -6,9 +6,9 @@ class SpeakerSession {
   late String name;
   late String type;
   late int? interval;
-  late bool? autoEnd;
+  bool? autoEnd;
   late DateTime startDate;
-  late DateTime? endDate;
+  DateTime? endDate;
 
   SpeakerSession();
 

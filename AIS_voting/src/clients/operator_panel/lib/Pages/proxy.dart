@@ -108,6 +108,25 @@ class _ProxyPageState extends State<ProxyPage>
                   ),
                 ),
                 onPressed: () async {
+                  var usedProxy = widget.proxies.firstWhereOrNull((element) =>
+                      element.id != widget.proxy.id &&
+                      element.proxy?.id == widget.proxy.proxy?.id &&
+                      element.isInitialVotes == true &&
+                      widget.proxy.isInitialVotes == true &&
+                      element.isActive == true &&
+                      widget.proxy.isActive == true);
+                  if (usedProxy != null) {
+                    await Utility().showMessageOkDialog(context,
+                        title: 'Ошибка',
+                        message: TextSpan(
+                          text:
+                              'Для данного пользователя уже существует активная доверенность используемая в предварительном голосовании',
+                        ),
+                        okButtonText: 'Ок');
+
+                    return;
+                  }
+
                   await _save();
                 },
                 child: Icon(Icons.save),
@@ -157,6 +176,25 @@ class _ProxyPageState extends State<ProxyPage>
           ),
         ),
         Container(
+          margin: const EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Text('Участвует в предварительном голосовании'),
+              Container(
+                width: 10,
+              ),
+              Switch(
+                  value: widget.proxy.isInitialVotes,
+                  onChanged: (value) => {
+                        setState(() {
+                          widget.proxy.isInitialVotes = value;
+                        })
+                      })
+            ],
+          ),
+        ),
+        Container(
           margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
           color: Colors.lightBlue,
           child: Row(
@@ -192,7 +230,7 @@ class _ProxyPageState extends State<ProxyPage>
           ),
         ),
         Padding(
-          padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
           child: getSubjectsTable(),
         ),
       ],
@@ -277,22 +315,32 @@ class _ProxyPageState extends State<ProxyPage>
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Добавить доверителя'),
+          insetPadding: EdgeInsets.zero,
+          contentPadding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+          title: Center(
+            child: Text('Добавить доверителя'),
+          ),
           content: Form(
             key: formKey,
-            child: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  getUserSelector(false, (value) {
-                    selectedUser = value;
-                  }),
-                ],
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 500,
+                minWidth: 500,
+              ),
+              child: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    getUserSelector(false, (value) {
+                      selectedUser = value;
+                    }),
+                  ],
+                ),
               ),
             ),
           ),
           actions: <Widget>[
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+              padding: EdgeInsets.fromLTRB(0, 0, 20, 10),
               child: TextButton(
                 child: Text('Отмена'),
                 onPressed: () {
@@ -300,20 +348,23 @@ class _ProxyPageState extends State<ProxyPage>
                 },
               ),
             ),
-            TextButton(
-              child: Text('Ок'),
-              onPressed: () {
-                if (formKey.currentState?.validate() != true) {
-                  return;
-                }
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
+              child: TextButton(
+                child: Text('Ок'),
+                onPressed: () {
+                  if (formKey.currentState?.validate() != true) {
+                    return;
+                  }
 
-                setState(() {
-                  widget.proxy.subjects.add(ProxyUser(
-                      id: 0, proxyId: widget.proxy.id, user: selectedUser!));
-                });
+                  setState(() {
+                    widget.proxy.subjects.add(ProxyUser(
+                        id: 0, proxyId: widget.proxy.id, user: selectedUser!));
+                  });
 
-                Navigator.of(context).pop();
-              },
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
           ],
         );
@@ -348,6 +399,8 @@ class _ProxyPageState extends State<ProxyPage>
           .toList();
     }
 
+    filteredUsers.sort((a, b) => a.toString().compareTo(b.toString()));
+
     return DropdownSearch<User>(
       // mode: Mode.DIALOG,
       // showSearchBox: true,
@@ -377,6 +430,9 @@ class _ProxyPageState extends State<ProxyPage>
       popupProps: PopupProps.menu(
         itemBuilder: userItemBuilder,
       ),
+      compareFn: (item1, item2) {
+        return item1 == item2;
+      },
       //emptyBuilder: emptyBuilder,
     );
   }
@@ -437,18 +493,18 @@ class _ProxyPageState extends State<ProxyPage>
         title: Row(
           children: [
             Text(item.toString()),
-            Expanded(child: Container()),
-            Container(
-              width: 20,
-            ),
-            alreadyUsed
-                ? Tooltip(
-                    message: 'Уже используется',
-                    child: Icon(
-                      Icons.done,
-                    ),
-                  )
-                : Container(),
+            // Expanded(child: Container()),
+            // Container(
+            //   width: 20,
+            // ),
+            // alreadyUsed
+            //     ? Tooltip(
+            //         message: 'Уже используется',
+            //         child: Icon(
+            //           Icons.done,
+            //         ),
+            //       )
+            //     : Container(),
           ],
         ),
       ),

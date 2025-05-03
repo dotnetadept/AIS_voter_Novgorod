@@ -1,5 +1,5 @@
 {
-    "server": "192.168.0.104",
+    "server": "192.168.216.210",
     "http_port": "27153",
     "ws_port": "27154",
     "vissonic_server": "192.168.100.100",
@@ -8,5 +8,6 @@
     "ais_server_timeout_sec": 10,
     "vissonic_keep_alive_interval": 3000,
     "vissonic_message_interval": 10,
-    "vissonic_await_interval": 20
+    "vissonic_await_interval": 20,
+    "vissonic_server_autoreconnect": true
 }

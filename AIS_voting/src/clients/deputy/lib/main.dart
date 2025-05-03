@@ -97,6 +97,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
               theme: ThemeData(
                 primarySwatch: Colors.blue,
                 visualDensity: VisualDensity.adaptivePlatformDensity,
+                useMaterial3: false,
                 textTheme: GoogleFonts.ubuntuTextTheme(
                   Theme.of(context).textTheme,
                 ),

@@ -31,7 +31,12 @@ class _ProxiesPageState extends State<ProxiesPage> {
 
   void _navigateProxyPage(int index) {
     var proxy = index == -1
-        ? Proxy(id: 0, proxy: null, subjects: <ProxyUser>[], isActive: false)
+        ? Proxy(
+            id: 0,
+            proxy: null,
+            subjects: <ProxyUser>[],
+            isActive: false,
+            isInitialVotes: false)
         : _filteredProxies[index];
     Navigator.push(
         context,
@@ -255,6 +260,8 @@ class _ProxiesPageState extends State<ProxiesPage> {
             TableHelper().getTitleItemWidget('Доверители', 2),
             TableHelper().getTitleItemWidget('Активность', 2,
                 aligment: Alignment.center),
+            TableHelper().getTitleItemWidget('Предварительное голосование', 2,
+                aligment: Alignment.center),
             Container(
               child: Text('', style: TextStyle(fontWeight: FontWeight.bold)),
               width: 217,
@@ -294,6 +301,22 @@ class _ProxiesPageState extends State<ProxiesPage> {
             child: Icon(
                 _filteredProxies[index].isActive ? Icons.done : Icons.close,
                 color: _filteredProxies[index].isActive
+                    ? Colors.green
+                    : Colors.red),
+            width: 100,
+            height: 52,
+            padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+            alignment: Alignment.center,
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Container(
+            child: Icon(
+                _filteredProxies[index].isInitialVotes
+                    ? Icons.done
+                    : Icons.close,
+                color: _filteredProxies[index].isInitialVotes
                     ? Colors.green
                     : Colors.red),
             width: 100,

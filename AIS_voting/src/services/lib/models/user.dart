@@ -7,7 +7,7 @@ class User extends ManagedObject<_User> implements _User {}
 
 class _User {
   @primaryKey
-  late int id;
+  late int? id;
   late String firstName;
   late String secondName;
   late String lastName;

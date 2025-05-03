@@ -1,10 +1,10 @@
 name: deputy
-description: AIS deputy client application.
+description: AIS Voter Deputy client.
 publish_to: 'none'
 version: 1.05.21
 
 environment:
-  sdk: '>=2.12.0 <4.0.0'
+  sdk: '>=2.17.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -14,7 +14,6 @@ dependencies:
   ntp: ^2.0.0
   provider: any
   global_configuration: any
-    #path: '../client_plugins/global_configuration-1.6.0'
   synchronized: ^3.0.0
   enum_to_string: any
   uuid: any
@@ -34,12 +33,15 @@ dependencies:
   window_manager: ^0.2.3
   auto_size_text: ^3.0.0
   google_fonts: any
-  dropdown_search: ^0.6.0
+  dropdown_search: 6.0.2
   package_info_plus: ^4.2.0
   sdp_transform: ^0.3.2
   statsfl: ^2.3.0
   pdfrx: ^1.0.72
   collection: ^1.18.0
+
+dependency_overrides:
+   win32: 5.5.4
 
 flutter:
   uses-material-design: true

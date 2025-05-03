@@ -764,6 +764,10 @@ class WebSocketServer {
 
           processSetHistory(json.encode(value['voting_history']));
 
+          if (value['clear_decisions'] == 'true') {
+            setClearDecisions();
+          }
+
           if (value['refresh_stream'] == 'true') {
             processSetRefreshStream();
           }
@@ -1395,10 +1399,10 @@ class WebSocketServer {
       for (var i = 0; i < proxy.getVotingSubjects().length; i++) {
         var proxyUser = proxy.getVotingSubjects()[i];
         if (!ServerState.usersRegistered.contains(proxyUser.user.id)) {
-          ServerState.usersRegistered.add(proxyUser.user.id);
+          ServerState.usersRegistered.add(proxyUser.user.id!);
 
           var proxyRegistration = Registration();
-          proxyRegistration.userId = proxyUser.user.id;
+          proxyRegistration.userId = proxyUser.user.id!;
           proxyRegistration.proxyId = proxy.id!;
           proxyRegistration.registrationSession =
               ServerState.registrationSession!;
@@ -1446,7 +1450,7 @@ class WebSocketServer {
     if (proxy != null) {
       for (var proxyUser in proxy.getVotingSubjects()) {
         var proxyRegistration = Registration();
-        proxyRegistration.userId = proxyUser.user.id;
+        proxyRegistration.userId = proxyUser.user.id!;
         proxyRegistration.registrationSession =
             ServerState.registrationSession!;
         registrationsForDelete.add(proxyRegistration);
@@ -1783,6 +1787,12 @@ class WebSocketServer {
 
   void setDetailsStoreboard(bool isDetailsStoreboard) {
     ServerState.isDetailsStoreboard = isDetailsStoreboard;
+
+    _isSendState = true;
+  }
+
+  void setClearDecisions() {
+    ServerState.usersDecisions.clear();
 
     _isSendState = true;
   }
@@ -2568,13 +2578,15 @@ class WebSocketServer {
     }
 
     // Set user voted indifferent if it registered and not voted
-    for (var i = 0; i < registredAndOnline.length; i++) {
-      var foundDecision = ServerState.usersDecisions.entries.firstWhereOrNull(
-          (element) => element.key == registredAndOnline[i].toString());
+    if (_settings.votingSettings.isCountNotVotingAsIndifferent == true) {
+      for (var i = 0; i < registredAndOnline.length; i++) {
+        var foundDecision = ServerState.usersDecisions.entries.firstWhereOrNull(
+            (element) => element.key == registredAndOnline[i].toString());
 
-      if (foundDecision == null) {
-        ServerState.usersDecisions
-            .putIfAbsent(registredAndOnline[i].toString(), () => 'ВОЗДЕРЖАЛСЯ');
+        if (foundDecision == null) {
+          ServerState.usersDecisions.putIfAbsent(
+              registredAndOnline[i].toString(), () => 'ВОЗДЕРЖАЛСЯ');
+        }
       }
     }
 
@@ -2891,7 +2903,7 @@ class WebSocketServer {
         //       '//home/user/Desktop/AIS_voter/AIS_voting/src/clients/vissonic_client/bin/app_settings.json'
         //     ]);
         await Process.run(
-            'gnome-terminal', ['--wait', '--', VISSONIC_MODULE_PATH]);
+            'fly-term', ['--hold', '-e', 'bash', VISSONIC_MODULE_PATH]);
 
         await waitUntilVissonicModuleConnect(5, Duration(milliseconds: 200));
       } catch (exc) {

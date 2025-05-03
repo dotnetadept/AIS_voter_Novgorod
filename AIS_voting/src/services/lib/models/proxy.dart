@@ -12,6 +12,7 @@ class _Proxy {
   late int? id;
   late ManagedSet<ProxyUser> subjects;
   late bool isActive;
+  late bool isInitialVotes;
   late DateTime createdDate;
   late DateTime lastUpdated;
 

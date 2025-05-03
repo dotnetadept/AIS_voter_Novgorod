@@ -6,6 +6,7 @@ import 'package:charset/charset.dart';
 import 'package:csv/csv.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:ais_model/ais_model.dart';
 import 'package:uuid/uuid.dart';
@@ -20,6 +21,7 @@ class AgendaListUtil {
   static final QuestionListSettings settings = QuestionListSettings();
   static List<Question> questions = <Question>[];
   static Question _newQuestionStub = Question();
+  static bool isLoaded = false;
 
   static late BuildContext _context;
   static late Function _setState;
@@ -89,7 +91,7 @@ class AgendaListUtil {
     );
   }
 
-  static void loadCsvQuestions(String agendaFilePath) {
+  static void loadQuestions(String agendaFilePath) {
     _agendaFilePath = agendaFilePath;
 
     if (_agendaFilePath.isEmpty) {
@@ -117,9 +119,26 @@ class AgendaListUtil {
     );
     var agendaQuestions = <Question>[];
 
+    // init first row if it not exists
+    if (tableQuestions.isEmpty) {
+      final String currentDate =
+          DateFormat('dd.MM.yyyy').format(DateTime.now());
+
+      firstRow = <String>[
+        currentDate,
+        '№',
+        '',
+        settings.mainQuestion.descriptionCaption1,
+        settings.mainQuestion.descriptionCaption2,
+        settings.mainQuestion.descriptionCaption3,
+        settings.mainQuestion.descriptionCaption4
+      ];
+    }
+
     for (int i = 0; i < tableQuestions.length; i++) {
       if (i == 0) {
         firstRow = tableQuestions[i];
+        firstRow.first = firstRow.first.toString().substring(1);
         continue;
       }
 
@@ -135,15 +154,11 @@ class AgendaListUtil {
         }
 
         var descriptionItem = QuestionDescriptionItem(
-            caption: (tableQuestions[0].length > j
-                    ? tableQuestions[0][j]
-                    : createQuestionDescription(
-                            settings.mainQuestion)[questionDescriptions.length]
-                        .caption) +
-                ':',
+            caption:
+                '${createQuestionDescription(settings.mainQuestion)[questionDescriptions.length].caption}:',
             text: tableQuestion[j].toString(),
             showInReports: true,
-            showOnStoreboard: true);
+            showOnStoreboard: !(j == 4 || j == 6));
         questionDescriptions.add(descriptionItem);
       }
 
@@ -166,15 +181,14 @@ class AgendaListUtil {
       // Загружаем описания файлов вопросов
       Map<String, dynamic> filesDescriptions = <String, dynamic>{};
       if (documentFolderContents
-          .any((element) => path.basename(element.path) == 'Описание.txt')) {
+          .any((element) => path.basename(element.path) == 'Description.txt')) {
         FileSystemEntity descriptionFile = documentFolderContents.firstWhere(
-            (element) => path.basename(element.path) == 'Описание.txt');
+            (element) => path.basename(element.path) == 'Description.txt');
 
         var descriptionsBytes = File(descriptionFile.path).readAsBytesSync();
         var descriptionsFileContent =
             String.fromCharCodes(descriptionsBytes.buffer.asUint16List());
-        Map<String, dynamic> filesDescriptions =
-            json.decode(descriptionsFileContent.substring(1));
+        filesDescriptions = json.decode(descriptionsFileContent.substring(1));
       }
 
       for (var fileOrDir in documentFolderContents) {
@@ -214,25 +228,27 @@ class AgendaListUtil {
       agendaQuestions.add(question);
     }
 
-    if (firstRow.length > 4) {
-      settings.firstQuestion.descriptionCaption1 = firstRow[1];
-      settings.mainQuestion.descriptionCaption1 = firstRow[1];
-      settings.additionalQiestion.descriptionCaption1 = firstRow[1];
+    if (firstRow.length == 7) {
+      settings.firstQuestion.descriptionCaption1 = firstRow[3];
+      settings.mainQuestion.descriptionCaption1 = firstRow[3];
+      settings.additionalQiestion.descriptionCaption1 = firstRow[3];
 
-      settings.firstQuestion.descriptionCaption2 = firstRow[2];
-      settings.mainQuestion.descriptionCaption2 = firstRow[2];
-      settings.additionalQiestion.descriptionCaption2 = firstRow[2];
+      settings.firstQuestion.descriptionCaption2 = firstRow[4];
+      settings.mainQuestion.descriptionCaption2 = firstRow[4];
+      settings.additionalQiestion.descriptionCaption2 = firstRow[4];
 
-      settings.firstQuestion.descriptionCaption3 = firstRow[3];
-      settings.mainQuestion.descriptionCaption3 = firstRow[3];
-      settings.additionalQiestion.descriptionCaption3 = firstRow[3];
+      settings.firstQuestion.descriptionCaption3 = firstRow[5];
+      settings.mainQuestion.descriptionCaption3 = firstRow[5];
+      settings.additionalQiestion.descriptionCaption3 = firstRow[5];
 
-      settings.firstQuestion.descriptionCaption4 = firstRow[4];
-      settings.mainQuestion.descriptionCaption4 = firstRow[4];
-      settings.additionalQiestion.descriptionCaption4 = firstRow[4];
+      settings.firstQuestion.descriptionCaption4 = firstRow[6];
+      settings.mainQuestion.descriptionCaption4 = firstRow[6];
+      settings.additionalQiestion.descriptionCaption4 = firstRow[6];
     }
 
     questions = agendaQuestions;
+
+    isLoaded = true;
 
     _setState(() {});
   }
@@ -277,6 +293,7 @@ class AgendaListUtil {
         "Основной вопрос",
         "Дополнительный вопрос",
       ],
+      selected: itemIndex == 0 ? "Первый вопрос" : "Основной вопрос",
       yesButtonText: 'Да',
       yesCallBack: (String option) {
         _setState(() {
@@ -325,6 +342,7 @@ class AgendaListUtil {
     newQuestion.files = <QuestionFile>[];
 
     questions.insert(itemIndex, newQuestion);
+    newQuestion.folder = getGetFolderName(itemIndex);
     normalizeList(true);
 
     // create folder for new question
@@ -333,7 +351,7 @@ class AgendaListUtil {
 
     // create description file
     var descriptionFile = File(
-        '${File(_agendaFilePath).parent.path}\\${newQuestion.folder}\\Описание.txt');
+        '${File(_agendaFilePath).parent.path}\\${newQuestion.folder}\\Description.txt');
     descriptionFile.createSync();
 
     var descriptionInfo = <String, dynamic>{};
@@ -344,7 +362,7 @@ class AgendaListUtil {
     return newQuestion;
   }
 
-  static Future<void> saveQuestionList() async {
+  static Future<bool> saveQuestionList() async {
     List<List<dynamic>> rows = <List<dynamic>>[];
 
     rows.add(firstRow);
@@ -377,11 +395,23 @@ class AgendaListUtil {
 
     File agendaFile = File(_agendaFilePath);
 
-    agendaFile.writeAsBytes(
-      const Utf16Encoder().encodeUtf16Le(fileContent, true),
-    );
-
     _setState(() {});
+
+    try {
+      await agendaFile.writeAsBytes(
+        const Utf16Encoder().encodeUtf16Le(fileContent, true),
+      );
+    } catch (e) {
+      await Utility().showMessageOkDialog(_context,
+          title: 'Сохранение повестки',
+          message: TextSpan(
+            text: 'В ходе сохранение повестки возникла ошибка: {$e}',
+          ),
+          okButtonText: 'Ок');
+      return false;
+    }
+
+    return true;
   }
 
   static void normalizeList(bool isReverseDirection) {
@@ -407,6 +437,8 @@ class AgendaListUtil {
         questions[i].id = getQuestionNumber(i);
         questions[i].orderNum = i;
         questions[i].folder = fixedFolderName;
+
+        normalizeFiles(questions[i], false);
       }
     } else {
       for (int i = 0; i < questions.length; i++) {
@@ -428,14 +460,21 @@ class AgendaListUtil {
         questions[i].id = getQuestionNumber(i);
         questions[i].orderNum = i;
         questions[i].folder = fixedFolderName;
+
+        normalizeFiles(questions[i], false);
       }
     }
   }
 
   static void normalizeFiles(Question question, bool isReverseDirection) {
-    var files = Directory(
-            '${File(_agendaFilePath).parent.path}\\${getGetFolderName(questions.indexOf(question))}')
-        .listSync();
+    var questionDirectory = Directory(
+        '${File(_agendaFilePath).parent.path}\\${getGetFolderName(questions.indexOf(question))}');
+
+    if (!questionDirectory.existsSync()) {
+      return;
+    }
+
+    var files = questionDirectory.listSync();
 
     if (isReverseDirection) {
       for (int i = question.files.length - 1; i >= 0; i--) {
@@ -466,7 +505,7 @@ class AgendaListUtil {
         // rename existing file
         var fixedFileName = getFileName(question.folder, i + 1);
 
-        if (questions[i].folder != fixedFileName && isFileExists) {
+        if (question.files[i].fileName != fixedFileName && isFileExists) {
           foundFile.renameSync('${foundFile.parent.path}\\$fixedFileName');
         }
 
@@ -482,7 +521,7 @@ class AgendaListUtil {
           question.files[i].fileName, () => question.files[i].description);
     }
 
-    File('${File(_agendaFilePath).parent.path}\\${question.folder}\\Описание.txt')
+    File('${File(_agendaFilePath).parent.path}\\${question.folder}\\Description.txt')
         .writeAsBytes(
       const Utf16Encoder().encodeUtf16Le(json.encode(descriptionInfo), true),
     );
@@ -550,6 +589,8 @@ class AgendaListUtil {
       tempQuestionDirectory.renameSync(
           '${questionDirectory.parent.path}\\${getGetFolderName(newItemIndex)}');
     }
+
+    normalizeFiles(question, false);
   }
 
   static void onFilesReorder(Question question, int oldItemIndex,

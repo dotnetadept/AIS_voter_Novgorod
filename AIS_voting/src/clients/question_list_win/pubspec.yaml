@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  file_picker_cross: any
   csv: any
   uuid: 2.2.2
   path: any
@@ -23,6 +22,9 @@ dependencies:
     path: '../client_plugins/DragAndDropLists-master'
   dropdown_search: ^0.6.0  
   charset: ^2.0.1
+  windows_single_instance: ^1.0.1
+  window_manager: ^0.3.7
+  filepicker_windows: any
 
 dev_dependencies:
   flutter_test:
@@ -31,3 +33,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+  - assets/data/povestka_example/
+  - assets/data/povestka_example/0/

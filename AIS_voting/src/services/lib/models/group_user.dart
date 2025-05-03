@@ -12,7 +12,7 @@ class GroupUser extends ManagedObject<_GroupUser> implements _GroupUser {
     groupUser.id = id;
     groupUser.isManager = isManager;
     groupUser.user = client_models.User();
-    groupUser.user.id = user.id;
+    groupUser.user.id = user.id!;
 
     return groupUser;
   }

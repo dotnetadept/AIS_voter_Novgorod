@@ -4,7 +4,7 @@ class AgendaListUtil {
   static int getQuestionNumber(
       int index, List<String> questions, QuestionListSettings settings) {
     RegExp regExp = new RegExp(
-        r'("[^"]*"),("?[^"]+"?),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*"),("[^"]*")');
+        r'("[^"]*"),("?[^"]+"?),("[^"]*"),(".*"),(".*"),(".*"),(".*")');
 
     var additionalQuestionCount = questions
         .sublist(0, index)

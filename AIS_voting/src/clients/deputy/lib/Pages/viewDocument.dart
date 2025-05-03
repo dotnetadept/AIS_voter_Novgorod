@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:ais_model/ais_model.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:global_configuration/global_configuration.dart';
@@ -50,20 +51,35 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          Text(_currentDocument?.description ?? ''),
+          Expanded(
+            child: AutoSizeText(
+              _currentDocument?.description ?? '',
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 300,
+                color: Colors.white,
+              ),
+            ),
+          ),
           IconButton(
+            padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
             icon: const Icon(Icons.zoom_in),
             onPressed: () => controller.zoomUp(),
           ),
           IconButton(
+            padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
             icon: const Icon(Icons.zoom_out),
             onPressed: () => controller.zoomDown(),
           ),
           IconButton(
+            padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
             icon: const Icon(Icons.first_page),
             onPressed: () => controller.goToPage(pageNumber: 1),
           ),
           IconButton(
+            padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
             icon: const Icon(Icons.last_page),
             onPressed: () =>
                 controller.goToPage(pageNumber: controller.pages.length),
@@ -103,6 +119,25 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
                   child:
                       Text('Невозможно открыть файл:\r\n${error.toString()}'),
                 ),
+                layoutPages: (pages, params) {
+                  final height = pages.fold(0.0, (prev, page) => page.height) +
+                      params.margin * 2;
+                  final pageLayouts = <Rect>[];
+                  double x = params.margin;
+                  for (final page in pages) {
+                    pageLayouts.add(
+                      Rect.fromLTWH(
+                        x,
+                        (height - page.height) / 2, // center vertically
+                        page.width,
+                        page.height,
+                      ),
+                    );
+                    x += page.width + params.margin;
+                  }
+                  return PdfPageLayout(
+                      pageLayouts: pageLayouts, documentSize: Size(x, height));
+                },
                 viewerOverlayBuilder: (context, size, handleLinkTap) => [
                   //
                   // Scroll-thumbs example
@@ -191,9 +226,6 @@ class _ViewDocumentPageState extends State<ViewDocumentPage> {
                       300,
                       true,
                     ),
-              Container(
-                width: 20,
-              ),
             ],
           ),
         ]),

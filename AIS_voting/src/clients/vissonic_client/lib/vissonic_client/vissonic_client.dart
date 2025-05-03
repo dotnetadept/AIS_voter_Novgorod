@@ -25,6 +25,7 @@ class VissonicClient {
   Socket? _socket;
   final List<VissonicCommand> _sendQueue = <VissonicCommand>[];
   Timer? _sendQueueTimer;
+  Timer? _closeConnectionTimer;
   bool? _isMicsEnabledOnStart;
 
   VissonicClient(
@@ -54,7 +55,7 @@ class VissonicClient {
           socket.setOption(SocketOption.tcpNoDelay, true);
 
           // configure socket events
-          var s = socket.listen((data) {
+          socket.listen((data) {
             _processServerMessage(data);
           }, onDone: () {
             print(
@@ -75,7 +76,11 @@ class VissonicClient {
 
           // Init vissonic session
           await _sendToServer(VissonicBasicCommand.init()).then((value) async {
-            await Future.delayed(Duration(
+            _secondInitTimer = Timer(Duration(milliseconds: 1000), () {
+              _processError("INIT TIMEOUT");
+            });
+
+            Future.delayed(Duration(
                     milliseconds:
                         AppSettings.settings?['vissonic_keep_alive_interval']))
                 .then((value) async {
@@ -110,7 +115,24 @@ class VissonicClient {
     });
   }
 
+  Timer? _secondInitTimer;
   void processInitMessage(List<int> data) {
+    print('Init data: ${data.toString()}');
+    if (data.length == 5) {
+      _socket?.add(
+          VissonicCommand([0x00, 0x06, 0x00, 0x00, 0x00, 0x01, 0xFC, 0xFC], [])
+              .getComand());
+      _socket?.add(VissonicBasicCommand.init().getComand());
+      _socket?.add(VissonicBasicCommand.keepAlive().getComand());
+      _socket?.flush();
+      print('second Init command set');
+
+      return;
+    }
+
+    //cancel secondInit timer
+    _secondInitTimer?.cancel();
+
     if (data.length < 36) {
       _processError(data.toString());
 
@@ -183,15 +205,25 @@ class VissonicClient {
     closeConnection();
   }
 
+  bool _isReconnectStarted = false;
+
   void closeConnection() {
-    // cancel send queue timer
+    // cancel timers
     _sendQueueTimer?.cancel();
+    _closeConnectionTimer?.cancel();
+
     _socket?.close();
-    // destroy socket
     _socket?.destroy();
 
-    if (ServerState.isVissonicServerOnline == true) {
-      Future.delayed(Duration(seconds: 3)).then((value) {
+    if (ServerState.isVissonicServerOnline == true &&
+        AppSettings.settings?['vissonic_server_autoreconnect'] == true &&
+        !_isReconnectStarted) {
+      _isReconnectStarted = true;
+      Future.delayed(Duration(
+              milliseconds: AppSettings
+                  .settings?['vissonic_server_autoreconnect_interval']))
+          .then((value) {
+        _isReconnectStarted = false;
         connect(_isMicsEnabledOnStart!);
       });
     }
@@ -308,8 +340,6 @@ class VissonicClient {
     }
   }
 
-  Timer? _closeConnectionTimer;
-
   // process single server command
   void _processServerCommand(
       List<int> serverCommand, int command, int terminalId) {
@@ -318,7 +348,11 @@ class VissonicClient {
     if (terminalId == 0x000 && command == 0x00e) {
       _insertToQueue(<VissonicCommand>[VissonicBasicCommand.keepAlive()]);
       _closeConnectionTimer?.cancel();
-      _closeConnectionTimer = Timer(Duration(seconds: 6), () {
+      _closeConnectionTimer = Timer(
+          Duration(
+              milliseconds: 2 *
+                  (AppSettings.settings?['vissonic_keep_alive_interval']
+                      as int)), () {
         _processError("connection timeout");
       });
       return;
